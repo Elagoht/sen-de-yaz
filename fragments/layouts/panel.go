@@ -8,7 +8,10 @@ import (
 )
 
 func PanelLayout(service *users.UserService) *collage.Fragment {
-	return collage.NewFragment("panel", "layouts/panel.html").
+	return collage.NewInlineFragment("panel", `
+		<main class="container py-5">
+			{{slot "content"}}
+		</main>`).
 		WithGuard(guards.RequireUser(service)).
 		Build()
 }

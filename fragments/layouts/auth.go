@@ -8,8 +8,10 @@ import (
 )
 
 func AuthLayout(service *users.UserService) *collage.Fragment {
-	return collage.NewFragment("auth", "layouts/auth.html").
+	return collage.NewInlineFragment("auth", `
+		<main class="container py-5">
+			{{slot "content"}}
+		</main>`).
 		WithGuard(guards.AuthGuard(service)).
-		WithData(struct{ Title string }{"Sen De Yaz"}).
 		Build()
 }
