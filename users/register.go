@@ -25,6 +25,9 @@ func SaveOptionalFile(r *http.Request, field, directory string) (string, error) 
 		return "", err
 	}
 	defer file.Close()
+	if header.Filename == "" {
+		return "", nil
+	}
 
 	if err := os.MkdirAll(directory, 0o755); err != nil {
 		return "", err

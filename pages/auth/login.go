@@ -15,18 +15,24 @@ func LoginPage(userService *users.UserService) *collage.Page {
 		<h2>Login</h2>
 		<label>E-mail</label>
 		<input name="email" type="email" required/>
+		{{with .Errors.email}}<small class="form-error">{{.}}</small>{{end}}
 		<label>Password</label>
 		<input name="password" type="password" required/>
+		{{with .Errors.password}}<small class="form-error">{{.}}</small>{{end}}
 		{{csrfToken}}
 		<input type="submit" value="Login">
 	</form>
 	<a href="/register">No accounts yet? Create an account</a>`,
-	).Build()
+	).WithDataHandler(collage.Load(formData)).Build()
 
-	return collage.NewPage("login").
+	var page *collage.Page
+	page = collage.NewPage("login").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout()).
 		WithContent(content).
 		WithPath("en", "/login").
-		WithAction(http.MethodPost, actions.LoginAction(userService)).
+		WithAction(http.MethodPost, actions.LoginAction(
+			userService,
+			func() *collage.Page { return page })).
 		Build()
+	return page
 }

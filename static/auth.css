@@ -24,3 +24,8 @@ form {
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.form-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+}

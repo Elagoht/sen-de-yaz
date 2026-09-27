@@ -80,6 +80,13 @@ func newApp(devMode bool, port int, userService *users.UserService) (*collage.Ap
 		return nil, fmt.Errorf("plugin configuration: %w", err)
 	}
 
+	csrfKey := os.Getenv("COLLAGE_CSRF_KEY")
+	if csrfKey == "" {
+		// Stable development key prevents form tokens from breaking on restart.
+		// Set COLLAGE_CSRF_KEY to a random secret outside local development.
+		csrfKey = "sen-de-yaz-development-csrf-key-change-me"
+	}
+
 	app, err := collage.New(&collage.Config{
 		DevMode: devMode,
 		Server: collage.ServerConfig{
@@ -99,7 +106,7 @@ func newApp(devMode bool, port int, userService *users.UserService) (*collage.Ap
 		},
 		PluginConfig: pluginConfig,
 		Security: collage.SecurityConfig{
-			CSRFKey: []byte(os.Getenv("COLLAGE_CSRF_KEY")),
+			CSRFKey: []byte(csrfKey),
 		},
 	})
 	if err != nil {

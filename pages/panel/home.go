@@ -8,15 +8,12 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-const homeBlock collage.InlineHTML = `
+func HomePage(service *users.UserService) *collage.Page {
+	content := collage.NewInlineFragment("home-content", `
 	<h1>Welcome, {{.FullName}}</h1>
 	{{if .ProfilePhoto}}
 	<img src="/{{.ProfilePhoto}}" alt="Profile photo">
-	{{end}}
-`
-
-func HomePage(service *users.UserService) *collage.Page {
-	content := collage.NewInlineFragment("home-content", homeBlock).
+	{{end}}`).
 		WithDataHandler(func(
 			ctx context.Context,
 			rc *collage.RenderContext,
