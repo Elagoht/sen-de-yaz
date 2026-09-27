@@ -31,7 +31,7 @@ var staticFS embed.FS
 var cacheDir = ".cache"
 
 func main() {
-	database, service, err := openUserService("db/app.sqlite")
+	database, service, err := openUserService("data/db/app.sqlite")
 	if err != nil {
 		log.Fatalf("sen-de-yaz: initialize users: %v", err)
 	}
