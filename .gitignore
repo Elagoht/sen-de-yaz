@@ -16,3 +16,5 @@
 # Local environment, read by "collage dev". .env.example is the one to commit.
 /.env
 /.env.development
+
+*.sqlite
