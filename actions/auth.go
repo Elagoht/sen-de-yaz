@@ -20,6 +20,9 @@ func RegisterAction(
 		ctx context.Context,
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
+		if rc.Request.ContentLength > 5<<20 {
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profile photo request must be smaller than 20 MB."})
+		}
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
 		}
@@ -111,6 +114,9 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		ctx context.Context,
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
+		if rc.Request.ContentLength > 5<<20 {
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profile photo request must be smaller than 20 MB."})
+		}
 		cookie, err := rc.Request.Cookie("session_token")
 		if err != nil {
 			return nil, fmt.Errorf("session cookie: %w", err)
@@ -119,7 +125,7 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		if err != nil {
 			return nil, err
 		}
-		if err := rc.Request.ParseMultipartForm(8 << 20); err != nil {
+		if err := rc.Request.ParseMultipartForm(5 << 20); err != nil {
 			return nil, err
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
@@ -129,7 +135,7 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		if err := service.UpdateProfile(user.ID, rc.Request.FormValue("fullname"), profilePhoto); err != nil {
 			return formErrors(page, rc, map[string]string{"fullname": err.Error()})
 		}
-		return collage.SeeOther("/profile"), nil
+		return collage.SeeOther("/"), nil
 	}
 }
 

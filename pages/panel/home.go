@@ -10,10 +10,10 @@ import (
 
 func HomePage(service *users.UserService) *collage.Page {
 	content := collage.NewInlineFragment("home-content", `
-	<h1>Welcome, {{.FullName}}</h1>
 	{{if .ProfilePhoto}}
-	<img src="/{{.ProfilePhoto}}" alt="Profile photo">
-	{{end}}`).
+	<img class="rounded-circle mb-3" style="width: 96px; height: 96px; object-fit: cover;" src="/{{.ProfilePhoto}}" alt="Profile photo">
+	{{end}}
+	<div><a class="btn btn-outline-primary" href="/profile">Edit profile</a></div>`).
 		WithDataHandler(func(
 			ctx context.Context,
 			rc *collage.RenderContext,
