@@ -9,7 +9,7 @@ import (
 
 func AuthLayout(service *users.UserService) *collage.Fragment {
 	return collage.NewInlineFragment("auth", `
-		<main class="container py-5">
+		<main class="auth-shell">
 			{{slot "content"}}
 		</main>`).
 		WithGuard(guards.AuthGuard(service)).

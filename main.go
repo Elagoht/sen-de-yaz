@@ -12,14 +12,19 @@ import (
 	"strconv"
 	"time"
 
+	favicon "github.com/Elagoht/collage-favicon"
 	"github.com/Elagoht/collage/pkg/collage"
 
 	appdb "sen-de-yaz/db"
+	"sen-de-yaz/stories"
 	"sen-de-yaz/users"
 )
 
 //go:embed all:templates
 var templatesFS embed.FS
+
+//go:embed all:assets
+var assetsFS embed.FS
 
 //go:embed all:static
 var staticFS embed.FS
@@ -41,7 +46,7 @@ func main() {
 
 	devMode := os.Getenv("COLLAGE_DEV") == "1"
 
-	app, err := newApp(devMode, *portFlag, service)
+	app, err := newApp(devMode, *portFlag, service, stories.NewService(database))
 	if err != nil {
 		log.Fatalf("sen-de-yaz: %v", err)
 	}
@@ -74,7 +79,7 @@ func openUserService(path string) (*sql.DB, *users.UserService, error) {
 	return database, users.NewService(database), nil
 }
 
-func newApp(devMode bool, port int, userService *users.UserService) (*collage.App, error) {
+func newApp(devMode bool, port int, userService *users.UserService, storyService *stories.StoryService) (*collage.App, error) {
 	pluginConfig, err := collage.LoadPluginConfig("plugins-config.json")
 	if err != nil {
 		return nil, fmt.Errorf("plugin configuration: %w", err)
@@ -105,6 +110,17 @@ func newApp(devMode bool, port int, userService *users.UserService) (*collage.Ap
 			DefaultTTL: 5 * time.Minute,
 		},
 		PluginConfig: pluginConfig,
+		Plugins: []collage.Plugin{
+			favicon.New(favicon.Options{
+				FS:              assetsFS,
+				Source:          "assets/icon.png",
+				SVG:             "assets/icon.svg",
+				Name:            "Sen de Yaz",
+				ShortName:       "Sen de Yaz",
+				ThemeColor:      "#6558f5",
+				BackgroundColor: "#f7f8fc",
+			}),
+		},
 		Security: collage.SecurityConfig{
 			CSRFKey: []byte(csrfKey),
 		},
@@ -113,7 +129,7 @@ func newApp(devMode bool, port int, userService *users.UserService) (*collage.Ap
 		return nil, err
 	}
 
-	if err := register(app, userService); err != nil {
+	if err := register(app, userService, storyService); err != nil {
 		return nil, err
 	}
 

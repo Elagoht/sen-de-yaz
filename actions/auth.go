@@ -21,7 +21,7 @@ func RegisterAction(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		if rc.Request.ContentLength > 5<<20 {
-			return formErrors(page, rc, map[string]string{"profile_photo": "Profile photo request must be smaller than 20 MB."})
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 20 MB'dan küçük olmalı."})
 		}
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
@@ -31,7 +31,7 @@ func RegisterAction(
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
 		if err != nil {
-			return formErrors(page, rc, map[string]string{"profile_photo": err.Error()})
+			return formErrors(page, rc, map[string]string{"profile_photo": profilePhotoError(err)})
 		}
 		_, err = service.Register(
 			rc.Request.FormValue("fullname"),
@@ -41,9 +41,9 @@ func RegisterAction(
 		)
 		if err != nil {
 			if errors.Is(err, users.ErrEmailAlreadyExists) {
-				return formErrors(page, rc, map[string]string{"email": "This email is already registered."})
+				return formErrors(page, rc, map[string]string{"email": "Bu e-posta zaten kayıtlı."})
 			}
-			return formErrors(page, rc, map[string]string{"form": fmt.Sprintf("register user: %v", err)})
+			return formErrors(page, rc, map[string]string{"form": "Kayıt oluşturulamadı."})
 		}
 
 		token, _, err := service.Login(
@@ -52,7 +52,7 @@ func RegisterAction(
 		)
 
 		if err != nil {
-			return formErrors(page, rc, map[string]string{"password": "Email or password is incorrect."})
+			return formErrors(page, rc, map[string]string{"password": "E-posta veya şifre hatalı."})
 		}
 
 		cookie := (&http.Cookie{
@@ -88,7 +88,7 @@ func LoginAction(
 		)
 
 		if err != nil {
-			return formErrors(page, rc, map[string]string{"password": "Email or password is incorrect."})
+			return formErrors(page, rc, map[string]string{"password": "E-posta veya şifre hatalı."})
 		}
 
 		cookie := (&http.Cookie{
@@ -115,7 +115,7 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		if rc.Request.ContentLength > 5<<20 {
-			return formErrors(page, rc, map[string]string{"profile_photo": "Profile photo request must be smaller than 20 MB."})
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 20 MB'dan küçük olmalı."})
 		}
 		cookie, err := rc.Request.Cookie("session_token")
 		if err != nil {
@@ -130,13 +130,20 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
 		if err != nil {
-			return formErrors(page, rc, map[string]string{"profile_photo": err.Error()})
+			return formErrors(page, rc, map[string]string{"profile_photo": profilePhotoError(err)})
 		}
 		if err := service.UpdateProfile(user.ID, rc.Request.FormValue("fullname"), profilePhoto); err != nil {
-			return formErrors(page, rc, map[string]string{"fullname": err.Error()})
+			return formErrors(page, rc, map[string]string{"fullname": "Ad soyad alanı zorunludur."})
 		}
 		return collage.SeeOther("/"), nil
 	}
+}
+
+func profilePhotoError(err error) string {
+	if strings.Contains(err.Error(), "jpg, jpeg, png, webp or gif") {
+		return "JPG, JPEG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
+	}
+	return "Profil fotoğrafı yüklenemedi."
 }
 
 func formErrors(page func() *collage.Page, rc *collage.RenderContext, errors map[string]string) (*collage.ActionResult, error) {
@@ -147,10 +154,10 @@ func formErrors(page func() *collage.Page, rc *collage.RenderContext, errors map
 func validateRegisterForm(r *http.Request) map[string]string {
 	fieldErrors := validateLoginForm(r)
 	if strings.TrimSpace(r.FormValue("fullname")) == "" {
-		fieldErrors["fullname"] = "Full name is required."
+		fieldErrors["fullname"] = "Ad soyad alanı zorunludur."
 	}
 	if password := r.FormValue("password"); password != "" && len(password) < 8 {
-		fieldErrors["password"] = "Password must be at least 8 characters."
+		fieldErrors["password"] = "Şifre en az 8 karakter olmalıdır."
 	}
 	return fieldErrors
 }
@@ -160,12 +167,12 @@ func validateLoginForm(r *http.Request) map[string]string {
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := r.FormValue("password")
 	if email == "" {
-		fieldErrors["email"] = "Email is required."
+		fieldErrors["email"] = "E-posta alanı zorunludur."
 	} else if address, err := mail.ParseAddress(email); err != nil || address.Address != email {
-		fieldErrors["email"] = "Enter a valid email address."
+		fieldErrors["email"] = "Geçerli bir e-posta adresi girin."
 	}
 	if password == "" {
-		fieldErrors["password"] = "Password is required."
+		fieldErrors["password"] = "Şifre alanı zorunludur."
 	}
 	return fieldErrors
 }

@@ -11,25 +11,21 @@ import (
 
 func RegisterPage(userService *users.UserService) *collage.Page {
 	content := collage.NewInlineFragment("register", `
-	<form class="card card-body shadow-sm mx-auto d-flex flex-column gap-2" style="max-width: 28rem" action="/register" method="POST" enctype="multipart/form-data">
-		<h2 class="mb-4">Register</h2>
-		<label class="form-label">Full Name</label>
-		<input class="form-control" name="fullname" type="text" required/>
-		{{with .Errors.fullname}}<small class="text-danger">{{.}}</small>{{end}}
-		<label class="form-label">E-mail</label>
-		<input class="form-control" name="email" type="email" required/>
-		{{with .Errors.email}}<small class="text-danger">{{.}}</small>{{end}}
-		<label class="form-label">Password</label>
-		<input class="form-control" name="password" type="password" required/>
-		{{with .Errors.password}}<small class="text-danger">{{.}}</small>{{end}}
-		<label class="form-label">Profile Photo</label>
-		<input class="form-control" name="profile_photo" type="file" accept="image/*"/>
-		{{with .Errors.profile_photo}}<small class="text-danger">{{.}}</small>{{end}}
-		{{with .Errors.form}}<small class="text-danger">{{.}}</small>{{end}}
+	<div class="auth-brand"><a class="brand" href="/"><span class="brand-mark">✎</span>Sen de Yaz</a></div><h1 class="auth-title">Hikâyeye katıl</h1><p class="auth-copy">Kendi hikâyeni başlat veya başkalarının hikâyelerine devam et.</p>
+	<form class="form-stack" action="/register" method="POST" enctype="multipart/form-data">
+		<label class="form-label">Ad soyad<input class="field" name="fullname" type="text" required/></label>
+		{{with .Errors.fullname}}<small class="field-error">{{.}}</small>{{end}}
+		<label class="form-label">E-posta<input class="field" name="email" type="email" required/></label>
+		{{with .Errors.email}}<small class="field-error">{{.}}</small>{{end}}
+		<label class="form-label">Şifre<input class="field" name="password" type="password" required/></label>
+		{{with .Errors.password}}<small class="field-error">{{.}}</small>{{end}}
+		<label class="form-label">Profil fotoğrafı <span class="form-help">İsteğe bağlı</span><input class="field" name="profile_photo" type="file" accept="image/*"/></label>
+		{{with .Errors.profile_photo}}<small class="field-error">{{.}}</small>{{end}}
+		{{with .Errors.form}}<small class="field-error">{{.}}</small>{{end}}
 		{{csrfToken}}
-		<input class="btn btn-primary mt-3" type="submit" value="Register"/>
+		<input class="btn btn-primary" type="submit" value="Kayıt ol"/>
 	</form>
-	<p class="text-center mt-3 mb-0"><a class="link-primary text-decoration-none" href="/login">Already have an account?</a></p>`,
+	<p class="auth-footer">Zaten hesabın var mı? <a class="text-link" href="/login">Giriş yap</a></p>`,
 	).WithDataHandler(collage.Load(formData)).Build()
 
 	var page *collage.Page
