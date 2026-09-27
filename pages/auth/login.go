@@ -27,7 +27,7 @@ func LoginPage(userService *users.UserService) *collage.Page {
 
 	var page *collage.Page
 	page = collage.NewPage("login").
-		WithLayouts(layouts.Layout(), layouts.AuthLayout()).
+		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(content).
 		WithPath("en", "/login").
 		WithAction(http.MethodPost, actions.LoginAction(

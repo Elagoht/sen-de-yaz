@@ -40,7 +40,7 @@ func RegisterPage(userService *users.UserService) *collage.Page {
 		Build()
 
 	page = collage.NewPage("register").
-		WithLayouts(layouts.Layout(), layouts.AuthLayout()).
+		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(content).
 		WithPath("en", "/register").
 		WithActionFor(registerAction).
