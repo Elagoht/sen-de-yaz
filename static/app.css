@@ -95,6 +95,11 @@ button, input, textarea { font: inherit; }
 .search-panel .field { flex: 1; }
 .field, .textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); outline: none; }
 .field { height: 48px; padding: 0 15px; }
+.file-field { height: auto; min-height: 48px; padding: 6px; color: var(--muted); cursor: pointer; }
+.file-field::file-selector-button { margin-right: 10px; padding: 9px 13px; border: 0; border-radius: 9px; background: var(--brand); color: #fff; font: inherit; font-size: .82rem; font-weight: 750; cursor: pointer; transition: background .18s ease, transform .18s ease; }
+.file-field:hover { border-color: var(--brand); }
+.file-field:hover::file-selector-button { background: var(--brand-dark); transform: translateY(-1px); }
+.file-field:focus { border-color: var(--brand); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent); outline: none; }
 .textarea { min-height: 150px; padding: 14px 15px; resize: vertical; }
 .field:focus, .textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent); }
 .story-list { display: grid; gap: 10px; }
