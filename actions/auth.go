@@ -21,7 +21,7 @@ func RegisterAction(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		if rc.Request.ContentLength > 5<<20 {
-			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 20 MB'dan küçük olmalı."})
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 5 MB'dan küçük olmalı."})
 		}
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
@@ -115,7 +115,7 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		if rc.Request.ContentLength > 5<<20 {
-			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 20 MB'dan küçük olmalı."})
+			return formErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 5 MB'dan küçük olmalı."})
 		}
 		cookie, err := rc.Request.Cookie("session_token")
 		if err != nil {

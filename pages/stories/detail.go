@@ -2,6 +2,7 @@ package stories
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"sen-de-yaz/actions"
@@ -9,6 +10,8 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 
+	jsonld "github.com/Elagoht/collage-jsonld"
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -39,7 +42,7 @@ func DetailPage(storyService *storydomain.StoryService, userService *users.UserS
 	<form class="continue-box form-stack" method="POST" action="/stories/{{.Story.ID}}">
 		<label class="form-label">Sıradaki bölümü yaz<span class="form-help">En fazla 140 karakter</span><textarea class="textarea" name="body" maxlength="140" required></textarea></label>
 		{{with .Errors.body}}<small class="field-error">{{.}}</small>{{end}}
-		{{csrfToken}}<button class="btn btn-primary" type="submit">Devamını ekle</button>
+		{{csrfToken}}{{honeypot}}<button class="btn btn-primary" type="submit">Devamını ekle</button>
 	</form>
 	{{else}}<div class="notice">Bu hikâyeye devam etmeden önce başka bir kullanıcı yazmalı.</div>{{end}}
 	</div>
@@ -73,6 +76,30 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		if err != nil {
 			return detailView{}, err
 		}
+		lastAuthor := ""
+		if len(entries) > 0 {
+			lastAuthor = entries[len(entries)-1].Author
+		}
+		rc.HoistTitle(story.Title + " | Sen de Yaz")
+		meta.Set(rc, meta.Page{
+			Title:       story.Title + " | Sen de Yaz",
+			Description: story.Theme,
+			Type:        meta.Article,
+			Canonical:   fmt.Sprintf("/stories/%d", story.ID),
+			Published:   story.CreatedAt,
+			Modified:    story.UpdatedAt,
+			Author:      lastAuthor,
+		})
+		jsonld.Emit(rc, jsonld.Article{
+			Headline:      story.Title,
+			Description:   story.Theme,
+			URL:           fmt.Sprintf("/stories/%d", story.ID),
+			Section:       "Hikâyeler",
+			DatePublished: story.CreatedAt,
+			DateModified:  story.UpdatedAt,
+			AuthorName:    lastAuthor,
+			PublisherName: "Sen de Yaz",
+		})
 		cookie, err := rc.Request.Cookie("session_token")
 		if err != nil {
 			return detailView{}, err
@@ -81,12 +108,12 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		if err != nil {
 			return detailView{}, err
 		}
-		lastAuthor := int64(0)
+		lastAuthorID := int64(0)
 		if len(entries) > 0 {
-			lastAuthor = entries[len(entries)-1].AuthorID
+			lastAuthorID = entries[len(entries)-1].AuthorID
 		}
 		value, _ := rc.Get("form_errors")
 		errors, _ := value.(map[string]string)
-		return detailView{Story: story, Entries: entries, CanWrite: lastAuthor != user.ID, Errors: errors}, nil
+		return detailView{Story: story, Entries: entries, CanWrite: lastAuthorID != user.ID, Errors: errors}, nil
 	}
 }

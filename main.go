@@ -15,7 +15,23 @@ import (
 	"strconv"
 	"time"
 
+	accesslog "github.com/Elagoht/collage-accesslog"
+	compress "github.com/Elagoht/collage-compress"
+	devtoolbar "github.com/Elagoht/collage-devtoolbar"
 	favicon "github.com/Elagoht/collage-favicon"
+	flash "github.com/Elagoht/collage-flash"
+	honeypot "github.com/Elagoht/collage-honeypot"
+	htmlcheck "github.com/Elagoht/collage-htmlcheck"
+	jsonld "github.com/Elagoht/collage-jsonld"
+	meta "github.com/Elagoht/collage-meta"
+	minimizer "github.com/Elagoht/collage-minimizer"
+	optiimage "github.com/Elagoht/collage-opti-image"
+	otel "github.com/Elagoht/collage-otel"
+	prometheus "github.com/Elagoht/collage-prometheus"
+	ratelimit "github.com/Elagoht/collage-ratelimit"
+	robots "github.com/Elagoht/collage-robots"
+	secure "github.com/Elagoht/collage-secure"
+	sitemap "github.com/Elagoht/collage-sitemap"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -91,6 +107,54 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		csrfKey = "sen-de-yaz-development-csrf-key-change-me"
 	}
 
+	baseURL := envString("BASE_URL", "http://localhost:3000")
+	plugins := []collage.Plugin{
+		favicon.New(favicon.Options{
+			FS:              assetsFS,
+			Source:          "assets/icon.png",
+			SVG:             "assets/icon.svg",
+			Name:            "Sen de Yaz",
+			ShortName:       "Sen de Yaz",
+			ThemeColor:      "#6558f5",
+			BackgroundColor: "#f7f8fc",
+		}),
+		secure.New(secure.Options{}),
+		ratelimit.New(ratelimit.Options{}),
+		honeypot.New(honeypot.Options{
+			Key:     []byte(envString("COLLAGE_HONEYPOT_KEY", "sen-de-yaz-development-honeypot-key-change-me")),
+			Protect: []string{"/profile", "/stories"},
+			MaxBody: 6 << 20,
+		}),
+		flash.New(flash.Options{Key: []byte(envString("COLLAGE_FLASH_KEY", "sen-de-yaz-development-flash-key-change-me"))}),
+		meta.New(meta.Options{
+			SiteName:        "Sen de Yaz",
+			BaseURL:         baseURL,
+			DefaultImage:    "/assets/icon.png",
+			DefaultImageAlt: "Sen de Yaz logosu",
+			Locales:         map[string]string{"en": "tr"},
+		}),
+		jsonld.New(),
+		robots.New(robots.Options{}),
+		sitemap.New(sitemap.Options{
+			BaseURL: baseURL,
+			Exclude: []string{"login", "register", "profile", "story-create"},
+		}),
+		compress.New(compress.Options{}),
+		minimizer.NewWith(minimizer.Config{
+			HTML: !devMode,
+			JSON: true,
+			CSS:  true,
+		}),
+		optiimage.New(),
+		accesslog.New(accesslog.Options{}),
+		prometheus.New(prometheus.Options{Token: os.Getenv("METRICS_TOKEN")}),
+		otel.New(otel.Options{}),
+		htmlcheck.New(htmlcheck.Options{}),
+	}
+	if devMode {
+		plugins = append(plugins, devtoolbar.New())
+	}
+
 	app, err := collage.New(&collage.Config{
 		DevMode: devMode,
 		Server: collage.ServerConfig{
@@ -109,17 +173,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			DefaultTTL: 5 * time.Minute,
 		},
 		PluginConfig: pluginConfig,
-		Plugins: []collage.Plugin{
-			favicon.New(favicon.Options{
-				FS:              assetsFS,
-				Source:          "assets/icon.png",
-				SVG:             "assets/icon.svg",
-				Name:            "Sen de Yaz",
-				ShortName:       "Sen de Yaz",
-				ThemeColor:      "#6558f5",
-				BackgroundColor: "#f7f8fc",
-			}),
-		},
+		Plugins:      plugins,
 		Security: collage.SecurityConfig{
 			CSRFKey: []byte(csrfKey),
 		},

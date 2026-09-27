@@ -6,6 +6,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -24,7 +25,7 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 			<p class="hero-copy">Topluluğun başlattığı hikâyelere katıl, sıradaki cümleyi yaz ve anlatının nereye gideceğine birlikte karar verin.</p>
 			<div class="hero-actions"><a class="btn btn-light" href="/stories">Hikâyeleri keşfet</a><a class="btn btn-outline-light" href="/stories/new">Yeni hikâye başlat</a></div>
 		</div>
-		<div class="hero-visual">{{if .User.ProfilePhoto}}<div class="avatar"><img src="/{{.User.ProfilePhoto}}" alt="Profil fotoğrafı"></div>{{else}}<div class="avatar">✎</div>{{end}}</div>
+		<div class="hero-visual">{{if .User.ProfilePhoto}}<div class="avatar"><img width="124" height="124" src="/{{.User.ProfilePhoto}}" alt="Profil fotoğrafı"></div>{{else}}<div class="avatar">✎</div>{{end}}</div>
 	</section>
 
 	<section>
@@ -37,6 +38,12 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 		{{if .Mine}}<div class="story-grid">{{range .Mine}}<a class="story-card" href="/stories/{{.ID}}"><div><div class="story-card-top"><span class="story-label">Katıldığın hikâye</span><span class="story-time">{{.LastEntryLabel}}</span></div><h3 class="story-card-title">{{.Title}}</h3><p class="story-theme">{{.Theme}}</p><p class="story-quote">“{{.LastBody}}”</p></div><div class="story-meta">Son yazan: <strong>{{.LastAuthor}}</strong></div></a>{{end}}</div>{{else}}<div class="empty-state"><p>Henüz bir hikâyeye katılmadın.</p><a class="btn btn-primary" href="/stories">Bir hikâye keşfet</a></div>{{end}}
 	</section>`).
 		WithDataHandler(func(ctx context.Context, rc *collage.RenderContext) (data any, tags []string, err error) {
+			rc.HoistTitle("Sen de Yaz | Birlikte yazılan hikâyeler")
+			meta.Set(rc, meta.Page{
+				Title:       "Sen de Yaz | Birlikte yazılan hikâyeler",
+				Description: "Toplulukla birlikte hikâye yaz, başkalarının anlatılarına devam et.",
+				Canonical:   "/",
+			})
 			cookie, err := rc.Request.Cookie("session_token")
 			if err != nil {
 				return nil, nil, err

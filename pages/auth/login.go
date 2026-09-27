@@ -17,11 +17,11 @@ func LoginPage(userService *users.UserService) *collage.Page {
 		{{with .Errors.email}}<small class="field-error">{{.}}</small>{{end}}
 		<label class="form-label">Şifre<input class="field" name="password" type="password" required/></label>
 		{{with .Errors.password}}<small class="field-error">{{.}}</small>{{end}}
-		{{csrfToken}}
+		{{csrfToken}}{{honeypot}}
 		<input class="btn btn-primary" type="submit" value="Giriş yap">
 	</form>
 	<p class="auth-footer">Hesabın yok mu? <a class="text-link" href="/register">Kayıt ol</a></p>`,
-	).WithDataHandler(collage.Load(formData)).Build()
+	).WithDataHandler(collage.Load(loginData)).Build()
 
 	var page *collage.Page
 	page = collage.NewPage("login").

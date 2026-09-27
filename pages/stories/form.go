@@ -36,7 +36,7 @@ func CreatePage(storyService *storydomain.StoryService, userService *users.UserS
 		<label class="form-label">Başlangıç metni<span class="form-help">En fazla 500 karakter</span><textarea class="textarea" name="opening" maxlength="500" required>{{.Opening}}</textarea></label>
 		{{with .Errors.opening}}<small class="field-error">{{.}}</small>{{end}}
 		{{with .Errors.form}}<small class="field-error">{{.}}</small>{{end}}
-		{{csrfToken}}<button class="btn btn-primary" type="submit">Hikâyeyi başlat</button>
+		{{csrfToken}}{{honeypot}}<button class="btn btn-primary" type="submit">Hikâyeyi başlat</button>
 	</form></div>`).
 		WithDataHandler(collage.Load(createData)).Build()
 

@@ -7,6 +7,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -45,6 +46,12 @@ func ListPage(storyService *storydomain.StoryService, userService *users.UserSer
 
 func listData(service *storydomain.StoryService) func(context.Context, *collage.RenderContext) (listView, error) {
 	return func(ctx context.Context, rc *collage.RenderContext) (listView, error) {
+		rc.HoistTitle("Hikâyeler | Sen de Yaz")
+		meta.Set(rc, meta.Page{
+			Title:       "Hikâyeler | Sen de Yaz",
+			Description: "Sen de Yaz topluluğunun birlikte geliştirdiği hikâyeleri keşfet.",
+			Canonical:   "/stories",
+		})
 		filter := rc.Request.URL.Query().Get("filter")
 		stories, err := service.ListStories(filter)
 		return listView{Stories: stories, Filter: filter}, err
