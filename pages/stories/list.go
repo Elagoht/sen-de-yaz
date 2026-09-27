@@ -3,10 +3,11 @@ package stories
 import (
 	"context"
 
-	"github.com/Elagoht/collage/pkg/collage"
+	storydomain "sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	storydomain "sen-de-yaz/stories"
-	"sen-de-yaz/users"
+
+	"github.com/Elagoht/collage/pkg/collage"
 )
 
 type listView struct {

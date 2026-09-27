@@ -2,9 +2,9 @@ package panel
 
 import (
 	"context"
+	"sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/stories"
-	"sen-de-yaz/users"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )

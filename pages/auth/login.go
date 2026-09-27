@@ -3,8 +3,8 @@ package auth
 import (
 	"net/http"
 	"sen-de-yaz/actions"
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/users"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )

@@ -1,8 +1,8 @@
 package layouts
 
 import (
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/guards"
-	"sen-de-yaz/users"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )

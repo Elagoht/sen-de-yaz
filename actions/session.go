@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"sen-de-yaz/data/users"
+
 	"github.com/Elagoht/collage/pkg/collage"
-	"sen-de-yaz/users"
 )
 
 func LogoutAction(service *users.UserService) collage.ActionHandlerFunc {

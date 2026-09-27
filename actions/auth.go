@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
-	"sen-de-yaz/users"
+	"sen-de-yaz/data/users"
 	"strings"
 
 	"github.com/Elagoht/collage/pkg/collage"

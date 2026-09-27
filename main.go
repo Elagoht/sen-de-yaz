@@ -9,15 +9,14 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"sen-de-yaz/data/db"
+	"sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
 	"strconv"
 	"time"
 
 	favicon "github.com/Elagoht/collage-favicon"
 	"github.com/Elagoht/collage/pkg/collage"
-
-	appdb "sen-de-yaz/db"
-	"sen-de-yaz/stories"
-	"sen-de-yaz/users"
 )
 
 //go:embed all:templates
@@ -72,7 +71,7 @@ func main() {
 }
 
 func openUserService(path string) (*sql.DB, *users.UserService, error) {
-	database, err := appdb.Open(path)
+	database, err := db.Open(path)
 	if err != nil {
 		return nil, nil, err
 	}

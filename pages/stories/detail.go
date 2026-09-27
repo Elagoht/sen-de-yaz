@@ -4,11 +4,12 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/Elagoht/collage/pkg/collage"
 	"sen-de-yaz/actions"
+	storydomain "sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	storydomain "sen-de-yaz/stories"
-	"sen-de-yaz/users"
+
+	"github.com/Elagoht/collage/pkg/collage"
 )
 
 type detailView struct {

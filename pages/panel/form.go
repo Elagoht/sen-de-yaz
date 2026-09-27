@@ -2,7 +2,7 @@ package panel
 
 import (
 	"context"
-	"sen-de-yaz/users"
+	"sen-de-yaz/data/users"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )

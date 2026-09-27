@@ -6,7 +6,7 @@ import (
 
 	"github.com/Elagoht/collage/pkg/collage"
 
-	"sen-de-yaz/users"
+	"sen-de-yaz/data/users"
 )
 
 func RequireUser(service *users.UserService) collage.GuardFunc {

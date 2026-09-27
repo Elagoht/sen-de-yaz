@@ -6,11 +6,11 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 
 	"sen-de-yaz/actions"
+	"sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
 	"sen-de-yaz/pages/auth"
 	"sen-de-yaz/pages/panel"
 	storypages "sen-de-yaz/pages/stories"
-	"sen-de-yaz/stories"
-	"sen-de-yaz/users"
 )
 
 // register adds every page, document and action to app. A new route goes here.

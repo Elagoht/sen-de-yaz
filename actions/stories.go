@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"strings"
 
+	"sen-de-yaz/data/stories"
+	"sen-de-yaz/data/users"
+
 	"github.com/Elagoht/collage/pkg/collage"
-	"sen-de-yaz/stories"
-	"sen-de-yaz/users"
 )
 
 func CreateStoryAction(service *stories.StoryService, userService *users.UserService, page func() *collage.Page) collage.ActionHandlerFunc {
