@@ -71,7 +71,7 @@ const entryEditHTML collage.InlineHTML = `
 	<label class="form-label">
 		Yeni hali
 		<span class="form-help">En fazla 140 karakter</span>
-		<textarea class="textarea" name="body" maxlength="140" required>{{fieldValue "body"}}</textarea>
+		<textarea class="textarea" name="body" maxlength="140" required>{{fieldValue "body" .Edit.Original}}</textarea>
 	</label>
 	{{with fieldError "body"}}
 		<small class="field-error">{{.}}</small>

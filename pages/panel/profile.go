@@ -16,6 +16,7 @@ import (
 func ProfilePage(userService *users.UserService) *collage.Page {
 	profileAction := collage.NewAction("profile").
 		WithMethods(http.MethodPost).
+		WithMaxBodyBytes(users.MaxFormBytes).
 		WithHandler(actions.UpdateProfileAction(userService)).
 		Build()
 

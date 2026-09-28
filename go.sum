@@ -1,5 +1,5 @@
-github.com/Elagoht/collage v0.33.0 h1:gOnOXno/Ksp8I2pksUJAzv03K7wzjAaThOkWcO3boVs=
-github.com/Elagoht/collage v0.33.0/go.mod h1:tyGWGpujZXtCFFxn9pjws85HOFOt4QdiuRswwQhj1Qw=
+github.com/Elagoht/collage v0.34.2 h1:85GN0566DpBdQmWtxXuIUf0LFgnAigtulzHQ7Fy3/s0=
+github.com/Elagoht/collage v0.34.2/go.mod h1:tyGWGpujZXtCFFxn9pjws85HOFOt4QdiuRswwQhj1Qw=
 github.com/Elagoht/collage-accesslog v0.1.2 h1:9bjhS/0EU6GPmhVDI20fooYLwXQHmgq2QF9mAwZAduQ=
 github.com/Elagoht/collage-accesslog v0.1.2/go.mod h1:2lADt49IIr3GA9rJ75DkEWWIUofSmvEsus/1Vvnc+4s=
 github.com/Elagoht/collage-compress v0.1.1 h1:Is71DDQpfnLmx1a8IX5KgNOrRGuy2vBL3SmNWlmvX3E=
@@ -34,8 +34,8 @@ github.com/Elagoht/collage-secure v0.1.1 h1:J/flvYOfr+o2i8073+SpXuwM62tFXz4x12YD
 github.com/Elagoht/collage-secure v0.1.1/go.mod h1:b6dNfVwS/bmVFjufDVvkFVkBn0Nu9h5x7QJoJdnCxyw=
 github.com/Elagoht/collage-sitemap v0.1.1 h1:zP7GP+9LRHT2gYqsLCNgkmBxT09qoevHL27mGd3WnS8=
 github.com/Elagoht/collage-sitemap v0.1.1/go.mod h1:KcgggWEVdh+bBg3KaJ/SY274FomWijktvHBLZuEPthg=
-github.com/Elagoht/collage-validate v0.1.1 h1:dx3Moe9PNhXjPQJT3PfADkMnhoYquzH++go3xgSH09k=
-github.com/Elagoht/collage-validate v0.1.1/go.mod h1:AFDcYME2BnNomlkX5NliRDlGkwH8g093WSSRWcrYIac=
+github.com/Elagoht/collage-validate v0.1.2 h1:3/cd3by9CjU6qrvITAOUhJ0LRjgI6RlrCoZgBQ8SqYw=
+github.com/Elagoht/collage-validate v0.1.2/go.mod h1:4GEYyzK4aGSMvOKpqpXigMrhm6G1rqswNGtUixuJBAw=
 github.com/HugoSmits86/nativewebp v1.3.0 h1:n1egtEzSV4KwFtealr7dzdYq1wI/uj/bOQ/QcTcIyVE=
 github.com/HugoSmits86/nativewebp v1.3.0/go.mod h1:YNQuWenlVmSUUASVNhTDwf4d7FwYQGbGhklC8p72Vr8=
 github.com/andybalholm/brotli v1.2.5 h1:BSI8V4zmx/3BAn6OKjF1PmfVq7Aoi52AdFsi6bpCx+s=

@@ -3,7 +3,7 @@ module sen-de-yaz
 go 1.26.0
 
 require (
-	github.com/Elagoht/collage v0.33.0
+	github.com/Elagoht/collage v0.34.2
 	github.com/Elagoht/collage-accesslog v0.1.2
 	github.com/Elagoht/collage-compress v0.1.1
 	github.com/Elagoht/collage-devtoolbar v0.2.3
@@ -21,7 +21,7 @@ require (
 	github.com/Elagoht/collage-robots v0.1.1
 	github.com/Elagoht/collage-secure v0.1.1
 	github.com/Elagoht/collage-sitemap v0.1.1
-	github.com/Elagoht/collage-validate v0.1.1
+	github.com/Elagoht/collage-validate v0.1.2
 	golang.org/x/crypto v0.57.0
 	modernc.org/sqlite v1.59.0
 )

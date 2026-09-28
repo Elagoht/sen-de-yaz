@@ -13,6 +13,7 @@ import (
 func RegisterPage(userService *users.UserService) *collage.Page {
 	registerAction := collage.NewAction("register").
 		WithMethods(http.MethodPost).
+		WithMaxBodyBytes(users.MaxFormBytes).
 		WithHandler(actions.RegisterAction(userService)).
 		Build()
 
