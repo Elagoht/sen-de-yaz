@@ -1,0 +1,45 @@
+package stories
+
+import (
+	"github.com/Elagoht/collage/pkg/collage"
+)
+
+const storyListBlock collage.InlineHTML = `
+<div class="page-intro">
+	<div>
+		<p class="eyebrow">Keşfet</p>
+		<h1 class="page-title">Hikâyeler</h1>
+		<p class="page-subtitle">Bir hikâye seç, sıradaki cümleyi sen yaz.</p>
+	</div>
+
+	<a class="btn btn-primary" href="/stories/new">Yeni hikâye başlat</a>
+</div>
+
+<form class="search-panel" method="GET" action="/stories">
+	<input class="field" name="filter" value="{{.Filter}}" aria-label="filtrele" placeholder="Başlık veya temaya göre ara">
+	<button class="btn btn-ghost" type="submit">Ara</button>
+</form>
+
+{{if .Stories}}
+	<div class="story-list">
+		{{range .Stories}}
+			<a class="story-row" href="/stories/{{.ID}}">
+				<div class="story-row-top">
+					<h2 class="story-row-title">{{.Title}}</h2>
+					<small class="story-time">{{.UpdatedAt}}</small>
+				</div>
+
+				<p class="story-theme">{{.Theme}}</p>
+			</a>
+		{{end}}
+	</div>
+{{else}}
+	<div class="empty-state">
+		<p>Hikâye bulunamadı.</p>
+		Aramanı değiştir veya ilk hikâyeyi sen başlat.
+	</div>
+{{end}}`
+
+func StoryListBlock() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("story-list", storyListBlock)
+}
