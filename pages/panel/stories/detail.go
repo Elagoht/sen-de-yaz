@@ -105,15 +105,15 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 			}
 		}
 		area := stories.EntryAreaState{StoryID: story.ID}
-		typed := rc.Request.FormValue("body")
 		switch {
 		case rc.Request.FormValue("entry_id") != "":
 			// A rejected edit posts its entry id back: the slot carries the
 			// edit box alone, visible, with what was typed — even though the
 			// entry is no longer last — because the add form would silently
-			// drop the words.
+			// drop the words. What was typed reaches the textarea through the
+			// validate plugin's fieldValue.
 			id, _ := strconv.ParseInt(rc.Request.FormValue("entry_id"), 10, 64)
-			edit := &stories.EntryEdit{ID: id, Body: typed}
+			edit := &stories.EntryEdit{ID: id}
 			for _, entry := range entries {
 				if entry.ID == id {
 					edit.Original = entry.Body

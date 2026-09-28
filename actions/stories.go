@@ -4,15 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strconv"
-	"strings"
 
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
-	"sen-de-yaz/utilities"
 
 	flash "github.com/Elagoht/collage-flash"
+	validate "github.com/Elagoht/collage-validate"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -21,35 +19,25 @@ func CreateStoryAction(
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if err := rc.Request.ParseForm(); err != nil {
-			return nil, err
+		v := validate.Form(rc)
+		v.Field("title").Required().Message("Başlık alanı zorunludur.")
+		v.Field("theme").Required().Message("Tema alanı zorunludur.").
+			MaxLen(100).Message("Tema 100 karakterden uzun olamaz.")
+		v.Field("opening").Required().Message("Başlangıç metni zorunludur.").
+			MaxLen(500).Message("Başlangıç metni 500 karakterden uzun olamaz.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		user, err := userService.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
 		}
-
-		title := strings.TrimSpace(rc.Request.FormValue("title"))
-		theme := strings.TrimSpace(rc.Request.FormValue("theme"))
-		opening := strings.TrimSpace(rc.Request.FormValue("opening"))
-
-		fieldErrors := map[string]string{}
-		if title == "" {
-			fieldErrors["title"] = "Başlık alanı zorunludur."
-		}
-		if theme == "" {
-			fieldErrors["theme"] = "Tema alanı zorunludur."
-		}
-		if opening == "" {
-			fieldErrors["opening"] = "Başlangıç metni zorunludur."
-		}
-		if len(fieldErrors) > 0 {
-			return utilities.FormErrors(rc,fieldErrors)
-		}
-
-		story, err := service.CreateStory(user.ID, title, theme, opening)
+		story, err := service.CreateStory(user.ID, v.Value("title"), v.Value("theme"), v.Value("opening"))
 		if err != nil {
-			return utilities.FormErrors(rc,stories.FieldErrors(err))
+			for field, message := range stories.FieldErrors(err) {
+				v.Fail(field, message)
+			}
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 
 		flash.Add(rc, flash.Success, "Hikâyen başladı. Sıra toplulukta!")
@@ -63,23 +51,29 @@ func AddEntryAction(
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if err := rc.Request.ParseForm(); err != nil {
-			return nil, err
+		v := validate.Form(rc)
+		v.Field("body").Required().Message("Devam metni zorunludur.").
+			MaxLen(140).Message("Devam metni 140 karakterden uzun olamaz.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		storyID, err := strconv.ParseInt(rc.Param("id"), 10, 64)
 		if err != nil || storyID <= 0 {
-			return utilities.FormErrors(rc,map[string]string{"body": "Hikâye adresi geçersiz."})
+			v.Fail("body", "Hikâye adresi geçersiz.")
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		user, err := userService.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
 		}
-		entry, err := service.AddEntry(storyID, user.ID, strings.TrimSpace(rc.Request.FormValue("body")))
+		entry, err := service.AddEntry(storyID, user.ID, v.Value("body"))
 		if err != nil {
 			if errors.Is(err, stories.ErrStoryNotFound) {
-				return utilities.FormErrors(rc,map[string]string{"body": "Hikâye bulunamadı."})
+				v.Fail("body", "Hikâye bulunamadı.")
+			} else {
+				v.Fail("body", stories.EntryErrorMessage(err))
 			}
-			return utilities.FormErrors(rc,map[string]string{"body": stories.EntryErrorMessage(err)})
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		flash.Add(rc, flash.Success, "Hikâyeye katkın eklendi.")
 		return collage.SeeOther(fmt.Sprintf("/stories/%d", entry.StoryID)), nil
@@ -95,40 +89,38 @@ func UpdateEntryAction(
 	page func() *collage.Page,
 ) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if err := rc.Request.ParseForm(); err != nil {
-			return nil, err
+		v := validate.Form(rc)
+		v.Field("body").Required().Message("Devam metni zorunludur.").
+			MaxLen(140).Message("Devam metni 140 karakterden uzun olamaz.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, page()), nil
 		}
 		storyID, err := strconv.ParseInt(rc.Param("id"), 10, 64)
 		if err != nil || storyID <= 0 {
-			return formErrorsOn(page(), rc, map[string]string{"body": "Hikâye adresi geçersiz."})
+			v.Fail("body", "Hikâye adresi geçersiz.")
+			return validate.Refuse(rc, v, page()), nil
 		}
-		entryID, err := strconv.ParseInt(rc.Request.FormValue("entry_id"), 10, 64)
+		entryID, err := strconv.ParseInt(v.Value("entry_id"), 10, 64)
 		if err != nil || entryID <= 0 {
-			return formErrorsOn(page(), rc, map[string]string{"body": "Düzenleme adresi geçersiz."})
+			v.Fail("body", "Düzenleme adresi geçersiz.")
+			return validate.Refuse(rc, v, page()), nil
 		}
 		user, err := userService.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
 		}
-		err = service.UpdateLastEntry(storyID, user.ID, entryID, strings.TrimSpace(rc.Request.FormValue("body")))
+		err = service.UpdateLastEntry(storyID, user.ID, entryID, v.Value("body"))
 		if err != nil {
 			if errors.Is(err, stories.ErrStoryNotFound) {
-				return formErrorsOn(page(), rc, map[string]string{"body": "Hikâye bulunamadı."})
+				v.Fail("body", "Hikâye bulunamadı.")
+			} else if errors.Is(err, stories.ErrEntryNoLongerLast) {
+				v.Fail("body", "Bu hikâyeye yeni bir katkı eklendi; düzenlemen kaydedilmedi.")
+			} else {
+				v.Fail("body", stories.EntryErrorMessage(err))
 			}
-			if errors.Is(err, stories.ErrEntryNoLongerLast) {
-				return formErrorsOn(page(), rc, map[string]string{"body": "Bu hikâyeye yeni bir katkı eklendi; düzenlemen kaydedilmedi."})
-			}
-			return formErrorsOn(page(), rc, map[string]string{"body": stories.EntryErrorMessage(err)})
+			return validate.Refuse(rc, v, page()), nil
 		}
 		flash.Add(rc, flash.Success, "Bölümün güncellendi.")
 		return collage.SeeOther(fmt.Sprintf("/stories/%d", storyID)), nil
 	}
-}
-
-// formErrorsOn refuses a submission by re-rendering a page the action does not
-// answer on — the same 422 FormErrors answers with, at a target other than
-// rc.Page.
-func formErrorsOn(page *collage.Page, rc *collage.RenderContext, errors map[string]string) (*collage.ActionResult, error) {
-	rc.Set("form_errors", errors)
-	return &collage.ActionResult{Status: http.StatusUnprocessableEntity, Page: page}, nil
 }

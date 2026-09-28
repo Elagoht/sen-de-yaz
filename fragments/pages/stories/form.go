@@ -15,29 +15,29 @@ const storyCreateBlock collage.InlineHTML = `
 <form class="form-shell form-stack" action="/stories/new" method="POST">
 	<label class="form-label">
 		Başlık
-		<input class="field" name="title" value="{{.Title}}" required>
+		<input class="field" name="title" value="{{fieldValue "title"}}" required>
 	</label>
-	{{with .Errors.title}}
+	{{with fieldError "title"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
 	<label class="form-label">
 		Tema açıklaması <span class="form-help">En fazla 100 karakter</span>
-		<input class="field" name="theme" maxlength="100" value="{{.Theme}}" required>
+		<input class="field" name="theme" maxlength="100" value="{{fieldValue "theme"}}" required>
 	</label>
-	{{with .Errors.theme}}
+	{{with fieldError "theme"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
 	<label class="form-label">
 		Başlangıç metni<span class="form-help">En fazla 500 karakter</span>
-		<textarea class="textarea" name="opening" maxlength="500" required>{{.Opening}}</textarea>
+		<textarea class="textarea" name="opening" maxlength="500" required>{{fieldValue "opening"}}</textarea>
 	</label>
-	{{with .Errors.opening}}
+	{{with fieldError "opening"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
-	{{with .Errors.form}}
+	{{with fieldError "form"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 

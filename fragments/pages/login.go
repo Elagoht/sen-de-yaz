@@ -3,8 +3,6 @@ package pages
 import (
 	"context"
 
-	"sen-de-yaz/utilities"
-
 	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
@@ -21,17 +19,17 @@ const loginBlock collage.InlineHTML = `
 <form class="form-stack" action="/login" method="POST">
 	<label class="form-label">
 		E-posta
-		<input class="field" name="email" type="email" value="{{.Email}}" required/>
+		<input class="field" name="email" type="email" value="{{fieldValue "email"}}" required/>
 	</label>
-	{{with .Errors.email}}
+	{{with fieldError "email"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
 	<label class="form-label">
 		Şifre
-		<input class="field" name="password" type="password" value="{{.Password}}" required/>
+		<input class="field" name="password" type="password" value="{{fieldValue "password"}}" required/>
 	</label>
-	{{with .Errors.password}}
+	{{with fieldError "password"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
@@ -46,15 +44,11 @@ const loginBlock collage.InlineHTML = `
 	<a class="text-link" href="/register">Kayıt ol</a>
 </p>`
 
-type loginView struct {
-	utilities.FormView
-	Email    string
-	Password string
-}
+type loginView struct{}
 
-// loginData fills the login form and hoists the page's SEO.
+// loginData hoists the page's SEO; the form's errors and submitted values
+// reach the template through the validate plugin's fieldError and fieldValue.
 func loginData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
-	view, err := utilities.FormData(ctx, rc)
 	rc.HoistTitle("Giriş yap | Sen de Yaz")
 	meta.Set(rc, meta.Page{
 		Title:       "Giriş yap | Sen de Yaz",
@@ -62,11 +56,7 @@ func loginData(ctx context.Context, rc *collage.RenderContext) (loginView, error
 		Canonical:   "/login",
 	})
 	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
-	return loginView{
-		FormView: view,
-		Email:    rc.Request.FormValue("email"),
-		Password: rc.Request.FormValue("password"),
-	}, err
+	return loginView{}, nil
 }
 
 func LoginBlock() *collage.Fragment {

@@ -3,8 +3,6 @@ package stories
 import (
 	"context"
 
-	"sen-de-yaz/utilities"
-
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -15,9 +13,10 @@ type EntryAreaState struct {
 	Notice   bool
 }
 
+// EntryEdit carries the entry's identity and its published text; what the
+// reader typed reaches the template through the validate plugin's fieldValue.
 type EntryEdit struct {
 	ID       int64
-	Body     string
 	Original string
 }
 
@@ -52,9 +51,9 @@ const entryAddHTML collage.InlineHTML = `
 	<label class="form-label">
 		Sıradaki bölümü yaz
 		<span class="form-help">En fazla 140 karakter</span>
-		<textarea class="textarea" name="body" maxlength="140" required></textarea>
+		<textarea class="textarea" name="body" maxlength="140" required>{{fieldValue "body"}}</textarea>
 	</label>
-	{{with .Errors.body}}
+	{{with fieldError "body"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
@@ -72,9 +71,9 @@ const entryEditHTML collage.InlineHTML = `
 	<label class="form-label">
 		Yeni hali
 		<span class="form-help">En fazla 140 karakter</span>
-		<textarea class="textarea" name="body" maxlength="140" required>{{.Edit.Body}}</textarea>
+		<textarea class="textarea" name="body" maxlength="140" required>{{fieldValue "body"}}</textarea>
 	</label>
-	{{with .Errors.body}}
+	{{with fieldError "body"}}
 		<small class="field-error">{{.}}</small>
 	{{end}}
 
@@ -118,30 +117,26 @@ const entryNoticeHTML collage.InlineHTML = `
 </div>`
 
 type entryAddView struct {
-	utilities.FormView
 	StoryID int64
 }
 
 func entryAddData(ctx context.Context, rc *collage.RenderContext) (entryAddView, error) {
-	form, _ := utilities.FormData(ctx, rc)
-	return entryAddView{FormView: form, StoryID: entryAreaState(rc).StoryID}, nil
+	return entryAddView{StoryID: entryAreaState(rc).StoryID}, nil
 }
 
 type entryEditView struct {
-	utilities.FormView
 	StoryID  int64
 	Edit     *EntryEdit
 	Rejected bool
 }
 
 func entryEditData(ctx context.Context, rc *collage.RenderContext) (entryEditView, error) {
-	form, _ := utilities.FormData(ctx, rc)
 	state := entryAreaState(rc)
 	edit := state.Edit
 	if edit == nil {
 		edit = &EntryEdit{}
 	}
-	return entryEditView{FormView: form, StoryID: state.StoryID, Edit: edit, Rejected: state.Rejected}, nil
+	return entryEditView{StoryID: state.StoryID, Edit: edit, Rejected: state.Rejected}, nil
 }
 
 func newEntryAdd() *collage.Fragment {

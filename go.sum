@@ -34,6 +34,8 @@ github.com/Elagoht/collage-secure v0.1.1 h1:J/flvYOfr+o2i8073+SpXuwM62tFXz4x12YD
 github.com/Elagoht/collage-secure v0.1.1/go.mod h1:b6dNfVwS/bmVFjufDVvkFVkBn0Nu9h5x7QJoJdnCxyw=
 github.com/Elagoht/collage-sitemap v0.1.1 h1:zP7GP+9LRHT2gYqsLCNgkmBxT09qoevHL27mGd3WnS8=
 github.com/Elagoht/collage-sitemap v0.1.1/go.mod h1:KcgggWEVdh+bBg3KaJ/SY274FomWijktvHBLZuEPthg=
+github.com/Elagoht/collage-validate v0.1.1 h1:dx3Moe9PNhXjPQJT3PfADkMnhoYquzH++go3xgSH09k=
+github.com/Elagoht/collage-validate v0.1.1/go.mod h1:AFDcYME2BnNomlkX5NliRDlGkwH8g093WSSRWcrYIac=
 github.com/HugoSmits86/nativewebp v1.3.0 h1:n1egtEzSV4KwFtealr7dzdYq1wI/uj/bOQ/QcTcIyVE=
 github.com/HugoSmits86/nativewebp v1.3.0/go.mod h1:YNQuWenlVmSUUASVNhTDwf4d7FwYQGbGhklC8p72Vr8=
 github.com/andybalholm/brotli v1.2.5 h1:BSI8V4zmx/3BAn6OKjF1PmfVq7Aoi52AdFsi6bpCx+s=

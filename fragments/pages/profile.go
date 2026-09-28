@@ -18,7 +18,7 @@ const profileBlock collage.InlineHTML = `
 		{{end}}
 
 		<label class="form-label">Ad soyad<input class="field" name="fullname" type="text" value="{{.User.FullName}}" required/></label>
-		{{with .Errors.fullname}}
+		{{with fieldError "fullname"}}
 			<small class="field-error">{{.}}</small>
 		{{end}}
 
@@ -26,7 +26,7 @@ const profileBlock collage.InlineHTML = `
 			Profil fotoğrafı <span class="form-help">İsteğe bağlı</span>
 			<input class="field file-field" name="profile_photo" type="file" accept="image/*"/>
 		</label>
-		{{with .Errors.profile_photo}}
+		{{with fieldError "profile_photo"}}
 			<small class="field-error">{{.}}</small>
 		{{end}}
 

@@ -1,4 +1,12 @@
 {
+  "elagoht/validate": {
+    "messages": {
+      "required": "Bu alan zorunludur.",
+      "email": "Geçerli bir e-posta adresi girin.",
+      "minLen": "En az {min} karakter olmalıdır.",
+      "maxLen": "En fazla {max} karakter olmalıdır."
+    }
+  },
   "elagoht/minimizer": {
     "html": true,
     "css": true,

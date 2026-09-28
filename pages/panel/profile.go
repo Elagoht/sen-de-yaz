@@ -33,10 +33,10 @@ func ProfilePage(userService *users.UserService) *collage.Page {
 type profileView struct {
 	User     *users.User
 	PhotoURL string
-	Errors   map[string]string
 }
 
-// profileData fills the profile form and hoists the page's SEO.
+// profileData fills the profile form and hoists the page's SEO; field errors
+// reach the template through the validate plugin's fieldError.
 func profileData(service *users.UserService) collage.DataHandlerFunc {
 	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (profileView, error) {
 		rc.HoistTitle("Profilini düzenle | Sen de Yaz")
@@ -49,7 +49,6 @@ func profileData(service *users.UserService) collage.DataHandlerFunc {
 		if err != nil {
 			return profileView{}, err
 		}
-		form, _ := utilities.FormData(ctx, rc)
-		return profileView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Errors: form.Errors}, nil
+		return profileView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto)}, nil
 	})
 }

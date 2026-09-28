@@ -9,7 +9,6 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages/stories"
-	"sen-de-yaz/utilities"
 
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
@@ -31,13 +30,10 @@ func CreatePage(storyService *storydomain.StoryService, userService *users.UserS
 		Build()
 }
 
-type createView struct {
-	utilities.FormView
-	Title   string
-	Theme   string
-	Opening string
-}
+type createView struct{}
 
+// createData hoists the page's SEO; the form's errors and submitted values
+// reach the template through the validate plugin's fieldError and fieldValue.
 func createData(ctx context.Context, rc *collage.RenderContext) (createView, error) {
 	rc.HoistTitle("Bir hikâye başlat | Sen de Yaz")
 	meta.Set(rc, meta.Page{
@@ -45,11 +41,5 @@ func createData(ctx context.Context, rc *collage.RenderContext) (createView, err
 		Description: "İlk cümleyi sen yaz, sonrasını topluluk getirsin.",
 		Canonical:   "/stories/new",
 	})
-	data, _ := utilities.FormData(ctx, rc)
-	return createView{
-		FormView: data,
-		Title:    rc.Request.FormValue("title"),
-		Theme:    rc.Request.FormValue("theme"),
-		Opening:  rc.Request.FormValue("opening"),
-	}, nil
+	return createView{}, nil
 }

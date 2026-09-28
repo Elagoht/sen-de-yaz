@@ -22,6 +22,7 @@ import (
 	favicon "github.com/Elagoht/collage-favicon"
 	flash "github.com/Elagoht/collage-flash"
 	honeypot "github.com/Elagoht/collage-honeypot"
+	validate "github.com/Elagoht/collage-validate"
 	htmlcheck "github.com/Elagoht/collage-htmlcheck"
 	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
@@ -138,6 +139,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			Protect: []string{"/login", "/register", "/profile", "/stories", "/logout"},
 		}),
 		flash.New(flash.Options{Key: []byte(envString("COLLAGE_FLASH_KEY", "sen-de-yaz-development-flash-key-change-me"))}),
+		validate.New(validate.Options{}),
 		meta.New(meta.Options{
 			SiteName:        "Sen de Yaz",
 			BaseURL:         baseURL,

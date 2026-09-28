@@ -6,47 +6,51 @@ import (
 	"net/http"
 
 	"sen-de-yaz/data/users"
-	"sen-de-yaz/utilities"
 
 	flash "github.com/Elagoht/collage-flash"
+	validate "github.com/Elagoht/collage-validate"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
 func RegisterAction(service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+		v := validate.Form(rc)
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
-			return utilities.FormErrors(rc,map[string]string{"profile_photo": users.PhotoTooLargeMessage})
+			v.Fail("profile_photo", users.PhotoTooLargeMessage)
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
-		if err := rc.Request.ParseForm(); err != nil {
-			return nil, err
-		}
-		if fieldErrors := utilities.ValidateRegisterForm(rc.Request); len(fieldErrors) > 0 {
-			return utilities.FormErrors(rc,fieldErrors)
+		v.Field("fullname").Required().Message("Ad soyad alanı zorunludur.")
+		v.Field("email").Required().Message("E-posta alanı zorunludur.").
+			Email().Message("Geçerli bir e-posta adresi girin.")
+		v.Field("password").Required().Message("Şifre alanı zorunludur.").
+			MinLen(8).Message("Şifre en az 8 karakter olmalıdır.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
 		if err != nil {
-			return utilities.FormErrors(rc,map[string]string{"profile_photo": users.ProfilePhotoErrorMessage(err)})
+			v.Fail("profile_photo", users.ProfilePhotoErrorMessage(err))
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		_, err = service.Register(
-			rc.Request.FormValue("fullname"),
-			rc.Request.FormValue("email"),
-			rc.Request.FormValue("password"),
+			v.Value("fullname"),
+			v.Value("email"),
+			v.Value("password"),
 			profilePhoto,
 		)
 		if err != nil {
 			if errors.Is(err, users.ErrEmailAlreadyExists) {
-				return utilities.FormErrors(rc,map[string]string{"email": "Bu e-posta zaten kayıtlı."})
+				v.Fail("email", "Bu e-posta zaten kayıtlı.")
+			} else {
+				v.Fail("form", "Kayıt oluşturulamadı.")
 			}
-			return utilities.FormErrors(rc,map[string]string{"form": "Kayıt oluşturulamadı."})
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 
-		token, _, err := service.Login(
-			rc.Request.FormValue("email"),
-			rc.Request.FormValue("password"),
-		)
-
+		token, _, err := service.Login(v.Value("email"), v.Value("password"))
 		if err != nil {
-			return utilities.FormErrors(rc,map[string]string{"password": "E-posta veya şifre hatalı."})
+			v.Fail("password", "E-posta veya şifre hatalı.")
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 
 		flash.Add(rc, flash.Success, "Hesabın oluşturuldu. Hoş geldin!")
@@ -60,20 +64,18 @@ func RegisterAction(service *users.UserService) collage.ActionHandlerFunc {
 
 func LoginAction(service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if err := rc.Request.ParseForm(); err != nil {
-			return nil, err
-		}
-		if fieldErrors := utilities.ValidateLoginForm(rc.Request); len(fieldErrors) > 0 {
-			return utilities.FormErrors(rc,fieldErrors)
+		v := validate.Form(rc)
+		v.Field("email").Required().Message("E-posta alanı zorunludur.").
+			Email().Message("Geçerli bir e-posta adresi girin.")
+		v.Field("password").Required().Message("Şifre alanı zorunludur.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 
-		token, _, err := service.Login(
-			rc.Request.FormValue("email"),
-			rc.Request.FormValue("password"),
-		)
-
+		token, _, err := service.Login(v.Value("email"), v.Value("password"))
 		if err != nil {
-			return utilities.FormErrors(rc,map[string]string{"password": "E-posta veya şifre hatalı."})
+			v.Fail("password", "E-posta veya şifre hatalı.")
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 
 		flash.Add(rc, flash.Success, "Tekrar hoş geldin!")
@@ -87,22 +89,27 @@ func LoginAction(service *users.UserService) collage.ActionHandlerFunc {
 
 func UpdateProfileAction(service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+		v := validate.Form(rc)
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
-			return utilities.FormErrors(rc,map[string]string{"profile_photo": users.PhotoTooLargeMessage})
+			v.Fail("profile_photo", users.PhotoTooLargeMessage)
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		user, err := service.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
 		}
-		if err := rc.Request.ParseMultipartForm(users.MaxPhotoBytes); err != nil {
-			return nil, err
+		v.Field("fullname").Required().Message("Ad soyad alanı zorunludur.")
+		if !v.Valid() {
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
 		if err != nil {
-			return utilities.FormErrors(rc,map[string]string{"profile_photo": users.ProfilePhotoErrorMessage(err)})
+			v.Fail("profile_photo", users.ProfilePhotoErrorMessage(err))
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
-		if err := service.UpdateProfile(user.ID, rc.Request.FormValue("fullname"), profilePhoto); err != nil {
-			return utilities.FormErrors(rc,map[string]string{"fullname": "Ad soyad alanı zorunludur."})
+		if err := service.UpdateProfile(user.ID, v.Value("fullname"), profilePhoto); err != nil {
+			v.Fail("fullname", "Ad soyad alanı zorunludur.")
+			return validate.Refuse(rc, v, rc.Page), nil
 		}
 		flash.Add(rc, flash.Success, "Profilin güncellendi.")
 		return collage.SeeOther("/"), nil

@@ -21,6 +21,7 @@ require (
 	github.com/Elagoht/collage-robots v0.1.1
 	github.com/Elagoht/collage-secure v0.1.1
 	github.com/Elagoht/collage-sitemap v0.1.1
+	github.com/Elagoht/collage-validate v0.1.1
 	golang.org/x/crypto v0.57.0
 	modernc.org/sqlite v1.59.0
 )
