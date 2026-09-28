@@ -7,7 +7,6 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"sync"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,13 +26,11 @@ type User struct {
 }
 
 type UserService struct {
-	db       *sql.DB
-	mu       sync.RWMutex
-	sessions map[string]int64
+	db *sql.DB
 }
 
 func NewService(database *sql.DB) *UserService {
-	return &UserService{db: database, sessions: make(map[string]int64)}
+	return &UserService{db: database}
 }
 
 func (service *UserService) Register(fullname, email, password, profilePhoto string) (*User, error) {
@@ -80,28 +77,31 @@ func (service *UserService) Login(email, password string) (string, *User, error)
 	if err != nil {
 		return "", nil, err
 	}
-	service.mu.Lock()
-	service.sessions[token] = user.ID
-	service.mu.Unlock()
+	if _, err := service.db.Exec("INSERT INTO sessions (token, user_id) VALUES (?, ?)", token, user.ID); err != nil {
+		return "", nil, err
+	}
 	return token, user, nil
 }
 
 func (service *UserService) Logout(token string) error {
-	service.mu.Lock()
-	defer service.mu.Unlock()
-	if _, ok := service.sessions[token]; !ok {
+	result, err := service.db.Exec("DELETE FROM sessions WHERE token = ?", token)
+	if err != nil {
+		return err
+	}
+	if rows, _ := result.RowsAffected(); rows == 0 {
 		return ErrInvalidSession
 	}
-	delete(service.sessions, token)
 	return nil
 }
 
 func (service *UserService) GetProfile(token string) (*User, error) {
-	service.mu.RLock()
-	id, ok := service.sessions[token]
-	service.mu.RUnlock()
-	if !ok {
+	var id int64
+	err := service.db.QueryRow("SELECT user_id FROM sessions WHERE token = ?", token).Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrInvalidSession
+	}
+	if err != nil {
+		return nil, err
 	}
 	return service.GetProfileByID(id)
 }

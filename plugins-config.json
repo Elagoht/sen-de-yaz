@@ -1,0 +1,18 @@
+{
+  "elagoht/minimizer": {
+    "html": true,
+    "css": true,
+    "json": true,
+    "js": true
+  },
+  "elagoht/opti-image": {
+    "allowedOrigins": [
+      {
+        "scheme": "http",
+        "host": "localhost:3000"
+      }
+    ],
+    "webp": "auto",
+    "quality": 82
+  }
+}

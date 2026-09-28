@@ -10,8 +10,9 @@ import (
 )
 
 type profileView struct {
-	User   *users.User
-	Errors map[string]string
+	User     *users.User
+	PhotoURL string
+	Errors   map[string]string
 }
 
 func profileData(service *users.UserService) collage.DataHandlerFunc {
@@ -27,6 +28,6 @@ func profileData(service *users.UserService) collage.DataHandlerFunc {
 			return profileView{}, err
 		}
 		form, _ := utilities.FormData(ctx, rc)
-		return profileView{User: user, Errors: form.Errors}, nil
+		return profileView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Errors: form.Errors}, nil
 	})
 }

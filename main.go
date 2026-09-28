@@ -12,6 +12,7 @@ import (
 	"sen-de-yaz/data/db"
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
+	"sen-de-yaz/utilities"
 	"strconv"
 	"time"
 
@@ -47,6 +48,12 @@ var staticFS embed.FS
 var cacheDir = ".cache"
 
 func main() {
+	if file, err := utilities.LoadEnvFile("."); err != nil {
+		log.Fatalf("sen-de-yaz: %v", err)
+	} else if file != "" {
+		log.Printf("sen-de-yaz: loaded environment from %s", file)
+	}
+
 	database, service, err := openUserService("app.sqlite")
 	if err != nil {
 		log.Fatalf("sen-de-yaz: initialize users: %v", err)

@@ -1,0 +1,78 @@
+package utilities
+
+import (
+	"errors"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+// envFiles are the files environment variables are read from, in order of
+// preference — the same files "collage dev" reads. Only the first one found is
+// applied: .env.development replaces .env rather than being merged over it.
+var envFiles = []string{".env.development", ".env"}
+
+// LoadEnvFile applies the first environment file found in dir and returns its
+// name, or "" when there is none — which is not an error.
+func LoadEnvFile(dir string) (string, error) {
+	for _, name := range envFiles {
+		content, err := os.ReadFile(filepath.Join(dir, name))
+		if errors.Is(err, fs.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return "", err
+		}
+		if err := applyEnv(string(content)); err != nil {
+			return "", fmt.Errorf("%s: %w", name, err)
+		}
+		return name, nil
+	}
+	return "", nil
+}
+
+// applyEnv sets every variable the process does not already have, so the shell
+// wins over the file. The format is the common dotenv subset: KEY=value lines,
+// blank lines, "#" comments, an optional "export " prefix, and an optional pair
+// of matching quotes around the value. A malformed line is an error rather than
+// a skipped one: a skipped line is a setting somebody wrote and the program
+// never saw, and the symptom — a default where a value was meant to be — points
+// everywhere except at the file.
+func applyEnv(content string) error {
+	for number, line := range strings.Split(content, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		line = strings.TrimSpace(strings.TrimPrefix(line, "export "))
+		key, value, found := strings.Cut(line, "=")
+		if !found {
+			return fmt.Errorf("line %d: want KEY=value", number+1)
+		}
+		key = strings.TrimSpace(key)
+		if key == "" || strings.ContainsAny(key, " \t") {
+			return fmt.Errorf("line %d: %q is not a variable name", number+1, key)
+		}
+		value = strings.TrimSpace(value)
+		if value != "" && (value[0] == '"' || value[0] == '\'') {
+			quote := value[0]
+			end := strings.IndexByte(value[1:], quote)
+			if end < 0 {
+				return fmt.Errorf("line %d: unterminated quote", number+1)
+			}
+			rest := strings.TrimSpace(value[end+2:])
+			if rest != "" && !strings.HasPrefix(rest, "#") {
+				return fmt.Errorf("line %d: text after the closing quote", number+1)
+			}
+			value = value[1 : end+1]
+		}
+		if _, ok := os.LookupEnv(key); !ok {
+			if err := os.Setenv(key, value); err != nil {
+				return fmt.Errorf("line %d: set %s: %w", number+1, key, err)
+			}
+		}
+	}
+	return nil
+}

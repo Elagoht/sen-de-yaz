@@ -9,11 +9,13 @@
 
   <body>
     <div class="flash-stack" aria-live="polite">
-      {{range flashes}}<div class="flash flash-{{.Kind}}" role="status">{{.Text}}</div>{{end}}
+      {{range flashes}}
+      <div class="flash flash-{{.Kind}}" role="status">{{.Text}}</div>
+      {{end}}
     </div>
     {{slot "content"}}
     <script>
-      document.querySelectorAll('.flash').forEach((toast) => {
+      document.querySelectorAll(".flash").forEach((toast) => {
         window.setTimeout(() => {
           toast.remove();
         }, 3780);

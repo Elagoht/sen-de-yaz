@@ -20,7 +20,7 @@ const homeBlock collage.InlineHTML = `
 	<div class="hero-visual">
 		{{if .User.ProfilePhoto}}
 			<div class="avatar">
-				<img width="124" height="124" src="/{{.User.ProfilePhoto}}" alt="Profil fotoğrafı">
+				<img width="124" height="124" src="{{.PhotoURL}}" alt="Profil fotoğrafı">
 			</div>
 		{{else}}
 			<div class="avatar">✎</div>

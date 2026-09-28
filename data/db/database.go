@@ -55,6 +55,11 @@ func Open(path string) (*sql.DB, error) {
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			UNIQUE(story_id, sequence)
 		);
+		CREATE TABLE IF NOT EXISTS sessions (
+			token TEXT PRIMARY KEY,
+			user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
 		CREATE INDEX IF NOT EXISTS idx_stories_updated_at ON stories(updated_at);
 		CREATE INDEX IF NOT EXISTS idx_story_entries_story_id ON story_entries(story_id);
 		CREATE INDEX IF NOT EXISTS idx_story_entries_author_id ON story_entries(author_id);

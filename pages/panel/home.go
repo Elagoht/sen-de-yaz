@@ -6,15 +6,17 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages"
+	"sen-de-yaz/utilities"
 
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
 type homeView struct {
-	User   *users.User
-	Recent []stories.Story
-	Mine   []stories.Story
+	User     *users.User
+	PhotoURL string
+	Recent   []stories.Story
+	Mine     []stories.Story
 }
 
 func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
@@ -38,7 +40,7 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 			if err != nil {
 				return nil, nil, err
 			}
-			return homeView{User: user, Recent: recent, Mine: mine}, nil, nil
+			return homeView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Recent: recent, Mine: mine}, nil, nil
 		}).Build()
 
 	return collage.NewPage("home").
