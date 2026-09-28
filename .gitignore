@@ -1,8 +1,7 @@
 # The compiled binary "collage build" writes, by name rather than the whole
 # directory: "collage build -i" writes a Dockerfile and a systemd unit in there
 # too, and those are files you edit and commit.
-/bin/sen-de-yaz
-/bin/sen-de-yaz.exe
+/bin/
 
 # "collage export" output.
 /dist/
