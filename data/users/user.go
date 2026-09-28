@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"errors"
+	"net/http"
 	"strings"
 	"sync"
 
@@ -125,6 +126,15 @@ func (service *UserService) UpdateProfile(id int64, fullname, profilePhoto strin
 	}
 	_, err := service.db.Exec("UPDATE users SET fullname = ?, profile_photo = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", fullname, profilePhoto, id)
 	return err
+}
+
+// CurrentUser resolves the signed-in user from the session cookie.
+func (service *UserService) CurrentUser(r *http.Request) (*User, error) {
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return nil, err
+	}
+	return service.GetProfile(cookie.Value)
 }
 
 func (service *UserService) findByEmail(email string) (*User, error) {

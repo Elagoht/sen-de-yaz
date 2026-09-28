@@ -54,6 +54,15 @@ func SaveOptionalFile(r *http.Request, field, directory string) (string, error) 
 	return path, nil
 }
 
+// ProfilePhotoErrorMessage translates a SaveOptionalFile failure into a
+// user-facing message.
+func ProfilePhotoErrorMessage(err error) string {
+	if strings.Contains(err.Error(), "jpg, jpeg, png, webp or gif") {
+		return "JPG, JPEG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
+	}
+	return "Profil fotoğrafı yüklenemedi."
+}
+
 func allowedImageExtension(ext string) bool {
 	switch ext {
 	case ".jpg", ".jpeg", ".png", ".webp", ".gif":

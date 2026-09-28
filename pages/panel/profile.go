@@ -28,7 +28,7 @@ func ProfilePage(userService *users.UserService) *collage.Page {
 	profileAction := collage.NewAction("profile").
 		WithMethods(http.MethodPost).
 		WithMaxBodyBytes(-1).
-		WithHandler(actions.GetUsers(userService, func() *collage.Page { return page })).
+		WithHandler(actions.UpdateProfileAction(userService, func() *collage.Page { return page })).
 		Build()
 
 	page = collage.NewPage("profile").

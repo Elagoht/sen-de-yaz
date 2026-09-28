@@ -226,3 +226,29 @@ func (service *StoryService) AddEntry(storyID, authorID int64, body string) (*En
 	}
 	return &Entry{ID: id, StoryID: storyID, AuthorID: authorID, Sequence: sequence, Body: body}, nil
 }
+
+// FieldErrors translates a CreateStory failure into per-field messages.
+func FieldErrors(err error) map[string]string {
+	switch {
+	case errors.Is(err, ErrThemeTooLong):
+		return map[string]string{"theme": "Tema 100 karakterden uzun olamaz."}
+	case errors.Is(err, ErrOpeningTooLong):
+		return map[string]string{"opening": "Başlangıç metni 500 karakterden uzun olamaz."}
+	case errors.Is(err, ErrRequiredField):
+		return map[string]string{"form": "Başlık, tema ve başlangıç metni zorunludur."}
+	default:
+		return map[string]string{"form": "Hikâye oluşturulamadı."}
+	}
+}
+
+// EntryErrorMessage translates an AddEntry failure into a user-facing message.
+func EntryErrorMessage(err error) string {
+	switch {
+	case errors.Is(err, ErrConsecutiveAuthor):
+		return "Bu hikâyeye devam etmeden önce başka bir kullanıcı yazmalı."
+	case errors.Is(err, ErrEntryTooLong):
+		return "Devam metni 140 karakterden uzun olamaz."
+	default:
+		return "Devam metni eklenemedi."
+	}
+}

@@ -9,6 +9,7 @@ import (
 	storydomain "sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
+	"sen-de-yaz/utilities"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )
@@ -45,16 +46,16 @@ func CreatePage(storyService *storydomain.StoryService, userService *users.UserS
 }
 
 type createView struct {
-	formView
+	utilities.FormView
 	Title   string
 	Theme   string
 	Opening string
 }
 
 func createData(ctx context.Context, rc *collage.RenderContext) (createView, error) {
-	data, _ := formData(ctx, rc)
+	data, _ := utilities.FormData(ctx, rc)
 	return createView{
-		formView: data,
+		FormView: data,
 		Title:    rc.Request.FormValue("title"),
 		Theme:    rc.Request.FormValue("theme"),
 		Opening:  rc.Request.FormValue("opening"),

@@ -44,11 +44,7 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 				Description: "Toplulukla birlikte hikâye yaz, başkalarının anlatılarına devam et.",
 				Canonical:   "/",
 			})
-			cookie, err := rc.Request.Cookie("session_token")
-			if err != nil {
-				return nil, nil, err
-			}
-			user, err := service.GetProfile(cookie.Value)
+			user, err := service.CurrentUser(rc.Request)
 			if err != nil {
 				return nil, nil, err
 			}

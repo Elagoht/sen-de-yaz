@@ -3,11 +3,14 @@ package stories
 import (
 	"context"
 	"fmt"
+	"net/http"
 
+	"sen-de-yaz/actions"
 	storydomain "sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages/stories"
+	"sen-de-yaz/utilities"
 
 	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
@@ -16,14 +19,22 @@ import (
 
 // Page
 func DetailPage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-	return collage.NewPage("story-detail").
+	var page *collage.Page
+	addEntry := collage.NewAction("story-detail").
+		WithMethods(http.MethodPost).
+		WithHandler(actions.AddEntryAction(storyService, userService, func() *collage.Page { return page })).
+		Build()
+
+	page = collage.NewPage("story-detail").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryDetailBlock().
 			WithDataHandler(detailData(storyService, userService)).
 			Build(),
 		).
 		WithPath("en", "/stories/{id}").
+		WithActionFor(addEntry).
 		Build()
+	return page
 }
 
 // SEO
@@ -72,11 +83,7 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 			AuthorName:    lastAuthor,
 			PublisherName: "Sen de Yaz",
 		})
-		cookie, err := rc.Request.Cookie("session_token")
-		if err != nil {
-			return detailView{}, err
-		}
-		user, err := userService.GetProfile(cookie.Value)
+		user, err := userService.CurrentUser(rc.Request)
 		if err != nil {
 			return detailView{}, err
 		}
@@ -84,8 +91,7 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		if len(entries) > 0 {
 			lastAuthorID = entries[len(entries)-1].AuthorID
 		}
-		value, _ := rc.Get("form_errors")
-		errors, _ := value.(map[string]string)
-		return detailView{Story: story, Entries: entries, CanWrite: lastAuthorID != user.ID, Errors: errors}, nil
+		form, _ := utilities.FormData(ctx, rc)
+		return detailView{Story: story, Entries: entries, CanWrite: lastAuthorID != user.ID, Errors: form.Errors}, nil
 	})
 }
