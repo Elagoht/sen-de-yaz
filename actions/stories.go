@@ -10,6 +10,7 @@ import (
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 
+	flash "github.com/Elagoht/collage-flash"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -44,6 +45,7 @@ func CreateStoryAction(service *stories.StoryService, userService *users.UserSer
 		if err != nil {
 			return formErrors(page, rc, storyFieldErrors(err))
 		}
+		flash.Add(rc, flash.Success, "Hikâyen başladı. Sıra toplulukta!")
 		return collage.SeeOther(fmt.Sprintf("/stories/%d", story.ID)), nil
 	}
 }
@@ -68,6 +70,7 @@ func AddEntryAction(service *stories.StoryService, userService *users.UserServic
 			}
 			return formErrors(page, rc, map[string]string{"body": entryErrorMessage(err)})
 		}
+		flash.Add(rc, flash.Success, "Hikâyeye katkın eklendi.")
 		return collage.SeeOther(fmt.Sprintf("/stories/%d", entry.StoryID)), nil
 	}
 }

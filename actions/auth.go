@@ -9,6 +9,7 @@ import (
 	"sen-de-yaz/data/users"
 	"strings"
 
+	flash "github.com/Elagoht/collage-flash"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -62,6 +63,7 @@ func RegisterAction(
 			HttpOnly: true,
 			SameSite: http.SameSiteLaxMode,
 		}).String()
+		flash.Add(rc, flash.Success, "Hesabın oluşturuldu. Hoş geldin!")
 
 		return &collage.ActionResult{
 			Location: "/",
@@ -98,6 +100,7 @@ func LoginAction(
 			HttpOnly: true,
 			SameSite: http.SameSiteLaxMode,
 		}).String()
+		flash.Add(rc, flash.Success, "Tekrar hoş geldin!")
 
 		return &collage.ActionResult{
 			Location: "/",
@@ -135,6 +138,7 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 		if err := service.UpdateProfile(user.ID, rc.Request.FormValue("fullname"), profilePhoto); err != nil {
 			return formErrors(page, rc, map[string]string{"fullname": "Ad soyad alanı zorunludur."})
 		}
+		flash.Add(rc, flash.Success, "Profilin güncellendi.")
 		return collage.SeeOther("/"), nil
 	}
 }

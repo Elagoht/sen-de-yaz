@@ -6,6 +6,7 @@ import (
 
 	"sen-de-yaz/data/users"
 
+	flash "github.com/Elagoht/collage-flash"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -15,6 +16,7 @@ func LogoutAction(service *users.UserService) collage.ActionHandlerFunc {
 		if err == nil {
 			_ = service.Logout(cookie.Value)
 		}
+		flash.Add(rc, flash.Info, "Oturumun kapatıldı.")
 		return &collage.ActionResult{
 			Location: "/login",
 			Header: http.Header{"Set-Cookie": []string{(&http.Cookie{
