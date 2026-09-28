@@ -38,9 +38,14 @@ func DetailPage(storyService *storydomain.StoryService, userService *users.UserS
 }
 
 // SEO
+type entryView struct {
+	storydomain.Entry
+	PhotoURL string
+}
+
 type detailView struct {
 	Story    *storydomain.Story
-	Entries  []storydomain.Entry
+	Entries  []entryView
 	CanWrite bool
 	Errors   map[string]string
 	NotFound bool
@@ -91,7 +96,11 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		if len(entries) > 0 {
 			lastAuthorID = entries[len(entries)-1].AuthorID
 		}
+		views := make([]entryView, len(entries))
+		for i, entry := range entries {
+			views[i] = entryView{Entry: entry, PhotoURL: utilities.PhotoURL(rc, entry.AuthorPhoto)}
+		}
 		form, _ := utilities.FormData(ctx, rc)
-		return detailView{Story: story, Entries: entries, CanWrite: lastAuthorID != user.ID, Errors: form.Errors}, nil
+		return detailView{Story: story, Entries: views, CanWrite: lastAuthorID != user.ID, Errors: form.Errors}, nil
 	})
 }

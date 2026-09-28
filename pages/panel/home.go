@@ -12,11 +12,26 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+type storyCard struct {
+	stories.Story
+	AuthorPhotoURL string
+}
+
 type homeView struct {
 	User     *users.User
 	PhotoURL string
-	Recent   []stories.Story
-	Mine     []stories.Story
+	Recent   []storyCard
+	Mine     []storyCard
+}
+
+// storyCards turns stories into cards, resolving each last author's photo to an
+// absolute URL for opti-image.
+func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
+	cards := make([]storyCard, len(list))
+	for i, story := range list {
+		cards[i] = storyCard{Story: story, AuthorPhotoURL: utilities.PhotoURL(rc, story.LastAuthorPhoto)}
+	}
+	return cards
 }
 
 func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
@@ -40,7 +55,7 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 			if err != nil {
 				return nil, nil, err
 			}
-			return homeView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Recent: recent, Mine: mine}, nil, nil
+			return homeView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Recent: storyCards(rc, recent), Mine: storyCards(rc, mine)}, nil, nil
 		}).Build()
 
 	return collage.NewPage("home").

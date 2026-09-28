@@ -25,7 +25,10 @@ const storyDetailBlock collage.InlineHTML = `
 				<article class="entry">
 					<div class="entry-number">#{{.Sequence}}</div>
 					<div>
-						<p class="entry-author">{{.Author}}</p>
+						<div class="entry-head">
+							{{if .PhotoURL}}<img class="entry-avatar" width="24" height="24" src="{{.PhotoURL}}" alt="">{{end}}
+							<p class="entry-author">{{.Author}}</p>
+						</div>
 						<p class="entry-body">{{.Body}}</p>
 					</div>
 				</article>

@@ -18,26 +18,28 @@ var (
 )
 
 type Story struct {
-	ID             int64
-	CreatorID      int64
-	Title          string
-	Theme          string
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	LastBody       string
-	LastAuthor     string
-	LastEntryAt    time.Time
-	LastEntryLabel string
+	ID              int64
+	CreatorID       int64
+	Title           string
+	Theme           string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	LastBody        string
+	LastAuthor      string
+	LastAuthorPhoto string
+	LastEntryAt     time.Time
+	LastEntryLabel  string
 }
 
 type Entry struct {
-	ID        int64
-	StoryID   int64
-	AuthorID  int64
-	Author    string
-	Sequence  int
-	Body      string
-	CreatedAt time.Time
+	ID          int64
+	StoryID     int64
+	AuthorID    int64
+	Author      string
+	AuthorPhoto string
+	Sequence    int
+	Body        string
+	CreatedAt   time.Time
 }
 
 type StoryService struct {
@@ -127,7 +129,7 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 	}
 	query := `
 		SELECT s.id, s.creator_id, s.title, s.theme, s.created_at, s.updated_at,
-		       last.body, last.created_at, u.fullname
+		       last.body, last.created_at, u.fullname, u.profile_photo
 		FROM stories s
 		JOIN story_entries last ON last.id = (SELECT e.id FROM story_entries e WHERE e.story_id = s.id ORDER BY e.sequence DESC LIMIT 1)
 		JOIN users u ON u.id = last.author_id ` + condition + `
@@ -141,7 +143,7 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 	var result []Story
 	for rows.Next() {
 		var story Story
-		if err := rows.Scan(&story.ID, &story.CreatorID, &story.Title, &story.Theme, &story.CreatedAt, &story.UpdatedAt, &story.LastBody, &story.LastEntryAt, &story.LastAuthor); err != nil {
+		if err := rows.Scan(&story.ID, &story.CreatorID, &story.Title, &story.Theme, &story.CreatedAt, &story.UpdatedAt, &story.LastBody, &story.LastEntryAt, &story.LastAuthor, &story.LastAuthorPhoto); err != nil {
 			return nil, err
 		}
 		story.LastEntryLabel = story.LastEntryAt.Format("Jan 2, 15:04")
@@ -162,7 +164,7 @@ func (service *StoryService) GetStory(id int64) (*Story, []Entry, error) {
 	}
 
 	rows, err := service.db.Query(`
-		SELECT e.id, e.story_id, e.author_id, u.fullname, e.sequence, e.body, e.created_at
+		SELECT e.id, e.story_id, e.author_id, u.fullname, e.sequence, e.body, e.created_at, u.profile_photo
 		FROM story_entries e JOIN users u ON u.id = e.author_id
 		WHERE e.story_id = ? ORDER BY e.sequence ASC`, id)
 	if err != nil {
@@ -172,7 +174,7 @@ func (service *StoryService) GetStory(id int64) (*Story, []Entry, error) {
 	var entries []Entry
 	for rows.Next() {
 		var entry Entry
-		if err := rows.Scan(&entry.ID, &entry.StoryID, &entry.AuthorID, &entry.Author, &entry.Sequence, &entry.Body, &entry.CreatedAt); err != nil {
+		if err := rows.Scan(&entry.ID, &entry.StoryID, &entry.AuthorID, &entry.Author, &entry.Sequence, &entry.Body, &entry.CreatedAt, &entry.AuthorPhoto); err != nil {
 			return nil, nil, err
 		}
 		entries = append(entries, entry)

@@ -55,6 +55,7 @@ const homeBlock collage.InlineHTML = `
 					</div>
 
 					<div class="story-meta">
+						{{if .AuthorPhotoURL}}<img class="card-avatar" width="20" height="20" src="{{.AuthorPhotoURL}}" alt="">{{end}}
 						Yazan: <strong>{{.LastAuthor}}</strong>
 					</div>
 				</a>
@@ -94,6 +95,7 @@ const homeBlock collage.InlineHTML = `
 					</div>
 
 					<div class="story-meta">
+						{{if .AuthorPhotoURL}}<img class="card-avatar" width="20" height="20" src="{{.AuthorPhotoURL}}" alt="">{{end}}
 						Son yazan: <strong>{{.LastAuthor}}</strong>
 					</div>
 				</a>
