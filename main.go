@@ -140,11 +140,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			Exclude: []string{"login", "register", "profile", "story-create"},
 		}),
 		compress.New(compress.Options{}),
-		minimizer.NewWith(minimizer.Config{
-			HTML: !devMode,
-			JSON: true,
-			CSS:  true,
-		}),
+		minimizer.New(),
 		optiimage.New(),
 		accesslog.New(accesslog.Options{}),
 		prometheus.New(prometheus.Options{Token: os.Getenv("METRICS_TOKEN")}),
