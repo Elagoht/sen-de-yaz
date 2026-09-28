@@ -6,8 +6,6 @@ import (
 	"net/mail"
 	"strings"
 
-	jsonld "github.com/Elagoht/collage-jsonld"
-	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -34,51 +32,6 @@ func FormData(ctx context.Context, rc *collage.RenderContext) (FormView, error) 
 	}
 	errors, _ := value.(map[string]string)
 	return FormView{Errors: errors}, nil
-}
-
-type LoginView struct {
-	FormView
-	Email    string
-	Password string
-}
-
-func LoginData(ctx context.Context, rc *collage.RenderContext) (LoginView, error) {
-	view, err := FormData(ctx, rc)
-	rc.HoistTitle("Giriş yap | Sen de Yaz")
-	meta.Set(rc, meta.Page{
-		Title:       "Giriş yap | Sen de Yaz",
-		Description: "Sen de Yaz hesabına giriş yap ve topluluk hikâyelerine devam et.",
-		Canonical:   "/login",
-	})
-	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
-	return LoginView{
-		FormView: view,
-		Email:    rc.Request.FormValue("email"),
-		Password: rc.Request.FormValue("password"),
-	}, err
-}
-
-type RegisterView struct {
-	FormView
-	FullName string
-	Email    string
-	Password string
-}
-
-func RegisterData(ctx context.Context, rc *collage.RenderContext) (RegisterView, error) {
-	view, err := FormData(ctx, rc)
-	rc.HoistTitle("Kayıt ol | Sen de Yaz")
-	meta.Set(rc, meta.Page{
-		Title:       "Kayıt ol | Sen de Yaz",
-		Description: "Sen de Yaz topluluğuna katıl, hikâyeler başlat ve anlatılara katkı ver.",
-		Canonical:   "/register",
-	})
-	return RegisterView{
-		FormView: view,
-		FullName: rc.Request.FormValue("fullname"),
-		Email:    rc.Request.FormValue("email"),
-		Password: rc.Request.FormValue("password"),
-	}, err
 }
 
 func ValidateRegisterForm(r *http.Request) map[string]string {

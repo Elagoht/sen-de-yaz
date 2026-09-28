@@ -130,7 +130,7 @@ func (service *UserService) UpdateProfile(id int64, fullname, profilePhoto strin
 
 // CurrentUser resolves the signed-in user from the session cookie.
 func (service *UserService) CurrentUser(r *http.Request) (*User, error) {
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie(SessionCookieName)
 	if err != nil {
 		return nil, err
 	}
@@ -161,4 +161,27 @@ func newToken() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes), nil
+}
+
+// SessionCookieName is the cookie a signed-in session travels in. Everything
+// that reads or writes the session — actions, guards, CurrentUser — names it
+// through here.
+const SessionCookieName = "session_token"
+
+// SessionCookie returns the cookie that signs token in as a session.
+func SessionCookie(token string) *http.Cookie {
+	return &http.Cookie{
+		Name:     SessionCookieName,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	}
+}
+
+// ClearSessionCookie returns the cookie that ends a session in the browser.
+func ClearSessionCookie() *http.Cookie {
+	cookie := SessionCookie("")
+	cookie.MaxAge = -1
+	return cookie
 }

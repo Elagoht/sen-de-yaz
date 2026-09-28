@@ -14,8 +14,8 @@ import (
 
 func RegisterAction(service *users.UserService, page func() *collage.Page) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if rc.Request.ContentLength > 5<<20 {
-			return utilities.FormErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 5 MB'dan küçük olmalı."})
+		if rc.Request.ContentLength > users.MaxPhotoBytes {
+			return utilities.FormErrors(page, rc, map[string]string{"profile_photo": users.PhotoTooLargeMessage})
 		}
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
@@ -49,18 +49,11 @@ func RegisterAction(service *users.UserService, page func() *collage.Page) colla
 			return utilities.FormErrors(page, rc, map[string]string{"password": "E-posta veya şifre hatalı."})
 		}
 
-		cookie := (&http.Cookie{
-			Name:     "session_token",
-			Value:    token,
-			Path:     "/",
-			HttpOnly: true,
-			SameSite: http.SameSiteLaxMode,
-		}).String()
 		flash.Add(rc, flash.Success, "Hesabın oluşturuldu. Hoş geldin!")
 
 		return &collage.ActionResult{
 			Location: "/",
-			Header:   http.Header{"Set-Cookie": []string{cookie}},
+			Header:   http.Header{"Set-Cookie": []string{users.SessionCookie(token).String()}},
 		}, nil
 	}
 }
@@ -83,32 +76,25 @@ func LoginAction(service *users.UserService, page func() *collage.Page) collage.
 			return utilities.FormErrors(page, rc, map[string]string{"password": "E-posta veya şifre hatalı."})
 		}
 
-		cookie := (&http.Cookie{
-			Name:     "session_token",
-			Value:    token,
-			Path:     "/",
-			HttpOnly: true,
-			SameSite: http.SameSiteLaxMode,
-		}).String()
 		flash.Add(rc, flash.Success, "Tekrar hoş geldin!")
 
 		return &collage.ActionResult{
 			Location: "/",
-			Header:   http.Header{"Set-Cookie": []string{cookie}},
+			Header:   http.Header{"Set-Cookie": []string{users.SessionCookie(token).String()}},
 		}, nil
 	}
 }
 
 func UpdateProfileAction(service *users.UserService, page func() *collage.Page) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		if rc.Request.ContentLength > 5<<20 {
-			return utilities.FormErrors(page, rc, map[string]string{"profile_photo": "Profil fotoğrafı 5 MB'dan küçük olmalı."})
+		if rc.Request.ContentLength > users.MaxPhotoBytes {
+			return utilities.FormErrors(page, rc, map[string]string{"profile_photo": users.PhotoTooLargeMessage})
 		}
 		user, err := service.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
 		}
-		if err := rc.Request.ParseMultipartForm(5 << 20); err != nil {
+		if err := rc.Request.ParseMultipartForm(users.MaxPhotoBytes); err != nil {
 			return nil, err
 		}
 		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
@@ -125,21 +111,13 @@ func UpdateProfileAction(service *users.UserService, page func() *collage.Page) 
 
 func LogoutAction(service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-		cookie, err := rc.Request.Cookie("session_token")
-		if err == nil {
+		if cookie, err := rc.Request.Cookie(users.SessionCookieName); err == nil {
 			_ = service.Logout(cookie.Value)
 		}
 		flash.Add(rc, flash.Info, "Oturumun kapatıldı.")
 		return &collage.ActionResult{
 			Location: "/login",
-			Header: http.Header{"Set-Cookie": []string{(&http.Cookie{
-				Name:     "session_token",
-				Value:    "",
-				Path:     "/",
-				MaxAge:   -1,
-				HttpOnly: true,
-				SameSite: http.SameSiteLaxMode,
-			}).String()}},
+			Header:   http.Header{"Set-Cookie": []string{users.ClearSessionCookie().String()}},
 		}, nil
 	}
 }

@@ -3,7 +3,6 @@ package stories
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"sen-de-yaz/actions"
 	storydomain "sen-de-yaz/data/stories"
@@ -56,9 +55,4 @@ func createData(ctx context.Context, rc *collage.RenderContext) (createView, err
 		Theme:    rc.Request.FormValue("theme"),
 		Opening:  rc.Request.FormValue("opening"),
 	}, nil
-}
-
-func storyID(rc *collage.RenderContext) (int64, bool) {
-	id, err := strconv.ParseInt(rc.Param("id"), 10, 64)
-	return id, err == nil && id > 0
 }

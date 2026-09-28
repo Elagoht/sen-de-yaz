@@ -1,8 +1,12 @@
 package pages
 
 import (
+	"context"
+
 	"sen-de-yaz/utilities"
 
+	jsonld "github.com/Elagoht/collage-jsonld"
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -42,8 +46,31 @@ const loginBlock collage.InlineHTML = `
 	<a class="text-link" href="/register">Kayıt ol</a>
 </p>`
 
+type loginView struct {
+	utilities.FormView
+	Email    string
+	Password string
+}
+
+// loginData fills the login form and hoists the page's SEO.
+func loginData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
+	view, err := utilities.FormData(ctx, rc)
+	rc.HoistTitle("Giriş yap | Sen de Yaz")
+	meta.Set(rc, meta.Page{
+		Title:       "Giriş yap | Sen de Yaz",
+		Description: "Sen de Yaz hesabına giriş yap ve topluluk hikâyelerine devam et.",
+		Canonical:   "/login",
+	})
+	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
+	return loginView{
+		FormView: view,
+		Email:    rc.Request.FormValue("email"),
+		Password: rc.Request.FormValue("password"),
+	}, err
+}
+
 func LoginBlock() *collage.Fragment {
 	return collage.NewInlineFragment("login", loginBlock).
-		WithDataHandler(collage.Load(utilities.LoginData)).
+		WithDataHandler(collage.Load(loginData)).
 		Build()
 }

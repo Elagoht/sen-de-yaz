@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+// MaxPhotoBytes caps an uploaded profile photo; the multipart envelope around
+// it is small next to one photo.
+const MaxPhotoBytes int64 = 5 << 20
+
+// PhotoTooLargeMessage is what a photo past MaxPhotoBytes earns.
+const PhotoTooLargeMessage = "Profil fotoğrafı 5 MB'dan küçük olmalı."
+
 // SaveOptionalFile stores an uploaded file and returns its relative path.
 // An omitted file returns an empty path without creating a file.
 func SaveOptionalFile(r *http.Request, field, directory string) (string, error) {

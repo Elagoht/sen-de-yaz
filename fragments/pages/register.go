@@ -1,8 +1,11 @@
 package pages
 
 import (
+	"context"
+
 	"sen-de-yaz/utilities"
 
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -62,9 +65,32 @@ const registerBlock collage.InlineHTML = `
 	<a class="text-link" href="/login">Giriş yap</a>
 </p>`
 
-func RegisterBlock() *collage.Fragment {
+type registerView struct {
+	utilities.FormView
+	FullName string
+	Email    string
+	Password string
+}
 
+// registerData fills the register form and hoists the page's SEO.
+func registerData(ctx context.Context, rc *collage.RenderContext) (registerView, error) {
+	view, err := utilities.FormData(ctx, rc)
+	rc.HoistTitle("Kayıt ol | Sen de Yaz")
+	meta.Set(rc, meta.Page{
+		Title:       "Kayıt ol | Sen de Yaz",
+		Description: "Sen de Yaz topluluğuna katıl, hikâyeler başlat ve anlatılara katkı ver.",
+		Canonical:   "/register",
+	})
+	return registerView{
+		FormView: view,
+		FullName: rc.Request.FormValue("fullname"),
+		Email:    rc.Request.FormValue("email"),
+		Password: rc.Request.FormValue("password"),
+	}, err
+}
+
+func RegisterBlock() *collage.Fragment {
 	return collage.NewInlineFragment("register", registerBlock).
-		WithDataHandler(collage.Load(utilities.RegisterData)).
+		WithDataHandler(collage.Load(registerData)).
 		Build()
 }

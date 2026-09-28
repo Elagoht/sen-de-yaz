@@ -34,29 +34,40 @@ func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
 	return cards
 }
 
+// homeData fills the dashboard and hoists the page's SEO.
+func homeData(service *users.UserService, storyService *stories.StoryService) collage.DataHandlerFunc {
+	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (homeView, error) {
+		rc.HoistTitle("Sen de Yaz | Birlikte yazılan hikâyeler")
+		meta.Set(rc, meta.Page{
+			Title:       "Sen de Yaz | Birlikte yazılan hikâyeler",
+			Description: "Toplulukla birlikte hikâye yaz, başkalarının anlatılarına devam et.",
+			Canonical:   "/",
+		})
+		user, err := service.CurrentUser(rc.Request)
+		if err != nil {
+			return homeView{}, err
+		}
+		recent, err := storyService.ListRecentStories(6)
+		if err != nil {
+			return homeView{}, err
+		}
+		mine, err := storyService.ListUserStories(user.ID, 6)
+		if err != nil {
+			return homeView{}, err
+		}
+		return homeView{
+			User:     user,
+			PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto),
+			Recent:   storyCards(rc, recent),
+			Mine:     storyCards(rc, mine),
+		}, nil
+	})
+}
+
 func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
 	content := pages.HomeBlock().
-		WithDataHandler(func(ctx context.Context, rc *collage.RenderContext) (data any, tags []string, err error) {
-			rc.HoistTitle("Sen de Yaz | Birlikte yazılan hikâyeler")
-			meta.Set(rc, meta.Page{
-				Title:       "Sen de Yaz | Birlikte yazılan hikâyeler",
-				Description: "Toplulukla birlikte hikâye yaz, başkalarının anlatılarına devam et.",
-				Canonical:   "/",
-			})
-			user, err := service.CurrentUser(rc.Request)
-			if err != nil {
-				return nil, nil, err
-			}
-			recent, err := storyService.ListRecentStories(6)
-			if err != nil {
-				return nil, nil, err
-			}
-			mine, err := storyService.ListUserStories(user.ID, 6)
-			if err != nil {
-				return nil, nil, err
-			}
-			return homeView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto), Recent: storyCards(rc, recent), Mine: storyCards(rc, mine)}, nil, nil
-		}).Build()
+		WithDataHandler(homeData(service, storyService)).
+		Build()
 
 	return collage.NewPage("home").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(service)).

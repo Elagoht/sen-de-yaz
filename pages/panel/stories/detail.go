@@ -135,3 +135,8 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		return detailView{Story: story, Entries: views}, nil
 	})
 }
+
+func storyID(rc *collage.RenderContext) (int64, bool) {
+	id, err := strconv.ParseInt(rc.Param("id"), 10, 64)
+	return id, err == nil && id > 0
+}
