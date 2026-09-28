@@ -23,7 +23,7 @@ func ListPage(storyService *storydomain.StoryService, userService *users.UserSer
 		<a class="btn btn-primary" href="/stories/new">Yeni hikâye başlat</a>
 	</div>
 	<form class="search-panel" method="GET" action="/stories">
-		<input class="field" name="filter" value="{{.Filter}}" placeholder="Başlık veya temaya göre ara"><button class="btn btn-ghost" type="submit">Ara</button>
+		<input class="field" name="filter" value="{{.Filter}}" aria-label="filtrele" placeholder="Başlık veya temaya göre ara"><button class="btn btn-ghost" type="submit">Ara</button>
 	</form>
 	{{if .Stories}}
 	<div class="story-list">
