@@ -1,4 +1,4 @@
-package auth
+package utilities
 
 import (
 	"context"
@@ -21,7 +21,7 @@ func formData(ctx context.Context, rc *collage.RenderContext) (formView, error) 
 	return formView{Errors: errors}, nil
 }
 
-func loginData(ctx context.Context, rc *collage.RenderContext) (formView, error) {
+func LoginData(ctx context.Context, rc *collage.RenderContext) (formView, error) {
 	view, err := formData(ctx, rc)
 	rc.HoistTitle("Giriş yap | Sen de Yaz")
 	meta.Set(rc, meta.Page{
@@ -33,7 +33,7 @@ func loginData(ctx context.Context, rc *collage.RenderContext) (formView, error)
 	return view, err
 }
 
-func registerData(ctx context.Context, rc *collage.RenderContext) (formView, error) {
+func RegisterData(ctx context.Context, rc *collage.RenderContext) (formView, error) {
 	view, err := formData(ctx, rc)
 	rc.HoistTitle("Kayıt ol | Sen de Yaz")
 	meta.Set(rc, meta.Page{

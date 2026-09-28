@@ -143,6 +143,27 @@ func GetUsers(service *users.UserService, page func() *collage.Page) func(
 	}
 }
 
+func LogoutAction(service *users.UserService) collage.ActionHandlerFunc {
+	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+		cookie, err := rc.Request.Cookie("session_token")
+		if err == nil {
+			_ = service.Logout(cookie.Value)
+		}
+		flash.Add(rc, flash.Info, "Oturumun kapatıldı.")
+		return &collage.ActionResult{
+			Location: "/login",
+			Header: http.Header{"Set-Cookie": []string{(&http.Cookie{
+				Name:     "session_token",
+				Value:    "",
+				Path:     "/",
+				MaxAge:   -1,
+				HttpOnly: true,
+				SameSite: http.SameSiteLaxMode,
+			}).String()}},
+		}, nil
+	}
+}
+
 func profilePhotoError(err error) string {
 	if strings.Contains(err.Error(), "jpg, jpeg, png, webp or gif") {
 		return "JPG, JPEG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
@@ -150,7 +171,11 @@ func profilePhotoError(err error) string {
 	return "Profil fotoğrafı yüklenemedi."
 }
 
-func formErrors(page func() *collage.Page, rc *collage.RenderContext, errors map[string]string) (*collage.ActionResult, error) {
+func formErrors(
+	page func() *collage.Page,
+	rc *collage.RenderContext,
+	errors map[string]string,
+) (*collage.ActionResult, error) {
 	rc.Set("form_errors", errors)
 	return &collage.ActionResult{Status: http.StatusUnprocessableEntity, Page: page()}, nil
 }

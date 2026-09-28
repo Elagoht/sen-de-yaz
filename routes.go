@@ -10,7 +10,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/pages/auth"
 	"sen-de-yaz/pages/panel"
-	storypages "sen-de-yaz/pages/stories"
+	storypages "sen-de-yaz/pages/panel/stories"
 )
 
 // register adds every page, document and action to app. A new route goes here.

@@ -120,10 +120,11 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		}),
 		secure.New(secure.Options{}),
 		ratelimit.New(ratelimit.Options{}),
+		// Register compression outside body-rewriting middleware so those
+		// plugins see and can update the uncompressed HTML response.
+		compress.New(compress.Options{}),
 		honeypot.New(honeypot.Options{
-			Key:     []byte(envString("COLLAGE_HONEYPOT_KEY", "sen-de-yaz-development-honeypot-key-change-me")),
-			Protect: []string{"/profile", "/stories"},
-			MaxBody: 6 << 20,
+			Key: []byte(envString("COLLAGE_HONEYPOT_KEY", "sen-de-yaz-development-honeypot-key-change-me")),
 		}),
 		flash.New(flash.Options{Key: []byte(envString("COLLAGE_FLASH_KEY", "sen-de-yaz-development-flash-key-change-me"))}),
 		meta.New(meta.Options{
@@ -139,7 +140,6 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			BaseURL: baseURL,
 			Exclude: []string{"login", "register", "profile", "story-create"},
 		}),
-		compress.New(compress.Options{}),
 		minimizer.New(),
 		optiimage.New(),
 		accesslog.New(accesslog.Options{}),

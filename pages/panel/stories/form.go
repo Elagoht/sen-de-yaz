@@ -13,16 +13,6 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-type formView struct {
-	Errors map[string]string
-}
-
-func formData(ctx context.Context, rc *collage.RenderContext) (formView, error) {
-	value, _ := rc.Get("form_errors")
-	errors, _ := value.(map[string]string)
-	return formView{Errors: errors}, nil
-}
-
 func CreatePage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
 	content := collage.NewInlineFragment("story-create", `
 	<div class="form-shell"><div class="form-intro"><p class="eyebrow">Yeni başlangıç</p><h1 class="page-title">Bir hikâye başlat</h1><p class="page-subtitle">İlk cümleyi sen yaz. Sonrasını topluluk getirsin.</p>

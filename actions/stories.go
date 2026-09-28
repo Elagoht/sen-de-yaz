@@ -4,17 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
+	"strconv"
+	"strings"
 
 	flash "github.com/Elagoht/collage-flash"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func CreateStoryAction(service *stories.StoryService, userService *users.UserService, page func() *collage.Page) collage.ActionHandlerFunc {
+func CreateStory(
+	service *stories.StoryService,
+	userService *users.UserService,
+	page func() *collage.Page,
+) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
@@ -23,34 +26,41 @@ func CreateStoryAction(service *stories.StoryService, userService *users.UserSer
 		if err != nil {
 			return nil, err
 		}
-		values := map[string]string{
-			"title":   strings.TrimSpace(rc.Request.FormValue("title")),
-			"theme":   strings.TrimSpace(rc.Request.FormValue("theme")),
-			"opening": strings.TrimSpace(rc.Request.FormValue("opening")),
-		}
+
+		title := strings.TrimSpace(rc.Request.FormValue("title"))
+		theme := strings.TrimSpace(rc.Request.FormValue("theme"))
+		opening := strings.TrimSpace(rc.Request.FormValue("opening"))
+
 		fieldErrors := map[string]string{}
-		if values["title"] == "" {
+		if title == "" {
 			fieldErrors["title"] = "Başlık alanı zorunludur."
 		}
-		if values["theme"] == "" {
+		if theme == "" {
 			fieldErrors["theme"] = "Tema alanı zorunludur."
 		}
-		if values["opening"] == "" {
+		if opening == "" {
 			fieldErrors["opening"] = "Başlangıç metni zorunludur."
 		}
 		if len(fieldErrors) > 0 {
 			return formErrors(page, rc, fieldErrors)
 		}
-		story, err := service.CreateStory(user.ID, values["title"], values["theme"], values["opening"])
+
+		story, err := service.CreateStory(user.ID, title, theme, opening)
 		if err != nil {
 			return formErrors(page, rc, storyFieldErrors(err))
 		}
+
 		flash.Add(rc, flash.Success, "Hikâyen başladı. Sıra toplulukta!")
+
 		return collage.SeeOther(fmt.Sprintf("/stories/%d", story.ID)), nil
 	}
 }
 
-func AddEntryAction(service *stories.StoryService, userService *users.UserService, page func() *collage.Page) collage.ActionHandlerFunc {
+func AddEntryAction(
+	service *stories.StoryService,
+	userService *users.UserService,
+	page func() *collage.Page,
+) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		if err := rc.Request.ParseForm(); err != nil {
 			return nil, err
