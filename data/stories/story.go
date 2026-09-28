@@ -14,6 +14,7 @@ var (
 	ErrOpeningTooLong    = errors.New("opening is too long")
 	ErrEntryTooLong      = errors.New("entry is too long")
 	ErrConsecutiveAuthor = errors.New("same user cannot write twice in a row")
+	ErrEntryNoLongerLast = errors.New("the edited entry is no longer the last one")
 	ErrStoryNotFound     = errors.New("story not found")
 )
 
@@ -227,6 +228,39 @@ func (service *StoryService) AddEntry(storyID, authorID int64, body string) (*En
 		return nil, err
 	}
 	return &Entry{ID: id, StoryID: storyID, AuthorID: authorID, Sequence: sequence, Body: body}, nil
+}
+
+// UpdateLastEntry replaces the body of an entry, but only while it is still the
+// story's last one and still belongs to authorID: an entry added in the
+// meantime turns the update into ErrEntryNoLongerLast instead of a silent
+// overwrite. Zero affected rows cover every miss — a rival entry, a foreign
+// entry id, a story that is gone — with the one message the reader can act on.
+func (service *StoryService) UpdateLastEntry(storyID, authorID, entryID int64, body string) error {
+	if utf8.RuneCountInString(strings.TrimSpace(body)) > 140 {
+		return ErrEntryTooLong
+	}
+	transaction, err := service.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer transaction.Rollback()
+
+	result, err := transaction.Exec(`
+		UPDATE story_entries
+		SET body = ?
+		WHERE id = ? AND author_id = ? AND story_id = ?
+		  AND id = (SELECT id FROM story_entries WHERE story_id = ? ORDER BY sequence DESC LIMIT 1)`,
+		body, entryID, authorID, storyID, storyID)
+	if err != nil {
+		return err
+	}
+	if rows, _ := result.RowsAffected(); rows == 0 {
+		return ErrEntryNoLongerLast
+	}
+	if _, err := transaction.Exec("UPDATE stories SET updated_at = CURRENT_TIMESTAMP WHERE id = ?", storyID); err != nil {
+		return err
+	}
+	return transaction.Commit()
 }
 
 // FieldErrors translates a CreateStory failure into per-field messages.

@@ -28,36 +28,18 @@ const storyDetailBlock collage.InlineHTML = `
 						<div class="entry-head">
 							{{if .PhotoURL}}<img class="entry-avatar" width="24" height="24" src="{{.PhotoURL}}" alt="">{{end}}
 							<p class="entry-author">{{.Author}}</p>
+							{{if .CanEdit}}<button type="button" class="entry-edit" title="Düzenle" aria-label="Düzenle">✎</button>{{end}}
 						</div>
 						<p class="entry-body">{{.Body}}</p>
 					</div>
 				</article>
 			{{end}}
 		</div>
-		{{if .CanWrite}}
-			<form class="continue-box form-stack" method="POST" action="/stories/{{.Story.ID}}">
-				<label class="form-label">
-					Sıradaki bölümü yaz
-					<span class="form-help">En fazla 140 karakter</span>
-					<textarea class="textarea" name="body" maxlength="140" required></textarea>
-				</label>
-				{{with .Errors.body}}
-					<small class="field-error">{{.}}</small>
-				{{end}}
-
-				{{csrfToken}}
-				{{honeypot}}
-
-				<button class="btn btn-primary" type="submit">Devamını ekle</button>
-			</form>
-		{{else}}
-			<div class="notice">
-				Bu hikâyeye devam etmeden önce başka bir kullanıcı yazmalı.
-			</div>
-		{{end}}
+		{{slot "entry-area"}}
 	</div>
 {{end}}`
 
 func StoryDetailBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-detail", storyDetailBlock)
+	return collage.NewInlineFragment("story-detail", storyDetailBlock).
+		WithSlotResolver("entry-area", resolveEntryArea)
 }

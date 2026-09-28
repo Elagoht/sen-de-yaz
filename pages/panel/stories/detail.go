@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"sen-de-yaz/actions"
 	storydomain "sen-de-yaz/data/stories"
@@ -41,13 +42,13 @@ func DetailPage(storyService *storydomain.StoryService, userService *users.UserS
 type entryView struct {
 	storydomain.Entry
 	PhotoURL string
+	IsLast   bool
+	CanEdit  bool
 }
 
 type detailView struct {
 	Story    *storydomain.Story
 	Entries  []entryView
-	CanWrite bool
-	Errors   map[string]string
 	NotFound bool
 }
 
@@ -98,9 +99,39 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		}
 		views := make([]entryView, len(entries))
 		for i, entry := range entries {
-			views[i] = entryView{Entry: entry, PhotoURL: utilities.PhotoURL(rc, entry.AuthorPhoto)}
+			views[i] = entryView{
+				Entry:    entry,
+				PhotoURL: utilities.PhotoURL(rc, entry.AuthorPhoto),
+				IsLast:   i == len(entries)-1,
+				CanEdit:  i == len(entries)-1 && entry.AuthorID == user.ID,
+			}
 		}
-		form, _ := utilities.FormData(ctx, rc)
-		return detailView{Story: story, Entries: views, CanWrite: lastAuthorID != user.ID, Errors: form.Errors}, nil
+		area := stories.EntryAreaState{StoryID: story.ID}
+		typed := rc.Request.FormValue("body")
+		switch {
+		case rc.Request.FormValue("entry_id") != "":
+			// A rejected edit posts its entry id back: the slot carries the
+			// edit box alone, visible, with what was typed — even though the
+			// entry is no longer last — because the add form would silently
+			// drop the words.
+			id, _ := strconv.ParseInt(rc.Request.FormValue("entry_id"), 10, 64)
+			edit := &stories.EntryEdit{ID: id, Body: typed}
+			for _, entry := range entries {
+				if entry.ID == id {
+					edit.Original = entry.Body
+					break
+				}
+			}
+			area.Edit = edit
+			area.Rejected = true
+		case lastAuthorID == user.ID && len(entries) > 0:
+			// The reader wrote the last entry: the slot carries the notice and
+			// their edit box, hidden until the pencil on the entry opens it.
+			last := entries[len(entries)-1]
+			area.Edit = &stories.EntryEdit{ID: last.ID, Original: last.Body}
+			area.Notice = true
+		}
+		rc.Set("entry-area", area)
+		return detailView{Story: story, Entries: views}, nil
 	})
 }

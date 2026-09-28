@@ -590,7 +590,7 @@ textarea {
 }
 .continue-box {
   padding: 24px;
-  border-radius: var(--radius);
+  margin-top: 1rem;
   background: var(--surface-soft);
 }
 .notice {
@@ -662,4 +662,50 @@ textarea {
 .card-avatar {
   border-radius: 50%;
   object-fit: cover;
+}
+
+.edit-box {
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-left: 3px solid var(--accent);
+}
+
+.edit-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.edit-original {
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-style: italic;
+}
+
+.edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.entry-edit {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.entry-edit:hover {
+  color: var(--accent);
+}
+
+.edit-box[hidden] {
+  display: none;
 }

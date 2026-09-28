@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/Elagoht/collage/pkg/collage"
 
@@ -15,18 +16,27 @@ import (
 
 // register adds every page, document and action to app. A new route goes here.
 func register(app *collage.App, userService *users.UserService, storyService *stories.StoryService) error {
+	detail := storypages.DetailPage(storyService, userService)
 	for _, page := range []*collage.Page{
 		panel.HomePage(userService, storyService),
 		panel.ProfilePage(userService),
 		storypages.ListPage(storyService, userService),
 		storypages.CreatePage(storyService, userService),
-		storypages.DetailPage(storyService, userService),
+		detail,
 		auth.RegisterPage(userService),
 		auth.LoginPage(userService),
 	} {
 		if err := app.RegisterPage(page); err != nil {
 			return fmt.Errorf("register page %q: %w", page.Name, err)
 		}
+	}
+	editEntry := collage.NewAction("story-edit-entry").
+		WithPath("en", "/stories/{id}/edit").
+		WithMethods(http.MethodPost).
+		WithHandler(actions.UpdateEntryAction(storyService, userService, func() *collage.Page { return detail })).
+		Build()
+	if err := app.RegisterAction(editEntry); err != nil {
+		return fmt.Errorf("register story edit action: %w", err)
 	}
 	logout := collage.NewAction("logout").
 		WithPath("en", "/logout").
