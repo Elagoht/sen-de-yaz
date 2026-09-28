@@ -15,7 +15,6 @@ func LoginPage(userService *users.UserService) *collage.Page {
 
 	loginAction := collage.NewAction("login").
 		WithMethods(http.MethodPost).
-		WithMaxBodyBytes(-1).
 		WithHandler(actions.LoginAction(userService, func() *collage.Page { return page })).
 		Build()
 

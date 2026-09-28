@@ -125,6 +125,10 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		compress.New(compress.Options{}),
 		honeypot.New(honeypot.Options{
 			Key: []byte(envString("COLLAGE_HONEYPOT_KEY", "sen-de-yaz-development-honeypot-key-change-me")),
+			// Enforced from process start; without it a path is only checked
+			// after a page carrying its form has been served. Every POST form
+			// in the app renders {{honeypot}}, so the prefixes are safe.
+			Protect: []string{"/login", "/register", "/profile", "/stories", "/logout"},
 		}),
 		flash.New(flash.Options{Key: []byte(envString("COLLAGE_FLASH_KEY", "sen-de-yaz-development-flash-key-change-me"))}),
 		meta.New(meta.Options{

@@ -15,7 +15,6 @@ func RegisterPage(userService *users.UserService) *collage.Page {
 
 	registerAction := collage.NewAction("register").
 		WithMethods(http.MethodPost).
-		WithMaxBodyBytes(-1).
 		WithHandler(actions.RegisterAction(userService, func() *collage.Page { return page })).
 		Build()
 

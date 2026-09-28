@@ -17,7 +17,7 @@ const registerBlock collage.InlineHTML = `
 <form class="form-stack" action="/register" method="POST" enctype="multipart/form-data">
 	<label class="form-label">
 		Ad soyad
-		<input class="field" name="fullname" type="text" required/>
+		<input class="field" name="fullname" type="text" value="{{.FullName}}" required/>
 	</label>
 	{{with .Errors.fullname}}
 		<small class="field-error">{{.}}</small>
@@ -25,7 +25,7 @@ const registerBlock collage.InlineHTML = `
 
 	<label class="form-label">
 		E-posta
-		<input class="field" name="email" type="email" required/>
+		<input class="field" name="email" type="email" value="{{.Email}}" required/>
 	</label>
 	{{with .Errors.email}}
 		<small class="field-error">{{.}}</small>
@@ -33,7 +33,7 @@ const registerBlock collage.InlineHTML = `
 
 	<label class="form-label">
 		Şifre
-		<input class="field" name="password" type="password" required/>
+		<input class="field" name="password" type="password" value="{{.Password}}" required/>
 	</label>
 	{{with .Errors.password}}
 		<small class="field-error">{{.}}</small>
