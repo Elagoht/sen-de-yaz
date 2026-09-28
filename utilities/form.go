@@ -14,14 +14,15 @@ type FormView struct {
 }
 
 // FormErrors stores field errors on the render context and returns a 422
-// result that re-renders the given page.
+// result that re-renders the form's page — rc.Page, the page whose URL the
+// action answers on. An action at a URL of its own has no rc.Page and answers
+// through formErrorsOn instead.
 func FormErrors(
-	page func() *collage.Page,
 	rc *collage.RenderContext,
 	errors map[string]string,
 ) (*collage.ActionResult, error) {
 	rc.Set("form_errors", errors)
-	return &collage.ActionResult{Status: http.StatusUnprocessableEntity, Page: page()}, nil
+	return &collage.ActionResult{Status: http.StatusUnprocessableEntity, Page: rc.Page}, nil
 }
 
 // FormData reads the field errors stored by FormErrors.

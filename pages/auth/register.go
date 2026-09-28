@@ -11,18 +11,15 @@ import (
 )
 
 func RegisterPage(userService *users.UserService) *collage.Page {
-	var page *collage.Page
-
 	registerAction := collage.NewAction("register").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.RegisterAction(userService, func() *collage.Page { return page })).
+		WithHandler(actions.RegisterAction(userService)).
 		Build()
 
-	page = collage.NewPage("register").
+	return collage.NewPage("register").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(pages.RegisterBlock()).
 		WithPath("en", "/register").
 		WithActionFor(registerAction).
 		Build()
-	return page
 }

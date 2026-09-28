@@ -11,18 +11,15 @@ import (
 )
 
 func LoginPage(userService *users.UserService) *collage.Page {
-	var page *collage.Page
-
 	loginAction := collage.NewAction("login").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.LoginAction(userService, func() *collage.Page { return page })).
+		WithHandler(actions.LoginAction(userService)).
 		Build()
 
-	page = collage.NewPage("login").
+	return collage.NewPage("login").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(pages.LoginBlock()).
 		WithPath("en", "/login").
 		WithActionFor(loginAction).
 		Build()
-	return page
 }

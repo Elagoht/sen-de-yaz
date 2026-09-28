@@ -16,13 +16,11 @@ import (
 )
 
 func CreatePage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-
-	var page *collage.Page
 	action := collage.NewAction("story-create").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.CreateStoryAction(storyService, userService, func() *collage.Page { return page })).
+		WithHandler(actions.CreateStoryAction(storyService, userService)).
 		Build()
-	page = collage.NewPage("story-create").
+	return collage.NewPage("story-create").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryCreateBlock().
 			WithDataHandler(collage.Load(createData)).
@@ -31,7 +29,6 @@ func CreatePage(storyService *storydomain.StoryService, userService *users.UserS
 		WithPath("en", "/stories/new").
 		WithActionFor(action).
 		Build()
-	return page
 }
 
 type createView struct {

@@ -14,14 +14,12 @@ import (
 )
 
 func ProfilePage(userService *users.UserService) *collage.Page {
-	var page *collage.Page
-
 	profileAction := collage.NewAction("profile").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.UpdateProfileAction(userService, func() *collage.Page { return page })).
+		WithHandler(actions.UpdateProfileAction(userService)).
 		Build()
 
-	page = collage.NewPage("profile").
+	return collage.NewPage("profile").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(pages.ProfileBlock().
 			WithDataHandler(profileData(userService)).
@@ -30,7 +28,6 @@ func ProfilePage(userService *users.UserService) *collage.Page {
 		WithPath("en", "/profile").
 		WithActionFor(profileAction).
 		Build()
-	return page
 }
 
 type profileView struct {

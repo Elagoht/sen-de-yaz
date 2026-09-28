@@ -1,7 +1,5 @@
-github.com/Elagoht/collage v0.31.0 h1:GIKuItIzfyZnOWGowpdDB7nNQim87/He83gC7/wTkSI=
-github.com/Elagoht/collage v0.31.0/go.mod h1:tyGWGpujZXtCFFxn9pjws85HOFOt4QdiuRswwQhj1Qw=
-github.com/Elagoht/collage v0.32.0 h1:lCDXTdhsM2n5CrCwTB5k2wUwDeNRbNJ9AGaUq6oAG8Y=
-github.com/Elagoht/collage v0.32.0/go.mod h1:tyGWGpujZXtCFFxn9pjws85HOFOt4QdiuRswwQhj1Qw=
+github.com/Elagoht/collage v0.33.0 h1:gOnOXno/Ksp8I2pksUJAzv03K7wzjAaThOkWcO3boVs=
+github.com/Elagoht/collage v0.33.0/go.mod h1:tyGWGpujZXtCFFxn9pjws85HOFOt4QdiuRswwQhj1Qw=
 github.com/Elagoht/collage-accesslog v0.1.2 h1:9bjhS/0EU6GPmhVDI20fooYLwXQHmgq2QF9mAwZAduQ=
 github.com/Elagoht/collage-accesslog v0.1.2/go.mod h1:2lADt49IIr3GA9rJ75DkEWWIUofSmvEsus/1Vvnc+4s=
 github.com/Elagoht/collage-compress v0.1.1 h1:Is71DDQpfnLmx1a8IX5KgNOrRGuy2vBL3SmNWlmvX3E=

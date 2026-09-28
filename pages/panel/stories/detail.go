@@ -20,13 +20,12 @@ import (
 
 // Page
 func DetailPage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-	var page *collage.Page
 	addEntry := collage.NewAction("story-detail").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.AddEntryAction(storyService, userService, func() *collage.Page { return page })).
+		WithHandler(actions.AddEntryAction(storyService, userService)).
 		Build()
 
-	page = collage.NewPage("story-detail").
+	return collage.NewPage("story-detail").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryDetailBlock().
 			WithDataHandler(detailData(storyService, userService)).
@@ -35,7 +34,6 @@ func DetailPage(storyService *storydomain.StoryService, userService *users.UserS
 		WithPath("en", "/stories/{id}").
 		WithActionFor(addEntry).
 		Build()
-	return page
 }
 
 // SEO
