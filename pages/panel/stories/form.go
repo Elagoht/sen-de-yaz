@@ -12,6 +12,7 @@ import (
 	"sen-de-yaz/fragments/pages/stories"
 	"sen-de-yaz/utilities"
 
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -42,6 +43,12 @@ type createView struct {
 }
 
 func createData(ctx context.Context, rc *collage.RenderContext) (createView, error) {
+	rc.HoistTitle("Bir hikâye başlat | Sen de Yaz")
+	meta.Set(rc, meta.Page{
+		Title:       "Bir hikâye başlat | Sen de Yaz",
+		Description: "İlk cümleyi sen yaz, sonrasını topluluk getirsin.",
+		Canonical:   "/stories/new",
+	})
 	data, _ := utilities.FormData(ctx, rc)
 	return createView{
 		FormView: data,
