@@ -132,10 +132,10 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		compress.New(compress.Options{}),
 		honeypot.New(honeypot.Options{
 			Key: []byte(utilities.EnvString("COLLAGE_HONEYPOT_KEY")),
-			// Enforced from process start; without it a path is only checked
-			// after a page carrying its form has been served. Every POST form
-			// in the app renders {{honeypot}}, so the prefixes are safe.
-			Protect: []string{"/login", "/register", "/profile", "/stories", "/logout"},
+			// Paths learn themselves from the {{honeypot}} forms the app
+			// serves; a new POST form is covered without touching this file.
+			// One trade-off: after a restart, a path is only checked once its
+			// page has been served.
 		}),
 		flash.New(flash.Options{Key: []byte(utilities.EnvString("COLLAGE_FLASH_KEY"))}),
 		validate.New(validate.Options{}),
@@ -144,7 +144,6 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			BaseURL:         baseURL,
 			DefaultImage:    "/assets/icon.png",
 			DefaultImageAlt: "Sen de Yaz logosu",
-			Locales:         map[string]string{"tr": "tr-TR"},
 		}),
 		jsonld.New(),
 		robots.New(robots.Options{}),
