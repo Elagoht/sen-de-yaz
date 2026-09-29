@@ -13,10 +13,16 @@ import (
 const SessionCookieName = "session_token"
 
 // Checks credentials and creates a session token
-func (service *UserService) Login(email, password string) (string, *User, error) {
+func (service *UserService) Login(
+	email string,
+	password string,
+) (string, *User, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
 	user, err := service.findByEmail(email)
-	if err != nil || bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+	if err != nil || bcrypt.CompareHashAndPassword(
+		[]byte(user.PasswordHash),
+		[]byte(password),
+	) != nil {
 		return "", nil, ErrInvalidCredentials
 	}
 
@@ -24,7 +30,11 @@ func (service *UserService) Login(email, password string) (string, *User, error)
 	if err != nil {
 		return "", nil, err
 	}
-	if _, err := service.db.Exec(insertSessionQuery, token, user.ID); err != nil {
+	if _, err := service.db.Exec(
+		insertSessionQuery,
+		token,
+		user.ID,
+	); err != nil {
 		return "", nil, err
 	}
 	return token, user, nil

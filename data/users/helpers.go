@@ -9,7 +9,13 @@ import (
 func (service *UserService) findByEmail(email string) (*User, error) {
 	user := new(User)
 	err := service.db.QueryRow(selectUserByEmailQuery, email).
-		Scan(&user.ID, &user.FullName, &user.Email, &user.PasswordHash, &user.ProfilePhoto)
+		Scan(
+			&user.ID,
+			&user.FullName,
+			&user.Email,
+			&user.PasswordHash,
+			&user.ProfilePhoto,
+		)
 	return user, err
 }
 
@@ -17,7 +23,13 @@ func (service *UserService) findByEmail(email string) (*User, error) {
 func (service *UserService) findByID(id int64) (*User, error) {
 	user := new(User)
 	err := service.db.QueryRow(selectUserByIDQuery, id).
-		Scan(&user.ID, &user.FullName, &user.Email, &user.PasswordHash, &user.ProfilePhoto)
+		Scan(
+			&user.ID,
+			&user.FullName,
+			&user.Email,
+			&user.PasswordHash,
+			&user.ProfilePhoto,
+		)
 	return user, err
 }
 

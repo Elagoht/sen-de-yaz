@@ -8,7 +8,12 @@ import (
 )
 
 // Creates a user with hashed password
-func (service *UserService) Register(fullname, email, password, profilePhoto string) (*User, error) {
+func (service *UserService) Register(
+	fullname string,
+	email string,
+	password string,
+	profilePhoto string,
+) (*User, error) {
 	fullname = strings.TrimSpace(fullname)
 	email = strings.ToLower(strings.TrimSpace(email))
 	if fullname == "" || email == "" || password == "" {
@@ -16,18 +21,30 @@ func (service *UserService) Register(fullname, email, password, profilePhoto str
 	}
 
 	var exists bool
-	if err := service.db.QueryRow(emailExistsQuery, email).Scan(&exists); err != nil {
+	if err := service.db.QueryRow(
+		emailExistsQuery,
+		email,
+	).Scan(&exists); err != nil {
 		return nil, err
 	}
 	if exists {
 		return nil, ErrEmailAlreadyExists
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword(
+		[]byte(password),
+		bcrypt.DefaultCost,
+	)
 	if err != nil {
 		return nil, err
 	}
-	result, err := service.db.Exec(insertUserQuery, fullname, email, string(hash), profilePhoto)
+	result, err := service.db.Exec(
+		insertUserQuery,
+		fullname,
+		email,
+		string(hash),
+		profilePhoto,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -35,5 +52,11 @@ func (service *UserService) Register(fullname, email, password, profilePhoto str
 	if err != nil {
 		return nil, err
 	}
-	return &User{ID: id, FullName: fullname, Email: email, PasswordHash: string(hash), ProfilePhoto: profilePhoto}, nil
+	return &User{
+		ID:           id,
+		FullName:     fullname,
+		Email:        email,
+		PasswordHash: string(hash),
+		ProfilePhoto: profilePhoto,
+	}, nil
 }

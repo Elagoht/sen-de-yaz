@@ -16,7 +16,11 @@ func (service *UserService) GetProfileByID(id int64) (*User, error) {
 }
 
 // Updates name and profile photo if given
-func (service *UserService) UpdateProfile(id int64, fullname, profilePhoto string) error {
+func (service *UserService) UpdateProfile(
+	id int64,
+	fullname string,
+	profilePhoto string,
+) error {
 	fullname = strings.TrimSpace(fullname)
 	if fullname == "" {
 		return errors.New("fullname is required")
@@ -25,6 +29,11 @@ func (service *UserService) UpdateProfile(id int64, fullname, profilePhoto strin
 		_, err := service.db.Exec(updateNameQuery, fullname, id)
 		return err
 	}
-	_, err := service.db.Exec(updateNameAndPhotoQuery, fullname, profilePhoto, id)
+	_, err := service.db.Exec(
+		updateNameAndPhotoQuery,
+		fullname,
+		profilePhoto,
+		id,
+	)
 	return err
 }

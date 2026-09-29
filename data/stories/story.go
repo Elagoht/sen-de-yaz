@@ -13,7 +13,12 @@ func NewService(database *sql.DB) *StoryService {
 }
 
 // Creates a story with its opening as the first entry
-func (service *StoryService) CreateStory(creatorID int64, title, theme, opening string) (*Story, error) {
+func (service *StoryService) CreateStory(
+	creatorID int64,
+	title,
+	theme,
+	opening string,
+) (*Story, error) {
 	title = strings.TrimSpace(title)
 	theme = strings.TrimSpace(theme)
 	opening = strings.TrimSpace(opening)
@@ -32,7 +37,12 @@ func (service *StoryService) CreateStory(creatorID int64, title, theme, opening 
 	}
 	defer transaction.Rollback()
 
-	result, err := transaction.Exec(insertStoryQuery, creatorID, title, theme)
+	result, err := transaction.Exec(
+		insertStoryQuery,
+		creatorID,
+		title,
+		theme,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -40,13 +50,23 @@ func (service *StoryService) CreateStory(creatorID int64, title, theme, opening 
 	if err != nil {
 		return nil, err
 	}
-	if _, err := transaction.Exec(insertOpeningQuery, storyID, creatorID, opening); err != nil {
+	if _, err := transaction.Exec(
+		insertOpeningQuery,
+		storyID,
+		creatorID,
+		opening,
+	); err != nil {
 		return nil, err
 	}
 	if err := transaction.Commit(); err != nil {
 		return nil, err
 	}
-	return &Story{ID: storyID, CreatorID: creatorID, Title: title, Theme: theme}, nil
+	return &Story{
+		ID:        storyID,
+		CreatorID: creatorID,
+		Title:     title,
+		Theme:     theme,
+	}, nil
 }
 
 // Gets a story with its entries in order

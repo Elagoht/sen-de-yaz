@@ -17,7 +17,11 @@ const (
 )
 
 // Saves uploaded image with a random name, returns empty path if no file
-func SaveOptionalFile(r *http.Request, field, directory string) (string, error) {
+func SaveOptionalFile(
+	r *http.Request,
+	field string,
+	directory string,
+) (string, error) {
 	if !strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
 		return "", nil
 	}
