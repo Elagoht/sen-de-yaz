@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -75,4 +76,19 @@ func applyEnv(content string) error {
 		}
 	}
 	return nil
+}
+
+func EnvString(key string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	panic(fmt.Sprintf("Missing environment variable: %s", key))
+}
+
+func EnvInt(key string) int {
+	value, err := strconv.Atoi(os.Getenv(key))
+	if err != nil {
+		panic(fmt.Sprintf("Missing environment variable: %s", key))
+	}
+	return value
 }

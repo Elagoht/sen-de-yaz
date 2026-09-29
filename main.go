@@ -13,7 +13,6 @@ import (
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/utilities"
-	"strconv"
 	"time"
 
 	accesslog "github.com/Elagoht/collage-accesslog"
@@ -64,7 +63,7 @@ func main() {
 	buildFlag := flag.Bool("collage-build", false, "render the app to static files instead of serving it")
 	outFlag := flag.String("out", "dist", "output directory for -collage-build")
 	cleanFlag := flag.Bool("clean", false, "remove -out's existing contents before building")
-	portFlag := flag.Int("port", envInt("PORT", 3000), "port to listen on (env PORT)")
+	portFlag := flag.Int("port", utilities.EnvInt("PORT"), "port to listen on (env PORT)")
 	flag.Parse()
 
 	devMode := os.Getenv("COLLAGE_DEV") == "1"
@@ -115,7 +114,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		csrfKey = "sen-de-yaz-development-csrf-key-change-me"
 	}
 
-	baseURL := envString("BASE_URL", "http://localhost:3000")
+	baseURL := utilities.EnvString("BASE_URL")
 	plugins := []collage.Plugin{
 		favicon.New(favicon.Options{
 			FS:              assetsFS,
@@ -132,13 +131,13 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		// plugins see and can update the uncompressed HTML response.
 		compress.New(compress.Options{}),
 		honeypot.New(honeypot.Options{
-			Key: []byte(envString("COLLAGE_HONEYPOT_KEY", "sen-de-yaz-development-honeypot-key-change-me")),
+			Key: []byte(utilities.EnvString("COLLAGE_HONEYPOT_KEY")),
 			// Enforced from process start; without it a path is only checked
 			// after a page carrying its form has been served. Every POST form
 			// in the app renders {{honeypot}}, so the prefixes are safe.
 			Protect: []string{"/login", "/register", "/profile", "/stories", "/logout"},
 		}),
-		flash.New(flash.Options{Key: []byte(envString("COLLAGE_FLASH_KEY", "sen-de-yaz-development-flash-key-change-me"))}),
+		flash.New(flash.Options{Key: []byte(utilities.EnvString("COLLAGE_FLASH_KEY"))}),
 		validate.New(validate.Options{}),
 		meta.New(meta.Options{
 			SiteName:        "Sen de Yaz",
@@ -167,7 +166,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 	app, err := collage.New(&collage.Config{
 		DevMode: devMode,
 		Server: collage.ServerConfig{
-			Host: envString("HOST", "localhost"),
+			Host: utilities.EnvString("HOST"),
 			Port: port,
 		},
 		Template: collage.TemplateConfig{
@@ -183,6 +182,9 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		},
 		PluginConfig: pluginConfig,
 		Plugins:      plugins,
+		Locale: collage.LocaleConfig{
+			Default: "tr",
+		},
 		Security: collage.SecurityConfig{
 			CSRFKey: []byte(csrfKey),
 		},
@@ -220,21 +222,6 @@ func staticFiles(devMode bool) (fs.FS, error) {
 	}
 
 	return fs.Sub(staticFS, "static")
-}
-
-func envString(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return fallback
-}
-
-func envInt(key string, fallback int) int {
-	value, err := strconv.Atoi(os.Getenv(key))
-	if err != nil {
-		return fallback
-	}
-	return value
 }
 
 func staticBuild(app *collage.App, outDir string, clean bool) error {
