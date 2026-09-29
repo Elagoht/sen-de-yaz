@@ -54,8 +54,7 @@ func main() {
 	os.Exit(run())
 }
 
-// Loads env, initializes services and serves or builds the app, returns the
-// exit code
+// Loads env, initializes services and serves or builds the app, returns the exit code
 func run() int {
 	// Load ENV files. Do not accept not having one.
 	if file, err := utils.LoadEnvFile("."); err != nil {
