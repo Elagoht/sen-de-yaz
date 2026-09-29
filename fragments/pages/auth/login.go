@@ -1,4 +1,4 @@
-package pages
+package fragments
 
 import (
 	"context"
@@ -7,6 +7,12 @@ import (
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func LoginBlock() *collage.Fragment {
+	return collage.NewInlineFragment("login", loginBlock).
+		WithDataHandler(collage.Load(loginPageData)).
+		Build()
+}
 
 const loginBlock collage.InlineHTML = `
 <div class="auth-brand"><a class="brand" href="{{pageURL "home"}}">
@@ -46,8 +52,6 @@ const loginBlock collage.InlineHTML = `
 
 type loginView struct{}
 
-// loginPageData hoists the page's SEO; the form's errors and submitted values
-// reach the template through the validate plugin's fieldError and fieldValue.
 func loginPageData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
 	rc.HoistTitle("Giriş yap | Sen de Yaz")
 	meta.Set(rc, meta.Page{
@@ -57,10 +61,4 @@ func loginPageData(ctx context.Context, rc *collage.RenderContext) (loginView, e
 	})
 	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
 	return loginView{}, nil
-}
-
-func LoginBlock() *collage.Fragment {
-	return collage.NewInlineFragment("login", loginBlock).
-		WithDataHandler(collage.Load(loginPageData)).
-		Build()
 }

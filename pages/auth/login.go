@@ -4,7 +4,7 @@ import (
 	"sen-de-yaz/actions"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages"
+	fragments "sen-de-yaz/fragments/pages/auth"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )
@@ -15,8 +15,8 @@ func LoginPage(
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("login").
-		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
-		WithContent(pages.LoginBlock()).
+		WithLayouts(layouts.Master(), layouts.Auth(userService)).
+		WithContent(fragments.LoginBlock()).
 		WithPath("tr", "/login").
 		WithActionFor(actions.Login(app, userService)).
 		Build()

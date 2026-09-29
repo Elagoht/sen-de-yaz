@@ -8,7 +8,7 @@ import (
 	storydomain "sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages/stories"
+	fragments "sen-de-yaz/fragments/pages/panel/stories"
 	"sen-de-yaz/utils"
 
 	jsonld "github.com/Elagoht/collage-jsonld"
@@ -23,8 +23,8 @@ func DetailPage(
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("story-detail").
-		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
-		WithContent(stories.StoryDetailBlock().
+		WithLayouts(layouts.Master(), layouts.Panel(userService)).
+		WithContent(fragments.StoryDetail().
 			WithDataHandler(detailData(app, storyService, userService)).
 			Build(),
 		).
@@ -128,11 +128,11 @@ func detailData(
 		}
 
 		// Decide which UI will be generated, a project specific section
-		area := stories.EntryAreaState{StoryID: story.ID}
+		area := fragments.EntryAreaState{StoryID: story.ID}
 		switch {
 		case rc.Request.FormValue("entry_id") != "":
 			id, _ := strconv.ParseInt(rc.Request.FormValue("entry_id"), 10, 64)
-			edit := &stories.EntryEdit{ID: id}
+			edit := &fragments.EntryEdit{ID: id}
 			for _, entry := range entries {
 				if entry.ID == id {
 					edit.Original = entry.Body
@@ -143,10 +143,10 @@ func detailData(
 			area.Rejected = true
 		case lastAuthorID == user.ID && len(entries) > 0:
 			last := entries[len(entries)-1]
-			area.Edit = &stories.EntryEdit{ID: last.ID, Original: last.Body}
+			area.Edit = &fragments.EntryEdit{ID: last.ID, Original: last.Body}
 			area.Notice = true
 		}
-		stories.SetEntryArea(rc, area)
+		fragments.SetEntryArea(rc, area)
 		return detailView{Story: story, Entries: views}, nil
 	})
 }

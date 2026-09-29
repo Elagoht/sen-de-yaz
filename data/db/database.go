@@ -8,10 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// Open opens a CGO-free SQLite database and creates the application tables.
 func Open(path string) (*sql.DB, error) {
-	// SQLite does not create missing parent directories (it fails with
-	// SQLITE_CANTOPEN), so the directory of a nested path is made first.
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, err
 	}
@@ -20,8 +17,6 @@ func Open(path string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// A shared single connection keeps :memory: databases reliable in tests and
-	// is sufficient for this small application module.
 	database.SetMaxOpenConns(1)
 	if _, err := database.Exec(`
 		CREATE TABLE IF NOT EXISTS users (

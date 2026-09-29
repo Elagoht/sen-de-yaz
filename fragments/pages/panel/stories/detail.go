@@ -1,8 +1,13 @@
-package stories
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func StoryDetail() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("story-detail", storyDetailBlock).
+		WithSlotResolver("entry-area", resolveEntryArea)
+}
 
 const storyDetailBlock collage.InlineHTML = `
 {{if .NotFound}}
@@ -38,8 +43,3 @@ const storyDetailBlock collage.InlineHTML = `
 		{{slot "entry-area"}}
 	</div>
 {{end}}`
-
-func StoryDetailBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-detail", storyDetailBlock).
-		WithSlotResolver("entry-area", resolveEntryArea)
-}

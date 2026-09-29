@@ -15,8 +15,6 @@ import (
 func Register(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
-		// Refuse before any Field or Value call: with the validator reading the
-		// form lazily, an oversized body is then never read at all.
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
 			v.Fail("profile_photo", users.PhotoTooLargeMessage)
 			return validate.Refuse(rc, v, rc.Page), nil
@@ -100,8 +98,6 @@ func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFu
 func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
-		// Refuse before any Field or Value call: with the validator reading the
-		// form lazily, an oversized body is then never read at all.
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
 			v.Fail("profile_photo", users.PhotoTooLargeMessage)
 			return validate.Refuse(rc, v, rc.Page), nil

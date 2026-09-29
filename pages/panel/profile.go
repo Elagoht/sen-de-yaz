@@ -5,7 +5,7 @@ import (
 	"sen-de-yaz/actions"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages"
+	fragments "sen-de-yaz/fragments/pages/panel"
 	"sen-de-yaz/utils"
 
 	meta "github.com/Elagoht/collage-meta"
@@ -15,9 +15,9 @@ import (
 // Returns Page with its all needs: layout, content and data
 func ProfilePage(app *collage.App, userService *users.UserService) *collage.Page {
 	return collage.NewPage("profile").
-		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
+		WithLayouts(layouts.Master(), layouts.Panel(userService)).
 		// Content fragments can also take thier own data handlers
-		WithContent(pages.ProfileBlock().
+		WithContent(fragments.Profile().
 			WithDataHandler(profileData(userService)).
 			Build(),
 		).

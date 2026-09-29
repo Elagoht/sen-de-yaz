@@ -1,4 +1,4 @@
-package pages
+package fragments
 
 import (
 	"context"
@@ -7,9 +7,18 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+func RegisterBlock() *collage.Fragment {
+	return collage.NewInlineFragment("register", registerBlock).
+		WithDataHandler(collage.Load(registerPageData)).
+		Build()
+}
+
+// Inline HTML, highlighted with extension thanks to `collage.InlineHTML`
+// Includes csrf and honeypot
 const registerBlock collage.InlineHTML = `
 <div class="auth-brand">
-	<a class="brand" href="{{pageURL "home"}}"><span class="brand-mark">✎</span>Sen de Yaz</a>
+	<a class="brand" href="{{pageURL "home"}}">
+	<span class="brand-mark">✎</span>Sen de Yaz</a>
 </div>
 
 <h1 class="auth-title">Hikâyeye katıl</h1>
@@ -63,10 +72,8 @@ const registerBlock collage.InlineHTML = `
 	<a class="text-link" href="{{pageURL "login"}}">Giriş yap</a>
 </p>`
 
-type registerView struct{}
-
-func registerPageData(ctx context.Context, rc *collage.RenderContext) (registerView, error) {
-	// SEO & metadata
+// Sets SEO & metadata
+func registerPageData(ctx context.Context, rc *collage.RenderContext) (any, error) {
 	title := "Kayıt ol | Sen de Yaz"
 	rc.HoistTitle(title)
 	meta.Set(rc, meta.Page{
@@ -74,11 +81,5 @@ func registerPageData(ctx context.Context, rc *collage.RenderContext) (registerV
 		Description: "Sen de Yaz topluluğuna katıl, hikâyeler başlat ve anlatılara katkı ver.",
 		Canonical:   "/register",
 	})
-	return registerView{}, nil
-}
-
-func RegisterBlock() *collage.Fragment {
-	return collage.NewInlineFragment("register", registerBlock).
-		WithDataHandler(collage.Load(registerPageData)).
-		Build()
+	return nil, nil
 }

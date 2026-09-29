@@ -7,11 +7,13 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func AuthLayout(service *users.UserService) *collage.Fragment {
-	return collage.NewInlineFragment("auth", `
-		<main class="auth-shell">
-			{{slot "content"}}
-		</main>`).
+func Auth(service *users.UserService) *collage.Fragment {
+	return collage.NewInlineFragment("auth", authBlock).
 		WithGuard(guards.AuthGuard(service)).
 		Build()
 }
+
+const authBlock = `
+<main class="auth-shell">
+	{{slot "content"}}
+</main>`

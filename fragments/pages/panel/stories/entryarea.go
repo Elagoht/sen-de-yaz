@@ -1,4 +1,4 @@
-package stories
+package fragments
 
 import (
 	"context"
@@ -13,18 +13,13 @@ type EntryAreaState struct {
 	Notice   bool
 }
 
-// EntryEdit carries the entry's identity and its published text; what the
-// reader typed reaches the template through the validate plugin's fieldValue.
 type EntryEdit struct {
 	ID       int64
 	Original string
 }
 
-// entryAreaKey is the SharedData key the entry area's state travels under.
 const entryAreaKey = "entry-area"
 
-// SetEntryArea writes the slot state the detail page's data handler resolved;
-// it is the key's only writer.
 func SetEntryArea(rc *collage.RenderContext, state EntryAreaState) {
 	rc.Set(entryAreaKey, state)
 }

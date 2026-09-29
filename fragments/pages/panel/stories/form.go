@@ -1,8 +1,12 @@
-package stories
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func StoryCreate() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("story-create", storyCreateBlock)
+}
 
 const storyCreateBlock collage.InlineHTML = `
 <div class="form-shell"><div class="form-intro">
@@ -46,7 +50,3 @@ const storyCreateBlock collage.InlineHTML = `
 
 	<button class="btn btn-primary" type="submit">Hikâyeyi başlat</button>
 </form></div>`
-
-func StoryCreateBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-create", storyCreateBlock)
-}

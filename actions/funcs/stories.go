@@ -139,8 +139,16 @@ func storyIDParam(rc *collage.RenderContext) (int64, bool) {
 	return id, err == nil && id > 0
 }
 
-func redirectToStory(app *collage.App, rc *collage.RenderContext, storyID int64) (*collage.ActionResult, error) {
-	location, err := app.URL("story-detail", rc.Locale, map[string]string{"id": strconv.FormatInt(storyID, 10)})
+func redirectToStory(
+	app *collage.App,
+	rc *collage.RenderContext,
+	storyID int64,
+) (*collage.ActionResult, error) {
+	location, err := app.URL(
+		"story-detail",
+		rc.Locale,
+		map[string]string{"id": strconv.FormatInt(storyID, 10)},
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages"
+	fragments "sen-de-yaz/fragments/pages/panel"
 	"sen-de-yaz/utils"
 
 	meta "github.com/Elagoht/collage-meta"
@@ -14,12 +14,12 @@ import (
 
 // Returns Page with its all needs: layout, content and data
 func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
-	content := pages.HomeBlock().
+	content := fragments.Home().
 		WithDataHandler(homeData(service, storyService)).
 		Build()
 
 	return collage.NewPage("home").
-		WithLayouts(layouts.Layout(), layouts.PanelLayout(service)).
+		WithLayouts(layouts.Master(), layouts.Panel(service)).
 		WithContent(content).
 		WithPath("tr", "/").
 		Build()

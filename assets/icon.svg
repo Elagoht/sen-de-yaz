@@ -9,7 +9,7 @@
   <path d="M112 151c55-25 103-20 144 15v229c-41-35-89-40-144-15V151Z" fill="#fff" opacity=".96"/>
   <path d="M400 151c-55-25-103-20-144 15v229c41-35 89-40 144-15V151Z" fill="#e9e7ff" opacity=".98"/>
   <path d="M256 166v229" stroke="#6558f5" stroke-width="12" stroke-linecap="round"/>
-  <path d="m325 103 73 73-112 112-86 18 18-86 107-117Z" fill="#f7c765" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
-  <path d="m325 103 73 73-25 25-73-73 25-25Z" fill="#f8d98d"/>
-  <path d="m200 306 86-18-68-68-18 86Z" fill="#fff"/>
+  <path d="m305 103 73 73-112 112-86 18 18-86 107-117Z" fill="#f7c765" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+  <path d="m305 103 73 73-25 25-73-73 25-25Z" fill="#f8d98d"/>
+  <path d="m180 306 86-18-68-68-18 86Z" fill="#fff"/>
 </svg>

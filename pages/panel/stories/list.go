@@ -2,11 +2,10 @@ package stories
 
 import (
 	"context"
-
 	storydomain "sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages/stories"
+	fragments "sen-de-yaz/fragments/pages/panel/stories"
 
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
@@ -18,8 +17,8 @@ func ListPage(
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("stories").
-		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
-		WithContent(stories.StoryListBlock().
+		WithLayouts(layouts.Master(), layouts.Panel(userService)).
+		WithContent(fragments.StoryList().
 			WithDataHandler(listData(storyService)).
 			Build(),
 		).

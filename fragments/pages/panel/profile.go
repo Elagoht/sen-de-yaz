@@ -1,8 +1,12 @@
-package pages
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func Profile() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("profile", profileBlock)
+}
 
 const profileBlock collage.InlineHTML = `
 <div class="profile-shell">
@@ -40,7 +44,3 @@ const profileBlock collage.InlineHTML = `
 		<input class="btn btn-primary" type="submit" value="Değişiklikleri kaydet"/>
 	</form>
 </div>`
-
-func ProfileBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("profile", profileBlock)
-}

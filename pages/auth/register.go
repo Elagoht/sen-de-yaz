@@ -4,7 +4,7 @@ import (
 	"sen-de-yaz/actions"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages"
+	fragments "sen-de-yaz/fragments/pages/auth"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )
@@ -15,8 +15,8 @@ func RegisterPage(
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("register").
-		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
-		WithContent(pages.RegisterBlock()).
+		WithLayouts(layouts.Master(), layouts.Auth(userService)).
+		WithContent(fragments.RegisterBlock()).
 		WithPath("tr", "/register").
 		WithActionFor(actions.Register(app, userService)).
 		Build()
