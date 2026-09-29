@@ -33,9 +33,12 @@ type profileView struct {
 	PhotoURL string
 }
 
-// Genreates dashboard and sets SEO & metadata
+// Generates profile data and sets SEO & metadata
 func profileData(service *users.UserService) collage.DataHandlerFunc {
-	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (profileView, error) {
+	return collage.Load(func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (profileView, error) {
 		// Sets SEO & metadata values
 		title := "Profilini düzenle | Sen de Yaz"
 

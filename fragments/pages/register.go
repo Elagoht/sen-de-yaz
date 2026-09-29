@@ -65,12 +65,12 @@ const registerBlock collage.InlineHTML = `
 
 type registerView struct{}
 
-// registerData hoists the page's SEO; the form's errors and submitted values
-// reach the template through the validate plugin's fieldError and fieldValue.
-func registerData(ctx context.Context, rc *collage.RenderContext) (registerView, error) {
-	rc.HoistTitle("Kayıt ol | Sen de Yaz")
+func registerPageData(ctx context.Context, rc *collage.RenderContext) (registerView, error) {
+	// SEO & metadata
+	title := "Kayıt ol | Sen de Yaz"
+	rc.HoistTitle(title)
 	meta.Set(rc, meta.Page{
-		Title:       "Kayıt ol | Sen de Yaz",
+		Title:       title,
 		Description: "Sen de Yaz topluluğuna katıl, hikâyeler başlat ve anlatılara katkı ver.",
 		Canonical:   "/register",
 	})
@@ -79,6 +79,6 @@ func registerData(ctx context.Context, rc *collage.RenderContext) (registerView,
 
 func RegisterBlock() *collage.Fragment {
 	return collage.NewInlineFragment("register", registerBlock).
-		WithDataHandler(collage.Load(registerData)).
+		WithDataHandler(collage.Load(registerPageData)).
 		Build()
 }

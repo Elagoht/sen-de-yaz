@@ -129,7 +129,7 @@ type entryAddView struct {
 	StoryID int64
 }
 
-func entryAddData(ctx context.Context, rc *collage.RenderContext) (entryAddView, error) {
+func entryAddPageData(ctx context.Context, rc *collage.RenderContext) (entryAddView, error) {
 	return entryAddView{StoryID: entryAreaState(rc).StoryID}, nil
 }
 
@@ -139,7 +139,7 @@ type entryEditView struct {
 	Rejected bool
 }
 
-func entryEditData(ctx context.Context, rc *collage.RenderContext) (entryEditView, error) {
+func entryEditPageData(ctx context.Context, rc *collage.RenderContext) (entryEditView, error) {
 	state := entryAreaState(rc)
 	edit := state.Edit
 	if edit == nil {
@@ -150,13 +150,13 @@ func entryEditData(ctx context.Context, rc *collage.RenderContext) (entryEditVie
 
 func newEntryAdd() *collage.Fragment {
 	return collage.NewInlineFragment("entry-add", entryAddHTML).
-		WithDataHandler(collage.Load(entryAddData)).
+		WithDataHandler(collage.Load(entryAddPageData)).
 		Build()
 }
 
 func newEntryEdit() *collage.Fragment {
 	return collage.NewInlineFragment("entry-edit", entryEditHTML).
-		WithDataHandler(collage.Load(entryEditData)).
+		WithDataHandler(collage.Load(entryEditPageData)).
 		Build()
 }
 

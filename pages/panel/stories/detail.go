@@ -16,9 +16,12 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-// Page
-func DetailPage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-
+// Returns Page with its all needs: layout, content and data
+func DetailPage(
+	app *collage.App,
+	storyService *storydomain.StoryService,
+	userService *users.UserService,
+) *collage.Page {
 	return collage.NewPage("story-detail").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryDetailBlock().
@@ -30,7 +33,7 @@ func DetailPage(app *collage.App, storyService *storydomain.StoryService, userSe
 		Build()
 }
 
-// SEO
+// Types data used on this page
 type entryView struct {
 	storydomain.Entry
 	PhotoURL string
@@ -44,12 +47,22 @@ type detailView struct {
 	NotFound bool
 }
 
-func detailData(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) collage.DataHandlerFunc {
-	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (detailView, error) {
+// Generates story details and sets SEO & metadata
+func detailData(
+	app *collage.App,
+	storyService *storydomain.StoryService,
+	userService *users.UserService,
+) collage.DataHandlerFunc {
+	return collage.Load(func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (detailView, error) {
+		// Checks story id from render context
 		id, ok := storyID(rc)
 		if !ok {
 			return detailView{NotFound: true}, nil
 		}
+		// Gets story from service
 		story, entries, err := storyService.GetStory(id)
 		if err == storydomain.ErrStoryNotFound {
 			return detailView{NotFound: true}, nil
@@ -57,14 +70,23 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 		if err != nil {
 			return detailView{}, err
 		}
-		storyURL, err := app.URL("story-detail", rc.Locale, map[string]string{"id": strconv.FormatInt(story.ID, 10)})
+		// Gets story url
+		storyURL, err := app.URL(
+			"story-detail",
+			rc.Locale,
+			map[string]string{"id": strconv.FormatInt(story.ID, 10)},
+		)
 		if err != nil {
 			return detailView{}, err
 		}
+
+		// Check last entry author
 		lastAuthor := ""
 		if len(entries) > 0 {
 			lastAuthor = entries[len(entries)-1].Author
 		}
+
+		// SEO & Metadata
 		rc.HoistTitle(story.Title + " | Sen de Yaz")
 		meta.Set(rc, meta.Page{
 			Title:       story.Title + " | Sen de Yaz",
@@ -85,6 +107,8 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 			AuthorName:    lastAuthor,
 			PublisherName: "Sen de Yaz",
 		})
+
+		// Gets current user
 		user, err := userService.CurrentUser(rc.Request)
 		if err != nil {
 			return detailView{}, err
@@ -102,14 +126,11 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 				CanEdit:  i == len(entries)-1 && entry.AuthorID == user.ID,
 			}
 		}
+
+		// Decide which UI will be generated, a project specific section
 		area := stories.EntryAreaState{StoryID: story.ID}
 		switch {
 		case rc.Request.FormValue("entry_id") != "":
-			// A rejected edit posts its entry id back: the slot carries the
-			// edit box alone, visible, with what was typed — even though the
-			// entry is no longer last — because the add form would silently
-			// drop the words. What was typed reaches the textarea through the
-			// validate plugin's fieldValue.
 			id, _ := strconv.ParseInt(rc.Request.FormValue("entry_id"), 10, 64)
 			edit := &stories.EntryEdit{ID: id}
 			for _, entry := range entries {
@@ -121,8 +142,6 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 			area.Edit = edit
 			area.Rejected = true
 		case lastAuthorID == user.ID && len(entries) > 0:
-			// The reader wrote the last entry: the slot carries the notice and
-			// their edit box, hidden until the pencil on the entry opens it.
 			last := entries[len(entries)-1]
 			area.Edit = &stories.EntryEdit{ID: last.ID, Original: last.Body}
 			area.Notice = true
@@ -132,6 +151,7 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 	})
 }
 
+// Gets story ID from render context
 func storyID(rc *collage.RenderContext) (int64, bool) {
 	id, err := strconv.ParseInt(rc.Param("id"), 10, 64)
 	return id, err == nil && id > 0

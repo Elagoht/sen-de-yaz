@@ -46,9 +46,9 @@ const loginBlock collage.InlineHTML = `
 
 type loginView struct{}
 
-// loginData hoists the page's SEO; the form's errors and submitted values
+// loginPageData hoists the page's SEO; the form's errors and submitted values
 // reach the template through the validate plugin's fieldError and fieldValue.
-func loginData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
+func loginPageData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
 	rc.HoistTitle("Giriş yap | Sen de Yaz")
 	meta.Set(rc, meta.Page{
 		Title:       "Giriş yap | Sen de Yaz",
@@ -61,6 +61,6 @@ func loginData(ctx context.Context, rc *collage.RenderContext) (loginView, error
 
 func LoginBlock() *collage.Fragment {
 	return collage.NewInlineFragment("login", loginBlock).
-		WithDataHandler(collage.Load(loginData)).
+		WithDataHandler(collage.Load(loginPageData)).
 		Build()
 }

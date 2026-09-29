@@ -13,7 +13,12 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func CreatePage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
+// Returns Page with its all needs: layout, content and data
+func CreatePage(
+	app *collage.App,
+	storyService *storydomain.StoryService,
+	userService *users.UserService,
+) *collage.Page {
 	return collage.NewPage("story-create").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryCreateBlock().
@@ -25,16 +30,14 @@ func CreatePage(app *collage.App, storyService *storydomain.StoryService, userSe
 		Build()
 }
 
-type createView struct{}
-
-// createData hoists the page's SEO; the form's errors and submitted values
-// reach the template through the validate plugin's fieldError and fieldValue.
-func createData(ctx context.Context, rc *collage.RenderContext) (createView, error) {
-	rc.HoistTitle("Bir hikâye başlat | Sen de Yaz")
+// Generates story details and sets SEO & metadata
+func createData(ctx context.Context, rc *collage.RenderContext) (any, error) {
+	title := "Bir hikâye başlat | Sen de Yaz"
+	rc.HoistTitle(title)
 	meta.Set(rc, meta.Page{
-		Title:       "Bir hikâye başlat | Sen de Yaz",
+		Title:       title,
 		Description: "İlk cümleyi sen yaz, sonrasını topluluk getirsin.",
 		Canonical:   "/stories/new",
 	})
-	return createView{}, nil
+	return nil, nil
 }

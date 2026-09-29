@@ -9,8 +9,11 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func LoginPage(app *collage.App, userService *users.UserService) *collage.Page {
-
+// Returns Page with its all needs: layout, content and data
+func LoginPage(
+	app *collage.App,
+	userService *users.UserService,
+) *collage.Page {
 	return collage.NewPage("login").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(pages.LoginBlock()).

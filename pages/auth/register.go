@@ -9,8 +9,11 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func RegisterPage(app *collage.App, userService *users.UserService) *collage.Page {
-
+// Returns Page with its all needs: layout, content and data
+func RegisterPage(
+	app *collage.App,
+	userService *users.UserService,
+) *collage.Page {
 	return collage.NewPage("register").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(pages.RegisterBlock()).

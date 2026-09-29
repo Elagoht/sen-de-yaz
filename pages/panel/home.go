@@ -38,12 +38,15 @@ type homeView struct {
 	Mine     []storyCard
 }
 
-// Genreates dashboard and sets SEO & metadata
+// Generates dashboard and sets SEO & metadata
 func homeData(
 	service *users.UserService,
 	storyService *stories.StoryService,
 ) collage.DataHandlerFunc {
-	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (homeView, error) {
+	return collage.Load(func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (homeView, error) {
 		// Sets SEO & metadata values
 		title := "Sen de Yaz | Birlikte yazılan hikâyeler"
 
