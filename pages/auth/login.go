@@ -1,25 +1,23 @@
 package auth
 
 import (
-	"net/http"
 	"sen-de-yaz/actions"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
-	"sen-de-yaz/fragments/pages"
+	fragments "sen-de-yaz/fragments/pages/auth"
 
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func LoginPage(app *collage.App, userService *users.UserService) *collage.Page {
-	loginAction := collage.NewAction("login").
-		WithMethods(http.MethodPost).
-		WithHandler(actions.LoginAction(app, userService)).
-		Build()
-
+// Returns Page with its all needs: layout, content and data
+func LoginPage(
+	app *collage.App,
+	userService *users.UserService,
+) *collage.Page {
 	return collage.NewPage("login").
-		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
-		WithContent(pages.LoginBlock()).
+		WithLayouts(layouts.Master(), layouts.Auth(userService)).
+		WithContent(fragments.LoginBlock()).
 		WithPath("tr", "/login").
-		WithActionFor(loginAction).
+		WithActionFor(actions.Login(app, userService)).
 		Build()
 }

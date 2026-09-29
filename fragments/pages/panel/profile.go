@@ -1,8 +1,12 @@
-package pages
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func Profile() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("profile", profileBlock)
+}
 
 const profileBlock collage.InlineHTML = `
 <div class="profile-shell">
@@ -17,13 +21,17 @@ const profileBlock collage.InlineHTML = `
 			<img class="profile-photo" width="124" height="124" src="{{.PhotoURL}}" alt="Profil fotoğrafı">
 		{{end}}
 
-		<label class="form-label">Ad soyad<input class="field" name="fullname" type="text" value="{{fieldValue "fullname" .User.FullName}}" required/></label>
+		<label class="form-label">
+			Ad soyad
+			<input class="field" name="fullname" type="text" value="{{fieldValue "fullname" .User.FullName}}" required/>
+		</label>
 		{{with fieldError "fullname"}}
 			<small class="field-error">{{.}}</small>
 		{{end}}
 
 		<label class="form-label">
-			Profil fotoğrafı <span class="form-help">İsteğe bağlı</span>
+			Profil fotoğrafı
+			<span class="form-help">İsteğe bağlı</span>
 			<input class="field file-field" name="profile_photo" type="file" accept="image/*"/>
 		</label>
 		{{with fieldError "profile_photo"}}
@@ -36,7 +44,3 @@ const profileBlock collage.InlineHTML = `
 		<input class="btn btn-primary" type="submit" value="Değişiklikleri kaydet"/>
 	</form>
 </div>`
-
-func ProfileBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("profile", profileBlock)
-}

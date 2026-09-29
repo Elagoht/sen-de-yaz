@@ -1,8 +1,12 @@
-package pages
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func Home() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("home-content", homeBlock)
+}
 
 const homeBlock collage.InlineHTML = `
 <section class="dashboard-hero">
@@ -108,7 +112,3 @@ const homeBlock collage.InlineHTML = `
 		</div>
 	{{end}}
 </section>`
-
-func HomeBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("home-content", homeBlock)
-}

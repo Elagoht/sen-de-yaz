@@ -1,8 +1,12 @@
-package stories
+package fragments
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
+
+func StoryList() *collage.FragmentBuilder {
+	return collage.NewInlineFragment("story-list", storyListBlock)
+}
 
 const storyListBlock collage.InlineHTML = `
 <div class="page-intro">
@@ -39,7 +43,3 @@ const storyListBlock collage.InlineHTML = `
 		Aramanı değiştir veya ilk hikâyeyi sen başlat.
 	</div>
 {{end}}`
-
-func StoryListBlock() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-list", storyListBlock)
-}

@@ -130,7 +130,7 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 	}
 	query := `
 		SELECT s.id, s.creator_id, s.title, s.theme, s.created_at, s.updated_at,
-		       last.body, last.created_at, u.fullname, u.profile_photo
+			last.body, last.created_at, u.fullname, u.profile_photo
 		FROM stories s
 		JOIN story_entries last ON last.id = (SELECT e.id FROM story_entries e WHERE e.story_id = s.id ORDER BY e.sequence DESC LIMIT 1)
 		JOIN users u ON u.id = last.author_id ` + condition + `
@@ -144,7 +144,18 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 	var result []Story
 	for rows.Next() {
 		var story Story
-		if err := rows.Scan(&story.ID, &story.CreatorID, &story.Title, &story.Theme, &story.CreatedAt, &story.UpdatedAt, &story.LastBody, &story.LastEntryAt, &story.LastAuthor, &story.LastAuthorPhoto); err != nil {
+		if err := rows.Scan(
+			&story.ID,
+			&story.CreatorID,
+			&story.Title,
+			&story.Theme,
+			&story.CreatedAt,
+			&story.UpdatedAt,
+			&story.LastBody,
+			&story.LastEntryAt,
+			&story.LastAuthor,
+			&story.LastAuthorPhoto,
+		); err != nil {
 			return nil, err
 		}
 		story.LastEntryLabel = story.LastEntryAt.Format("Jan 2, 15:04")
@@ -156,7 +167,14 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 func (service *StoryService) GetStory(id int64) (*Story, []Entry, error) {
 	var story Story
 	err := service.db.QueryRow(`SELECT id, creator_id, title, theme, created_at, updated_at FROM stories WHERE id = ?`, id).
-		Scan(&story.ID, &story.CreatorID, &story.Title, &story.Theme, &story.CreatedAt, &story.UpdatedAt)
+		Scan(
+			&story.ID,
+			&story.CreatorID,
+			&story.Title,
+			&story.Theme,
+			&story.CreatedAt,
+			&story.UpdatedAt,
+		)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, ErrStoryNotFound
 	}
@@ -175,7 +193,16 @@ func (service *StoryService) GetStory(id int64) (*Story, []Entry, error) {
 	var entries []Entry
 	for rows.Next() {
 		var entry Entry
-		if err := rows.Scan(&entry.ID, &entry.StoryID, &entry.AuthorID, &entry.Author, &entry.Sequence, &entry.Body, &entry.CreatedAt, &entry.AuthorPhoto); err != nil {
+		if err := rows.Scan(
+			&entry.ID,
+			&entry.StoryID,
+			&entry.AuthorID,
+			&entry.Author,
+			&entry.Sequence,
+			&entry.Body,
+			&entry.CreatedAt,
+			&entry.AuthorPhoto,
+		); err != nil {
 			return nil, nil, err
 		}
 		entries = append(entries, entry)
@@ -230,11 +257,6 @@ func (service *StoryService) AddEntry(storyID, authorID int64, body string) (*En
 	return &Entry{ID: id, StoryID: storyID, AuthorID: authorID, Sequence: sequence, Body: body}, nil
 }
 
-// UpdateLastEntry replaces the body of an entry, but only while it is still the
-// story's last one and still belongs to authorID: an entry added in the
-// meantime turns the update into ErrEntryNoLongerLast instead of a silent
-// overwrite. Zero affected rows cover every miss — a rival entry, a foreign
-// entry id, a story that is gone — with the one message the reader can act on.
 func (service *StoryService) UpdateLastEntry(storyID, authorID, entryID int64, body string) error {
 	if utf8.RuneCountInString(strings.TrimSpace(body)) > 140 {
 		return ErrEntryTooLong
@@ -249,7 +271,7 @@ func (service *StoryService) UpdateLastEntry(storyID, authorID, entryID int64, b
 		UPDATE story_entries
 		SET body = ?
 		WHERE id = ? AND author_id = ? AND story_id = ?
-		  AND id = (SELECT id FROM story_entries WHERE story_id = ? ORDER BY sequence DESC LIMIT 1)`,
+			AND id = (SELECT id FROM story_entries WHERE story_id = ? ORDER BY sequence DESC LIMIT 1)`,
 		body, entryID, authorID, storyID, storyID)
 	if err != nil {
 		return err
@@ -263,7 +285,6 @@ func (service *StoryService) UpdateLastEntry(storyID, authorID, entryID int64, b
 	return transaction.Commit()
 }
 
-// FieldErrors translates a CreateStory failure into per-field messages.
 func FieldErrors(err error) map[string]string {
 	switch {
 	case errors.Is(err, ErrThemeTooLong):
@@ -277,7 +298,6 @@ func FieldErrors(err error) map[string]string {
 	}
 }
 
-// EntryErrorMessage translates an AddEntry failure into a user-facing message.
 func EntryErrorMessage(err error) string {
 	switch {
 	case errors.Is(err, ErrConsecutiveAuthor):

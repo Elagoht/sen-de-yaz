@@ -48,31 +48,35 @@ var staticFS embed.FS
 var cacheDir = ".cache"
 
 func main() {
+	// Load ENV files. Do not accept not having one.
 	if file, err := utils.LoadEnvFile("."); err != nil {
 		log.Fatalf("sen-de-yaz: %v", err)
 	} else if file != "" {
 		log.Printf("sen-de-yaz: loaded environment from %s", file)
 	}
 
-	database, service, err := openUserService("app.sqlite")
+	// Initialize database and services
+	database, usersService, storiesService, err := initializeDomains("app.sqlite")
 	if err != nil {
-		log.Fatalf("sen-de-yaz: initialize users: %v", err)
-	}
+		log.Fatalf("sen-de-yaz: initialize database: %v", err)
+	} // Dont Forget to close it on shutdown
 	defer database.Close()
 
+	// Startup flags setup
 	buildFlag := flag.Bool("collage-build", false, "render the app to static files instead of serving it")
 	outFlag := flag.String("out", "dist", "output directory for -collage-build")
 	cleanFlag := flag.Bool("clean", false, "remove -out's existing contents before building")
 	portFlag := flag.Int("port", utils.EnvInt("PORT"), "port to listen on (env PORT)")
 	flag.Parse()
 
+	// Create an App as configured
 	devMode := os.Getenv("COLLAGE_DEV") == "1"
-
-	app, err := newApp(devMode, *portFlag, service, stories.NewService(database))
+	app, err := newApp(devMode, *portFlag, usersService, storiesService)
 	if err != nil {
 		log.Fatalf("sen-de-yaz: %v", err)
 	}
 
+	// Dispatch flag commands
 	if args := flag.Args(); len(args) > 0 {
 		code, err := collage.DispatchCommands(context.Background(), app, args)
 		if err != nil {
@@ -81,6 +85,7 @@ func main() {
 		os.Exit(code)
 	}
 
+	// Build App if needed
 	if *buildFlag {
 		if err := staticBuild(app, *outFlag, *cleanFlag); err != nil {
 			log.Fatalf("sen-de-yaz: static build: %v", err)
@@ -88,34 +93,46 @@ func main() {
 		return
 	}
 
+	// If not closed yet, run the app
 	if err := app.ListenAndServe(); err != nil {
 		log.Fatalf("sen-de-yaz: %v", err)
 	}
 }
 
-func openUserService(path string) (*sql.DB, *users.UserService, error) {
+// Initialize database and services
+func initializeDomains(path string) (
+	*sql.DB,
+	*users.UserService,
+	*stories.StoryService,
+	error,
+) {
 	database, err := db.Open(path)
 	if err != nil {
-		return nil, nil, err
+		log.Fatal("sen-de-yaz: Database nor services cannot be initialized")
 	}
-	return database, users.NewService(database), nil
+	return database, users.NewService(database), stories.NewService(database), nil
 }
 
-func newApp(devMode bool, port int, userService *users.UserService, storyService *stories.StoryService) (*collage.App, error) {
+// Crate Collage App with project specific needs
+func newApp(
+	devMode bool,
+	port int,
+	userService *users.UserService,
+	storyService *stories.StoryService,
+) (*collage.App, error) {
+	// Load pluginc configs from typed json file.
 	pluginConfig, err := collage.LoadPluginConfig("plugins-config.json")
 	if err != nil {
 		return nil, fmt.Errorf("plugin configuration: %w", err)
 	}
 
-	csrfKey := os.Getenv("COLLAGE_CSRF_KEY")
-	if csrfKey == "" {
-		// Stable development key prevents form tokens from breaking on restart.
-		// Set COLLAGE_CSRF_KEY to a random secret outside local development.
-		csrfKey = "sen-de-yaz-development-csrf-key-change-me"
-	}
-
+	// CSRF key is required for security
+	csrfKey := utils.EnvString("COLLAGE_CSRF_KEY")
+	// Especially for SEO data
 	baseURL := utils.EnvString("BASE_URL")
+	// Configures plugins
 	plugins := []collage.Plugin{
+		// Creates required filed from source png or svg files
 		favicon.New(favicon.Options{
 			FS:              assetsFS,
 			Source:          "assets/icon.png",
@@ -125,65 +142,83 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			ThemeColor:      "#6558f5",
 			BackgroundColor: "#f7f8fc",
 		}),
+		// Defines security headers
 		secure.New(secure.Options{}),
+		// Creates rate limits
 		ratelimit.New(ratelimit.Options{}),
-		// Register compression outside body-rewriting middleware so those
-		// plugins see and can update the uncompressed HTML response.
+		// Compresses the responses with brotli or gzip depending on Accept-Encoding
 		compress.New(compress.Options{}),
+		// Bot protection with honeypots placed with {{honeypot}}
 		honeypot.New(honeypot.Options{
 			Key: []byte(utils.EnvString("COLLAGE_HONEYPOT_KEY")),
-			// Paths learn themselves from the {{honeypot}} forms the app
-			// serves; a new POST form is covered without touching this file.
-			// One trade-off: after a restart, a path is only checked once its
-			// page has been served.
 		}),
+		// Short lived cookies for HTTP response messages
 		flash.New(flash.Options{Key: []byte(utils.EnvString("COLLAGE_FLASH_KEY"))}),
+		// Registers form validation utility functions for templates
 		validate.New(validate.Options{}),
+		// Metadata options for pages
 		meta.New(meta.Options{
 			SiteName:        "Sen de Yaz",
 			BaseURL:         baseURL,
 			DefaultImage:    "/assets/icon.png",
 			DefaultImageAlt: "Sen de Yaz logosu",
 		}),
+		// Structured Json-LD meta data for pages
 		jsonld.New(),
+		// Robots.txt creation
 		robots.New(robots.Options{}),
+		// Sitemap creation
 		sitemap.New(sitemap.Options{
 			BaseURL: baseURL,
 			Exclude: []string{"login", "register", "profile", "story-create"},
 		}),
+		// Minimize html, css, js, json responses
 		minimizer.New(),
+		// Optimize images bt creating resized versions if width and height is set
 		optiimage.New(),
+		// Access log
 		accesslog.New(accesslog.Options{}),
+		// Prometheus
 		prometheus.New(prometheus.Options{Token: os.Getenv("METRICS_TOKEN")}),
+		// Open Telemetry
 		otel.New(otel.Options{}),
+		// Semantic HTML checks
 		htmlcheck.New(htmlcheck.Options{}),
 	}
+	// Load devtoolbar only on dev mode
 	if devMode {
 		plugins = append(plugins, devtoolbar.New())
 	}
 
+	// Finally Create the Collage Application
 	app, err := collage.New(&collage.Config{
+		// Basic configurations
 		DevMode: devMode,
 		Server: collage.ServerConfig{
 			Host: utils.EnvString("HOST"),
 			Port: port,
 		},
+		// Register templates
 		Template: collage.TemplateConfig{
 			FS:        templatesFS,
 			Root:      "templates",
 			Extension: ".html",
 		},
+		// Default cache rules
 		Cache: collage.CacheConfig{
 			Enabled:    true,
 			Type:       "disk",
 			Dir:        cacheDir,
 			DefaultTTL: 5 * time.Minute,
 		},
+		// Registers plugins and their configs
 		PluginConfig: pluginConfig,
 		Plugins:      plugins,
+		// All unsupported page paths returns "TR" here
 		Locale: collage.LocaleConfig{
 			Default: "tr",
 		},
+		// Security configuration
 		Security: collage.SecurityConfig{
 			CSRFKey: []byte(csrfKey),
 		},
@@ -192,14 +227,17 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		return nil, err
 	}
 
+	// Register app's needs and routes
 	if err := register(app, userService, storyService); err != nil {
 		return nil, err
 	}
 
+	// Mount secured Static files to app
 	assets, err := staticFiles(devMode)
 	if err != nil {
 		return nil, err
 	}
+	// Create the required directories
 	if err := app.Mount("/static/", assets); err != nil {
 		return nil, fmt.Errorf("mount static files: %w", err)
 	}
@@ -213,6 +251,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 	return app, nil
 }
 
+// Create a secure storage path that doesn't allow links to follow outer places
 func staticFiles(devMode bool) (fs.FS, error) {
 	if devMode {
 		if root, err := os.OpenRoot("static"); err == nil {
@@ -223,6 +262,7 @@ func staticFiles(devMode bool) (fs.FS, error) {
 	return fs.Sub(staticFS, "static")
 }
 
+// Build the configured app
 func staticBuild(app *collage.App, outDir string, clean bool) error {
 	builder, err := collage.NewBuilder(app, collage.BuildOptions{
 		OutDir: outDir,
@@ -233,7 +273,6 @@ func staticBuild(app *collage.App, outDir string, clean bool) error {
 	}
 
 	report, buildErr := builder.Build(context.Background())
-
 	collage.PrintBuildReport(os.Stdout, report, buildErr)
 
 	return buildErr

@@ -1,4 +1,4 @@
-package stories
+package fragments
 
 import (
 	"context"
@@ -13,18 +13,13 @@ type EntryAreaState struct {
 	Notice   bool
 }
 
-// EntryEdit carries the entry's identity and its published text; what the
-// reader typed reaches the template through the validate plugin's fieldValue.
 type EntryEdit struct {
 	ID       int64
 	Original string
 }
 
-// entryAreaKey is the SharedData key the entry area's state travels under.
 const entryAreaKey = "entry-area"
 
-// SetEntryArea writes the slot state the detail page's data handler resolved;
-// it is the key's only writer.
 func SetEntryArea(rc *collage.RenderContext, state EntryAreaState) {
 	rc.Set(entryAreaKey, state)
 }
@@ -129,7 +124,7 @@ type entryAddView struct {
 	StoryID int64
 }
 
-func entryAddData(ctx context.Context, rc *collage.RenderContext) (entryAddView, error) {
+func entryAddPageData(ctx context.Context, rc *collage.RenderContext) (entryAddView, error) {
 	return entryAddView{StoryID: entryAreaState(rc).StoryID}, nil
 }
 
@@ -139,7 +134,7 @@ type entryEditView struct {
 	Rejected bool
 }
 
-func entryEditData(ctx context.Context, rc *collage.RenderContext) (entryEditView, error) {
+func entryEditPageData(ctx context.Context, rc *collage.RenderContext) (entryEditView, error) {
 	state := entryAreaState(rc)
 	edit := state.Edit
 	if edit == nil {
@@ -150,13 +145,13 @@ func entryEditData(ctx context.Context, rc *collage.RenderContext) (entryEditVie
 
 func newEntryAdd() *collage.Fragment {
 	return collage.NewInlineFragment("entry-add", entryAddHTML).
-		WithDataHandler(collage.Load(entryAddData)).
+		WithDataHandler(collage.Load(entryAddPageData)).
 		Build()
 }
 
 func newEntryEdit() *collage.Fragment {
 	return collage.NewInlineFragment("entry-edit", entryEditHTML).
-		WithDataHandler(collage.Load(entryEditData)).
+		WithDataHandler(collage.Load(entryEditPageData)).
 		Build()
 }
 

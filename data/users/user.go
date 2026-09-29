@@ -163,9 +163,6 @@ func newToken() (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-// SessionCookieName is the cookie a signed-in session travels in. Everything
-// that reads or writes the session — actions, guards, CurrentUser — names it
-// through here.
 const SessionCookieName = "session_token"
 
 // SessionCookie returns the cookie that signs token in as a session.
