@@ -13,7 +13,10 @@ import (
 )
 
 // Validates register form, creates the user and signs in
-func Register(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
+func Register(
+	app *collage.App,
+	service *users.UserService,
+) collage.ActionHandlerFunc {
 	return func(
 		ctx context.Context,
 		rc *collage.RenderContext,
@@ -69,16 +72,13 @@ func Register(app *collage.App, service *users.UserService) collage.ActionHandle
 		}
 		return &collage.ActionResult{
 			Location: home,
-			Header:   http.Header{"Set-Cookie": []string{users.SessionCookie(token).String()}},
+			Header: http.Header{
+				"Set-Cookie": []string{users.SessionCookie(token).String()},
+			},
 		}, nil
 	}
 }
 
-<<<<<<< Updated upstream
-// Validates login form and signs in
-func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-=======
 func Login(
 	app *collage.App,
 	service *users.UserService,
@@ -87,7 +87,6 @@ func Login(
 		ctx context.Context,
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
->>>>>>> Stashed changes
 		v := validate.Form(rc)
 		v.Field("email").Required().Message("E-posta alanı zorunludur.").
 			Email().Message("Geçerli bir e-posta adresi girin.")
@@ -117,11 +116,6 @@ func Login(
 	}
 }
 
-<<<<<<< Updated upstream
-// Validates profile form and updates the current user
-func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
-=======
 func ProfileUpdate(
 	app *collage.App,
 	service *users.UserService,
@@ -130,7 +124,6 @@ func ProfileUpdate(
 		ctx context.Context,
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
->>>>>>> Stashed changes
 		v := validate.Form(rc)
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
 			v.Fail("profile_photo", users.PhotoTooLargeMessage)

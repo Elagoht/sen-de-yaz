@@ -8,15 +8,10 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-<<<<<<< Updated upstream
-// Returns logout action, ends the session and redirects to login
-func Logout(app *collage.App, userService *users.UserService) *collage.Action {
-=======
 func Logout(
 	app *collage.App,
 	userService *users.UserService,
 ) *collage.Action {
->>>>>>> Stashed changes
 	return collage.NewAction("logout").
 		WithPath("tr", "/logout").
 		WithMethods(http.MethodPost).
