@@ -14,7 +14,10 @@ import (
 
 // Validates register form, creates the user and signs in
 func Register(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
 			v.Fail("profile_photo", users.PhotoTooLargeMessage)
@@ -28,7 +31,11 @@ func Register(app *collage.App, service *users.UserService) collage.ActionHandle
 		if !v.Valid() {
 			return validate.Refuse(rc, v, rc.Page), nil
 		}
-		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
+		profilePhoto, err := users.SaveOptionalFile(
+			rc.Request,
+			"profile_photo",
+			"uploads/profile",
+		)
 		if err != nil {
 			v.Fail("profile_photo", users.ProfilePhotoErrorMessage(err))
 			return validate.Refuse(rc, v, rc.Page), nil
@@ -67,9 +74,20 @@ func Register(app *collage.App, service *users.UserService) collage.ActionHandle
 	}
 }
 
+<<<<<<< Updated upstream
 // Validates login form and signs in
 func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+=======
+func Login(
+	app *collage.App,
+	service *users.UserService,
+) collage.ActionHandlerFunc {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
+>>>>>>> Stashed changes
 		v := validate.Form(rc)
 		v.Field("email").Required().Message("E-posta alanı zorunludur.").
 			Email().Message("Geçerli bir e-posta adresi girin.")
@@ -92,14 +110,27 @@ func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFu
 		}
 		return &collage.ActionResult{
 			Location: home,
-			Header:   http.Header{"Set-Cookie": []string{users.SessionCookie(token).String()}},
+			Header: http.Header{
+				"Set-Cookie": []string{users.SessionCookie(token).String()},
+			},
 		}, nil
 	}
 }
 
+<<<<<<< Updated upstream
 // Validates profile form and updates the current user
 func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+=======
+func ProfileUpdate(
+	app *collage.App,
+	service *users.UserService,
+) collage.ActionHandlerFunc {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
+>>>>>>> Stashed changes
 		v := validate.Form(rc)
 		if rc.Request.ContentLength > users.MaxPhotoBytes {
 			v.Fail("profile_photo", users.PhotoTooLargeMessage)
@@ -113,12 +144,20 @@ func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionH
 		if !v.Valid() {
 			return validate.Refuse(rc, v, rc.Page), nil
 		}
-		profilePhoto, err := users.SaveOptionalFile(rc.Request, "profile_photo", "uploads/profile")
+		profilePhoto, err := users.SaveOptionalFile(
+			rc.Request,
+			"profile_photo",
+			"uploads/profile",
+		)
 		if err != nil {
 			v.Fail("profile_photo", users.ProfilePhotoErrorMessage(err))
 			return validate.Refuse(rc, v, rc.Page), nil
 		}
-		if err := service.UpdateProfile(user.ID, v.Value("fullname"), profilePhoto); err != nil {
+		if err := service.UpdateProfile(
+			user.ID,
+			v.Value("fullname"),
+			profilePhoto,
+		); err != nil {
 			v.Fail("fullname", "Ad soyad alanı zorunludur.")
 			return validate.Refuse(rc, v, rc.Page), nil
 		}
@@ -131,9 +170,14 @@ func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionH
 	}
 }
 
-// Ends the session and clears session cookie
-func Logout(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+func Logout(
+	app *collage.App,
+	service *users.UserService,
+) collage.ActionHandlerFunc {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
 		if cookie, err := rc.Request.Cookie(users.SessionCookieName); err == nil {
 			_ = service.Logout(cookie.Value)
 		}
@@ -144,7 +188,9 @@ func Logout(app *collage.App, service *users.UserService) collage.ActionHandlerF
 		}
 		return &collage.ActionResult{
 			Location: login,
-			Header:   http.Header{"Set-Cookie": []string{users.ClearSessionCookie().String()}},
+			Header: http.Header{
+				"Set-Cookie": []string{users.ClearSessionCookie().String()},
+			},
 		}, nil
 	}
 }

@@ -19,7 +19,10 @@ func StoryCreate(
 	service *stories.StoryService,
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
 		v.Field("title").Required().Message("Başlık alanı zorunludur.")
 		v.Field("theme").Required().Message("Tema alanı zorunludur.").
@@ -33,7 +36,12 @@ func StoryCreate(
 		if err != nil {
 			return nil, err
 		}
-		story, err := service.CreateStory(user.ID, v.Value("title"), v.Value("theme"), v.Value("opening"))
+		story, err := service.CreateStory(
+			user.ID,
+			v.Value("title"),
+			v.Value("theme"),
+			v.Value("opening"),
+		)
 		if err != nil {
 			for field, message := range stories.FieldErrors(err) {
 				v.Fail(field, message)
@@ -53,7 +61,10 @@ func StoryEntry(
 	service *stories.StoryService,
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
-	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
+	return func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (*collage.ActionResult, error) {
 		if rc.Request.FormValue("entry_id") != "" {
 			return updateEntry(app, rc, service, userService)
 		}
