@@ -10,11 +10,11 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func RegisterPage(userService *users.UserService) *collage.Page {
+func RegisterPage(app *collage.App, userService *users.UserService) *collage.Page {
 	registerAction := collage.NewAction("register").
 		WithMethods(http.MethodPost).
 		WithMaxBodyBytes(users.MaxFormBytes).
-		WithHandler(actions.RegisterAction(userService)).
+		WithHandler(actions.RegisterAction(app, userService)).
 		Build()
 
 	return collage.NewPage("register").

@@ -13,11 +13,11 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func ProfilePage(userService *users.UserService) *collage.Page {
+func ProfilePage(app *collage.App, userService *users.UserService) *collage.Page {
 	profileAction := collage.NewAction("profile").
 		WithMethods(http.MethodPost).
 		WithMaxBodyBytes(users.MaxFormBytes).
-		WithHandler(actions.UpdateProfileAction(userService)).
+		WithHandler(actions.UpdateProfileAction(app, userService)).
 		Build()
 
 	return collage.NewPage("profile").

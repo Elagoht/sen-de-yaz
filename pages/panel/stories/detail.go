@@ -2,7 +2,6 @@ package stories
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,20 +18,20 @@ import (
 )
 
 // Page
-func DetailPage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-	addEntry := collage.NewAction("story-detail").
+func DetailPage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
+	entryAction := collage.NewAction("story-detail").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.AddEntryAction(storyService, userService)).
+		WithHandler(actions.StoryEntryAction(app, storyService, userService)).
 		Build()
 
 	return collage.NewPage("story-detail").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryDetailBlock().
-			WithDataHandler(detailData(storyService, userService)).
+			WithDataHandler(detailData(app, storyService, userService)).
 			Build(),
 		).
 		WithPath("tr", "/stories/{id}").
-		WithActionFor(addEntry).
+		WithActionFor(entryAction).
 		Build()
 }
 
@@ -50,7 +49,7 @@ type detailView struct {
 	NotFound bool
 }
 
-func detailData(storyService *storydomain.StoryService, userService *users.UserService) collage.DataHandlerFunc {
+func detailData(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) collage.DataHandlerFunc {
 	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (detailView, error) {
 		id, ok := storyID(rc)
 		if !ok {
@@ -63,6 +62,10 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		if err != nil {
 			return detailView{}, err
 		}
+		storyURL, err := app.URL("story-detail", rc.Locale, map[string]string{"id": strconv.FormatInt(story.ID, 10)})
+		if err != nil {
+			return detailView{}, err
+		}
 		lastAuthor := ""
 		if len(entries) > 0 {
 			lastAuthor = entries[len(entries)-1].Author
@@ -72,7 +75,7 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 			Title:       story.Title + " | Sen de Yaz",
 			Description: story.Theme,
 			Type:        meta.Article,
-			Canonical:   fmt.Sprintf("/stories/%d", story.ID),
+			Canonical:   storyURL,
 			Published:   story.CreatedAt,
 			Modified:    story.UpdatedAt,
 			Author:      lastAuthor,
@@ -80,7 +83,7 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 		jsonld.Emit(rc, jsonld.Article{
 			Headline:      story.Title,
 			Description:   story.Theme,
-			URL:           fmt.Sprintf("/stories/%d", story.ID),
+			URL:           storyURL,
 			Section:       "Hikâyeler",
 			DatePublished: story.CreatedAt,
 			DateModified:  story.UpdatedAt,
@@ -129,7 +132,7 @@ func detailData(storyService *storydomain.StoryService, userService *users.UserS
 			area.Edit = &stories.EntryEdit{ID: last.ID, Original: last.Body}
 			area.Notice = true
 		}
-		rc.Set("entry-area", area)
+		stories.SetEntryArea(rc, area)
 		return detailView{Story: story, Entries: views}, nil
 	})
 }

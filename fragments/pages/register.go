@@ -9,13 +9,13 @@ import (
 
 const registerBlock collage.InlineHTML = `
 <div class="auth-brand">
-	<a class="brand" href="/"><span class="brand-mark">✎</span>Sen de Yaz</a>
+	<a class="brand" href="{{pageURL "home"}}"><span class="brand-mark">✎</span>Sen de Yaz</a>
 </div>
 
 <h1 class="auth-title">Hikâyeye katıl</h1>
 <p class="auth-copy">Kendi hikâyeni başlat veya başkalarının hikâyelerine devam et.</p>
 
-<form class="form-stack" action="/register" method="POST" enctype="multipart/form-data">
+<form class="form-stack" action="{{pageURL "register"}}" method="POST" enctype="multipart/form-data">
 	<label class="form-label">
 		Ad soyad
 		<input class="field" name="fullname" type="text" value="{{fieldValue "fullname"}}" required/>
@@ -60,7 +60,7 @@ const registerBlock collage.InlineHTML = `
 
 <p class="auth-footer">
 	Zaten hesabın var mı?
-	<a class="text-link" href="/login">Giriş yap</a>
+	<a class="text-link" href="{{pageURL "login"}}">Giriş yap</a>
 </p>`
 
 type registerView struct{}

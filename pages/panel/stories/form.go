@@ -14,10 +14,10 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func CreatePage(storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
+func CreatePage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
 	action := collage.NewAction("story-create").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.CreateStoryAction(storyService, userService)).
+		WithHandler(actions.CreateStoryAction(app, storyService, userService)).
 		Build()
 	return collage.NewPage("story-create").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).

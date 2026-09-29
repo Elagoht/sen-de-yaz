@@ -16,32 +16,26 @@ import (
 
 // register adds every page, document and action to app. A new route goes here.
 func register(app *collage.App, userService *users.UserService, storyService *stories.StoryService) error {
-	detail := storypages.DetailPage(storyService, userService)
 	for _, page := range []*collage.Page{
 		panel.HomePage(userService, storyService),
-		panel.ProfilePage(userService),
+		panel.ProfilePage(app, userService),
 		storypages.ListPage(storyService, userService),
-		storypages.CreatePage(storyService, userService),
-		detail,
-		auth.RegisterPage(userService),
-		auth.LoginPage(userService),
+		storypages.CreatePage(app, storyService, userService),
+		storypages.DetailPage(app, storyService, userService),
+		auth.RegisterPage(app, userService),
+		auth.LoginPage(app, userService),
 	} {
 		if err := app.RegisterPage(page); err != nil {
 			return fmt.Errorf("register page %q: %w", page.Name, err)
 		}
 	}
-	editEntry := collage.NewAction("story-edit-entry").
-		WithPath("tr", "/stories/{id}/edit").
-		WithMethods(http.MethodPost).
-		WithHandler(actions.UpdateEntryAction(storyService, userService, func() *collage.Page { return detail })).
-		Build()
-	if err := app.RegisterAction(editEntry); err != nil {
-		return fmt.Errorf("register story edit action: %w", err)
-	}
+	// The logout action answers a URL of its own — no page posts anywhere
+	// else on /logout — so its form hardcodes the path; the URL registry
+	// names pages and documents, not actions.
 	logout := collage.NewAction("logout").
 		WithPath("tr", "/logout").
-		WithMethods("POST").
-		WithHandler(actions.LogoutAction(userService)).
+		WithMethods(http.MethodPost).
+		WithHandler(actions.LogoutAction(app, userService)).
 		Build()
 	if err := app.RegisterAction(logout); err != nil {
 		return fmt.Errorf("register logout action: %w", err)

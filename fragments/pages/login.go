@@ -9,14 +9,14 @@ import (
 )
 
 const loginBlock collage.InlineHTML = `
-<div class="auth-brand"><a class="brand" href="/">
+<div class="auth-brand"><a class="brand" href="{{pageURL "home"}}">
 	<span class="brand-mark">✎</span>Sen de Yaz</a>
 </div>
 
 <h1 class="auth-title">Tekrar hoş geldin</h1>
 <p class="auth-copy">Hikâyelere kaldığın yerden devam et.</p>
 
-<form class="form-stack" action="/login" method="POST">
+<form class="form-stack" action="{{pageURL "login"}}" method="POST">
 	<label class="form-label">
 		E-posta
 		<input class="field" name="email" type="email" value="{{fieldValue "email"}}" required/>
@@ -41,7 +41,7 @@ const loginBlock collage.InlineHTML = `
 
 <p class="auth-footer">
 	Hesabın yok mu?
-	<a class="text-link" href="/register">Kayıt ol</a>
+	<a class="text-link" href="{{pageURL "register"}}">Kayıt ol</a>
 </p>`
 
 type loginView struct{}

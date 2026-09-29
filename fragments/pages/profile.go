@@ -12,7 +12,7 @@ const profileBlock collage.InlineHTML = `
 		<p class="page-subtitle">Seni tanıtan bilgileri güncel tut.</p>
 	</div>
 
-	<form class="form-stack" action="/profile" method="POST" enctype="multipart/form-data">
+	<form class="form-stack" action="{{pageURL "profile"}}" method="POST" enctype="multipart/form-data">
 		{{if .User.ProfilePhoto}}
 			<img class="profile-photo" width="124" height="124" src="{{.PhotoURL}}" alt="Profil fotoğrafı">
 		{{end}}

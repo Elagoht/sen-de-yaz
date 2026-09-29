@@ -9,10 +9,10 @@ const storyCreateBlock collage.InlineHTML = `
 	<p class="eyebrow">Yeni başlangıç</p>
 	<h1 class="page-title">Bir hikâye başlat</h1>
 	<p class="page-subtitle">İlk cümleyi sen yaz. Sonrasını topluluk getirsin.</p>
-	<a class="text-link" href="/stories">← Hikâyelere dön</a>
+	<a class="text-link" href="{{pageURL "stories"}}">← Hikâyelere dön</a>
 </div>
 
-<form class="form-shell form-stack" action="/stories/new" method="POST">
+<form class="form-shell form-stack" action="{{pageURL "story-create"}}" method="POST">
 	<label class="form-label">
 		Başlık
 		<input class="field" name="title" value="{{fieldValue "title"}}" required>

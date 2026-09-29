@@ -8,7 +8,7 @@ const storyDetailBlock collage.InlineHTML = `
 {{if .NotFound}}
 	<div class="empty-state">
 		<p>Hikâye bulunamadı.</p>
-		<a class="text-link" href="/stories">Hikâyelere dön</a>
+		<a class="text-link" href="{{pageURL "stories"}}">Hikâyelere dön</a>
 	</div>
 {{else}}
 	<div class="reading-shell">
@@ -18,7 +18,7 @@ const storyDetailBlock collage.InlineHTML = `
 				<h1 class="reading-title">{{.Story.Title}}</h1>
 				<p class="page-subtitle">{{.Story.Theme}}</p>
 			</div>
-			<a class="text-link" href="/stories">← Tüm hikâyeler</a>
+			<a class="text-link" href="{{pageURL "stories"}}">← Tüm hikâyeler</a>
 		</div>
 		<div class="entries">
 			{{range .Entries}}

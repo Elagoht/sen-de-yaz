@@ -10,10 +10,10 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func LoginPage(userService *users.UserService) *collage.Page {
+func LoginPage(app *collage.App, userService *users.UserService) *collage.Page {
 	loginAction := collage.NewAction("login").
 		WithMethods(http.MethodPost).
-		WithHandler(actions.LoginAction(userService)).
+		WithHandler(actions.LoginAction(app, userService)).
 		Build()
 
 	return collage.NewPage("login").

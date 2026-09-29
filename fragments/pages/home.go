@@ -13,8 +13,8 @@ const homeBlock collage.InlineHTML = `
 		<p class="hero-copy">Topluluğun başlattığı hikâyelere katıl, sıradaki cümleyi yaz ve anlatının nereye gideceğine birlikte karar verin.</p>
 
 		<div class="hero-actions">
-			<a class="btn btn-light" href="/stories">Hikâyeleri keşfet</a>
-			<a class="btn btn-outline-light" href="/stories/new">Yeni hikâye başlat</a>
+			<a class="btn btn-light" href="{{pageURL "stories"}}">Hikâyeleri keşfet</a>
+			<a class="btn btn-outline-light" href="{{pageURL "story-create"}}">Yeni hikâye başlat</a>
 		</div>
 	</div>
 	<div class="hero-visual">
@@ -35,13 +35,13 @@ const homeBlock collage.InlineHTML = `
 			<p class="section-note">Topluluktaki en yeni cümleler.</p>
 		</div>
 
-		<a class="text-link" href="/stories">Tüm hikâyeler →</a>
+		<a class="text-link" href="{{pageURL "stories"}}">Tüm hikâyeler →</a>
 	</div>
 
 	{{if .Recent}}
 		<div class="story-grid">
 			{{range .Recent}}
-				<a class="story-card" href="/stories/{{.ID}}">
+				<a class="story-card" href="{{pageURL "story-detail" "id" (printf "%d" .ID)}}">
 					<div>
 						<div class="story-card-top">
 							<span class="story-label">Yeni katkı</span>
@@ -76,13 +76,13 @@ const homeBlock collage.InlineHTML = `
 			<p class="section-note">Başlattığın veya devam ettiğin anlatılar.</p>
 		</div>
 
-		<a class="text-link" href="/stories">Yeni bir tane bul →</a>
+		<a class="text-link" href="{{pageURL "stories"}}">Yeni bir tane bul →</a>
 	</div>
 
 	{{if .Mine}}
 		<div class="story-grid">
 			{{range .Mine}}
-				<a class="story-card" href="/stories/{{.ID}}">
+				<a class="story-card" href="{{pageURL "story-detail" "id" (printf "%d" .ID)}}">
 					<div>
 						<div class="story-card-top">
 							<span class="story-label">Katıldığın hikâye</span>
@@ -104,7 +104,7 @@ const homeBlock collage.InlineHTML = `
 	{{else}}
 		<div class="empty-state">
 			<p>Henüz bir hikâyeye katılmadın.</p>
-			<a class="btn btn-primary" href="/stories">Bir hikâye keşfet</a>
+			<a class="btn btn-primary" href="{{pageURL "stories"}}">Bir hikâye keşfet</a>
 		</div>
 	{{end}}
 </section>`

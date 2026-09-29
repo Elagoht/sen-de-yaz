@@ -20,8 +20,17 @@ type EntryEdit struct {
 	Original string
 }
 
+// entryAreaKey is the SharedData key the entry area's state travels under.
+const entryAreaKey = "entry-area"
+
+// SetEntryArea writes the slot state the detail page's data handler resolved;
+// it is the key's only writer.
+func SetEntryArea(rc *collage.RenderContext, state EntryAreaState) {
+	rc.Set(entryAreaKey, state)
+}
+
 func entryAreaState(rc *collage.RenderContext) EntryAreaState {
-	value, _ := rc.Get("entry-area")
+	value, _ := rc.Get(entryAreaKey)
 	state, _ := value.(EntryAreaState)
 	return state
 }
@@ -47,7 +56,7 @@ var (
 )
 
 const entryAddHTML collage.InlineHTML = `
-<form class="continue-box form-stack" method="POST" action="/stories/{{.StoryID}}">
+<form class="continue-box form-stack" method="POST" action="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}">
 	<label class="form-label">
 		Sıradaki bölümü yaz
 		<span class="form-help">En fazla 140 karakter</span>
@@ -64,7 +73,7 @@ const entryAddHTML collage.InlineHTML = `
 </form>`
 
 const entryEditHTML collage.InlineHTML = `
-<form class="continue-box edit-box form-stack" method="POST" action="/stories/{{.StoryID}}/edit"{{if not .Rejected}} hidden{{end}}>
+<form class="continue-box edit-box form-stack" method="POST" action="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}"{{if not .Rejected}} hidden{{end}}>
 	<input type="hidden" name="entry_id" value="{{.Edit.ID}}"/>
 	<p class="edit-note">Yayında olan:</p>
 	<blockquote class="edit-original">{{.Edit.Original}}</blockquote>
@@ -82,7 +91,7 @@ const entryEditHTML collage.InlineHTML = `
 
 	<div class="edit-actions">
 		<button class="btn btn-primary" type="submit">Değişiklikleri kaydet</button>
-		<a class="text-link" href="/stories/{{.StoryID}}">Vazgeç</a>
+		<a class="text-link" href="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}">Vazgeç</a>
 	</div>
 </form>
 <script nonce="{{cspNonce}}">
