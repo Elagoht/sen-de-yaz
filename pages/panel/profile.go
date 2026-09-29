@@ -10,12 +10,12 @@ import (
 )
 
 // Returns Page with its all needs: layout, content and data
-func ProfilePage(app *collage.App, userService *users.UserService) *collage.Page {
+func ProfilePage(userService *users.UserService) *collage.Page {
 	return collage.NewPage("profile").
 		WithLayouts(layouts.Master(), layouts.Panel(userService)).
 		WithContent(fragments.Profile(userService)).
 		WithPath("tr", "/profile").
 		// Defines POST "form" action here
-		WithActionFor(actions.ProfileUpdate(app, userService)).
+		WithActionFor(actions.ProfileUpdate(userService)).
 		Build()
 }

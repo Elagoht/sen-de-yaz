@@ -11,24 +11,22 @@ import (
 
 // Returns story detail action, adds or edits entries
 func StoryEntry(
-	app *collage.App,
 	storyService *stories.StoryService,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("story-detail").
 		WithMethods(http.MethodPost).
-		WithHandler(funcs.StoryEntry(app, storyService, userService)).
+		WithHandler(funcs.StoryEntry(storyService, userService)).
 		Build()
 }
 
 // Returns story creation form action
 func StoryCreate(
-	app *collage.App,
 	storyService *stories.StoryService,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("story-create").
 		WithMethods(http.MethodPost).
-		WithHandler(funcs.StoryCreate(app, storyService, userService)).
+		WithHandler(funcs.StoryCreate(storyService, userService)).
 		Build()
 }

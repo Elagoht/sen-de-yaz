@@ -12,14 +12,13 @@ import (
 
 // Returns Page with its all needs: layout, content and data
 func DetailPage(
-	app *collage.App,
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("story-detail").
 		WithLayouts(layouts.Master(), layouts.Panel(userService)).
-		WithContent(fragments.StoryDetail(app, storyService, userService)).
+		WithContent(fragments.StoryDetail(storyService, userService)).
 		WithPath("tr", "/stories/{id}").
-		WithActionFor(actions.StoryEntry(app, storyService, userService)).
+		WithActionFor(actions.StoryEntry(storyService, userService)).
 		Build()
 }

@@ -9,44 +9,40 @@ import (
 )
 
 func Logout(
-	app *collage.App,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("logout").
 		WithPath("tr", "/logout").
 		WithMethods(http.MethodPost).
-		WithHandler(funcs.Logout(app, userService)).
+		WithHandler(funcs.Logout(userService)).
 		Build()
 }
 
 func Login(
-	app *collage.App,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("login").
 		WithMethods(http.MethodPost).
-		WithHandler(funcs.Login(app, userService)).
+		WithHandler(funcs.Login(userService)).
 		Build()
 }
 
 func Register(
-	app *collage.App,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("register").
 		WithMethods(http.MethodPost).
 		WithMaxBodyBytes(users.MaxFormBytes).
-		WithHandler(funcs.Register(app, userService)).
+		WithHandler(funcs.Register(userService)).
 		Build()
 }
 
 func ProfileUpdate(
-	app *collage.App,
 	userService *users.UserService,
 ) *collage.Action {
 	return collage.NewAction("profile").
 		WithMethods(http.MethodPost).
 		WithMaxBodyBytes(users.MaxFormBytes).
-		WithHandler(funcs.ProfileUpdate(app, userService)).
+		WithHandler(funcs.ProfileUpdate(userService)).
 		Build()
 }

@@ -12,7 +12,6 @@ import (
 
 // Returns Page with its all needs: layout, content and data
 func CreatePage(
-	app *collage.App,
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Page {
@@ -20,6 +19,6 @@ func CreatePage(
 		WithLayouts(layouts.Master(), layouts.Panel(userService)).
 		WithContent(fragments.StoryCreate()).
 		WithPath("tr", "/stories/new").
-		WithActionFor(actions.StoryCreate(app, storyService, userService)).
+		WithActionFor(actions.StoryCreate(storyService, userService)).
 		Build()
 }

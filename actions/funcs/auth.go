@@ -14,7 +14,6 @@ import (
 
 // Validates register form, creates the user and signs in
 func Register(
-	app *collage.App,
 	service *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(
@@ -64,7 +63,7 @@ func Register(
 
 		flash.Add(rc, flash.Success, "Hesabın oluşturuldu. Hoş geldin!")
 
-		home, err := app.URL("home", rc.Locale, nil)
+		home, err := rc.URL("home", nil)
 		if err != nil {
 			return nil, err
 		}
@@ -78,7 +77,6 @@ func Register(
 }
 
 func Login(
-	app *collage.App,
 	service *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(
@@ -101,7 +99,7 @@ func Login(
 
 		flash.Add(rc, flash.Success, "Tekrar hoş geldin!")
 
-		home, err := app.URL("home", rc.Locale, nil)
+		home, err := rc.URL("home", nil)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +113,6 @@ func Login(
 }
 
 func ProfileUpdate(
-	app *collage.App,
 	service *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(
@@ -154,7 +151,7 @@ func ProfileUpdate(
 			users.RemoveFile(user.ProfilePhoto)
 		}
 		flash.Add(rc, flash.Success, "Profilin güncellendi.")
-		home, err := app.URL("home", rc.Locale, nil)
+		home, err := rc.URL("home", nil)
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +160,6 @@ func ProfileUpdate(
 }
 
 func Logout(
-	app *collage.App,
 	service *users.UserService,
 ) collage.ActionHandlerFunc {
 	return func(
@@ -174,7 +170,7 @@ func Logout(
 			_ = service.Logout(cookie.Value)
 		}
 		flash.Add(rc, flash.Info, "Oturumun kapatıldı.")
-		login, err := app.URL("login", rc.Locale, nil)
+		login, err := rc.URL("login", nil)
 		if err != nil {
 			return nil, err
 		}

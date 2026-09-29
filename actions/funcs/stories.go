@@ -15,7 +15,6 @@ import (
 
 // Validates story form and creates the story with its opening
 func StoryCreate(
-	app *collage.App,
 	service *stories.StoryService,
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
@@ -51,13 +50,12 @@ func StoryCreate(
 
 		flash.Add(rc, flash.Success, "Hikâyen başladı. Sıra toplulukta!")
 
-		return redirectToStory(app, rc, story.ID)
+		return redirectToStory(rc, story.ID)
 	}
 }
 
 // Adds a new entry or edits the last one depending on entry_id
 func StoryEntry(
-	app *collage.App,
 	service *stories.StoryService,
 	userService *users.UserService,
 ) collage.ActionHandlerFunc {
@@ -66,15 +64,14 @@ func StoryEntry(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		if rc.Request.FormValue("entry_id") != "" {
-			return updateEntry(app, rc, service, userService)
+			return updateEntry(rc, service, userService)
 		}
-		return addEntry(app, rc, service, userService)
+		return addEntry(rc, service, userService)
 	}
 }
 
 // Validates and appends an entry to the story
 func addEntry(
-	app *collage.App,
 	rc *collage.RenderContext,
 	service *stories.StoryService,
 	userService *users.UserService,
@@ -104,12 +101,11 @@ func addEntry(
 		return validate.Refuse(rc, v, rc.Page), nil
 	}
 	flash.Add(rc, flash.Success, "Hikâyeye katkın eklendi.")
-	return redirectToStory(app, rc, entry.StoryID)
+	return redirectToStory(rc, entry.StoryID)
 }
 
 // Validates and updates the last entry of the current user
 func updateEntry(
-	app *collage.App,
 	rc *collage.RenderContext,
 	service *stories.StoryService,
 	userService *users.UserService,
@@ -146,7 +142,7 @@ func updateEntry(
 		return validate.Refuse(rc, v, rc.Page), nil
 	}
 	flash.Add(rc, flash.Success, "Bölümün güncellendi.")
-	return redirectToStory(app, rc, storyID)
+	return redirectToStory(rc, storyID)
 }
 
 // Gets story ID from render context
@@ -157,13 +153,11 @@ func storyIDParam(rc *collage.RenderContext) (int64, bool) {
 
 // Redirects to story detail page
 func redirectToStory(
-	app *collage.App,
 	rc *collage.RenderContext,
 	storyID int64,
 ) (*collage.ActionResult, error) {
-	location, err := app.URL(
+	location, err := rc.URL(
 		"story-detail",
-		rc.Locale,
 		map[string]string{"id": strconv.FormatInt(storyID, 10)},
 	)
 	if err != nil {

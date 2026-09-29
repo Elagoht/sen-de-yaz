@@ -18,7 +18,6 @@ import (
 
 // Returns story reading content with its data handler and entry area slot
 func StoryDetail(
-	app *collage.App,
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Fragment {
@@ -26,7 +25,7 @@ func StoryDetail(
 	return collage.NewInlineFragment("story-detail", storyDetailBlock).
 		Required().
 		WithSlotResolver("entry-area", resolveEntryArea).
-		WithDataHandler(detailData(app, storyService, userService)).
+		WithDataHandler(detailData(storyService, userService)).
 		Build()
 }
 
@@ -74,7 +73,6 @@ const storyDetailBlock collage.InlineHTML = `
 
 // Generates story details and sets SEO & metadata
 func detailData(
-	app *collage.App,
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) collage.DataHandlerFunc {
@@ -96,9 +94,8 @@ func detailData(
 			return detailView{}, err
 		}
 		// Gets story url
-		storyURL, err := app.URL(
+		storyURL, err := rc.URL(
 			"story-detail",
-			rc.Locale,
 			map[string]string{"id": strconv.FormatInt(story.ID, 10)},
 		)
 		if err != nil {

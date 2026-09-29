@@ -1,7 +1,7 @@
 # Sen de Yaz
 
 [![Go](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go&logoColor=white)](https://go.dev)
-[![collage](https://img.shields.io/badge/collage-v0.36.0-6558F5)](https://collage.furkanbaytekin.dev/en/)
+[![collage](https://img.shields.io/badge/collage-v0.37.0-6558F5)](https://collage.furkanbaytekin.dev/en/)
 [![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
 
 > Write the first sentence; let the community bring the rest.

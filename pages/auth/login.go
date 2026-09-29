@@ -11,13 +11,12 @@ import (
 
 // Returns Page with its all needs: layout, content and data
 func LoginPage(
-	app *collage.App,
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("login").
 		WithLayouts(layouts.Master(), layouts.Auth(userService)).
 		WithContent(fragments.LoginBlock()).
 		WithPath("tr", "/login").
-		WithActionFor(actions.Login(app, userService)).
+		WithActionFor(actions.Login(userService)).
 		Build()
 }

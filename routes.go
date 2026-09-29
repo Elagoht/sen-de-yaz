@@ -24,12 +24,12 @@ func register(
 	for _, page := range []*collage.Page{
 		// Register all Pages with their needs
 		panel.HomePage(userService, storyService),
-		panel.ProfilePage(app, userService),
+		panel.ProfilePage(userService),
 		storypages.ListPage(storyService, userService),
-		storypages.CreatePage(app, storyService, userService),
-		storypages.DetailPage(app, storyService, userService),
-		auth.RegisterPage(app, userService),
-		auth.LoginPage(app, userService),
+		storypages.CreatePage(storyService, userService),
+		storypages.DetailPage(storyService, userService),
+		auth.RegisterPage(userService),
+		auth.LoginPage(userService),
 		notFound,
 	} {
 		if err := app.RegisterPage(page); err != nil {
@@ -44,7 +44,7 @@ func register(
 
 	// Register all Actions which not registered specifically for a page with their needs
 	if err := app.RegisterAction(
-		funcs.Logout(app, userService),
+		funcs.Logout(userService),
 	); err != nil {
 		return fmt.Errorf("register logout action: %w", err)
 	}
