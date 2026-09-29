@@ -12,6 +12,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Types data used on this page
 type storyCard struct {
 	stories.Story
 	AuthorPhotoURL string
@@ -24,25 +25,35 @@ type homeView struct {
 	Mine     []storyCard
 }
 
-// storyCards turns stories into cards, resolving each last author's photo to an
-// absolute URL for opti-image.
+// storyCards turns stories into cards
 func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
 	cards := make([]storyCard, len(list))
 	for i, story := range list {
-		cards[i] = storyCard{Story: story, AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto)}
+		cards[i] = storyCard{
+			Story:          story,
+			AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto),
+		}
 	}
 	return cards
 }
 
-// homeData fills the dashboard and hoists the page's SEO.
-func homeData(service *users.UserService, storyService *stories.StoryService) collage.DataHandlerFunc {
+// Genreated dashboard and sets SEO & metadata
+func homeData(
+	service *users.UserService,
+	storyService *stories.StoryService,
+) collage.DataHandlerFunc {
 	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (homeView, error) {
-		rc.HoistTitle("Sen de Yaz | Birlikte yazılan hikâyeler")
+		// Sets SEO & metadata values
+		title := "Sen de Yaz | Birlikte yazılan hikâyeler"
+
+		rc.HoistTitle(title)
 		meta.Set(rc, meta.Page{
-			Title:       "Sen de Yaz | Birlikte yazılan hikâyeler",
+			Title:       title,
 			Description: "Toplulukla birlikte hikâye yaz, başkalarının anlatılarına devam et.",
 			Canonical:   "/",
 		})
+
+		// Dashboard Data
 		user, err := service.CurrentUser(rc.Request)
 		if err != nil {
 			return homeView{}, err
@@ -64,6 +75,7 @@ func homeData(service *users.UserService, storyService *stories.StoryService) co
 	})
 }
 
+// Returns Page with its all needs: layout, content and data
 func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
 	content := pages.HomeBlock().
 		WithDataHandler(homeData(service, storyService)).
