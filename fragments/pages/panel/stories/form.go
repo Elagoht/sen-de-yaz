@@ -1,13 +1,20 @@
 package fragments
 
 import (
+	"context"
+
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func StoryCreate() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-create", storyCreateBlock)
+// Returns story creation form content with its data handler
+func StoryCreate() *collage.Fragment {
+	return collage.NewInlineFragment("story-create", storyCreateBlock).
+		WithDataHandler(collage.Load(createData)).
+		Build()
 }
 
+// Story creation form markup, includes csrf and honeypot
 const storyCreateBlock collage.InlineHTML = `
 <div class="form-shell"><div class="form-intro">
 	<p class="eyebrow">Yeni başlangıç</p>
@@ -50,3 +57,15 @@ const storyCreateBlock collage.InlineHTML = `
 
 	<button class="btn btn-primary" type="submit">Hikâyeyi başlat</button>
 </form></div>`
+
+// Sets SEO & metadata
+func createData(ctx context.Context, rc *collage.RenderContext) (any, error) {
+	title := "Bir hikâye başlat | Sen de Yaz"
+	rc.HoistTitle(title)
+	meta.Set(rc, meta.Page{
+		Title:       title,
+		Description: "İlk cümleyi sen yaz, sonrasını topluluk getirsin.",
+		Canonical:   "/stories/new",
+	})
+	return nil, nil
+}

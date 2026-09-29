@@ -9,6 +9,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns story detail action, adds or edits entries
 func StoryEntry(
 	app *collage.App,
 	storyService *stories.StoryService,
@@ -20,6 +21,7 @@ func StoryEntry(
 		Build()
 }
 
+// Returns story creation form action
 func StoryCreate(
 	app *collage.App,
 	storyService *stories.StoryService,

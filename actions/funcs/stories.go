@@ -13,6 +13,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Validates story form and creates the story with its opening
 func StoryCreate(
 	app *collage.App,
 	service *stories.StoryService,
@@ -46,6 +47,7 @@ func StoryCreate(
 	}
 }
 
+// Adds a new entry or edits the last one depending on entry_id
 func StoryEntry(
 	app *collage.App,
 	service *stories.StoryService,
@@ -59,6 +61,7 @@ func StoryEntry(
 	}
 }
 
+// Validates and appends an entry to the story
 func addEntry(
 	app *collage.App,
 	rc *collage.RenderContext,
@@ -93,6 +96,7 @@ func addEntry(
 	return redirectToStory(app, rc, entry.StoryID)
 }
 
+// Validates and updates the last entry of the current user
 func updateEntry(
 	app *collage.App,
 	rc *collage.RenderContext,
@@ -134,11 +138,13 @@ func updateEntry(
 	return redirectToStory(app, rc, storyID)
 }
 
+// Gets story ID from render context
 func storyIDParam(rc *collage.RenderContext) (int64, bool) {
 	id, err := strconv.ParseInt(rc.Param("id"), 10, 64)
 	return id, err == nil && id > 0
 }
 
+// Redirects to story detail page
 func redirectToStory(
 	app *collage.App,
 	rc *collage.RenderContext,

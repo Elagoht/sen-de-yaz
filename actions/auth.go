@@ -8,6 +8,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns logout action, ends the session and redirects to login
 func Logout(app *collage.App, userService *users.UserService) *collage.Action {
 	return collage.NewAction("logout").
 		WithPath("tr", "/logout").
@@ -16,6 +17,7 @@ func Logout(app *collage.App, userService *users.UserService) *collage.Action {
 		Build()
 }
 
+// Returns login form action
 func Login(app *collage.App, userService *users.UserService) *collage.Action {
 	return collage.NewAction("login").
 		WithMethods(http.MethodPost).
@@ -23,6 +25,7 @@ func Login(app *collage.App, userService *users.UserService) *collage.Action {
 		Build()
 }
 
+// Returns register form action, allows profile photo uploads
 func Register(app *collage.App, userService *users.UserService) *collage.Action {
 	return collage.NewAction("register").
 		WithMethods(http.MethodPost).
@@ -31,6 +34,7 @@ func Register(app *collage.App, userService *users.UserService) *collage.Action 
 		Build()
 }
 
+// Returns profile form action, allows profile photo uploads
 func ProfileUpdate(app *collage.App, userService *users.UserService) *collage.Action {
 	return collage.NewAction("profile").
 		WithMethods(http.MethodPost).

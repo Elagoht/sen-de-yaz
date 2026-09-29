@@ -1,81 +1,39 @@
 package users
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
-const MaxPhotoBytes int64 = 5 << 20
-const MaxFormBytes = MaxPhotoBytes + 64<<10
-const PhotoTooLargeMessage = "Profil fotoğrafı 5 MB'dan küçük olmalı."
+// Creates a user with hashed password
+func (service *UserService) Register(fullname, email, password, profilePhoto string) (*User, error) {
+	fullname = strings.TrimSpace(fullname)
+	email = strings.ToLower(strings.TrimSpace(email))
+	if fullname == "" || email == "" || password == "" {
+		return nil, errors.New("fullname, email and password are required")
+	}
 
-func SaveOptionalFile(r *http.Request, field, directory string) (string, error) {
-	if !strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
-		return "", nil
+	var exists bool
+	if err := service.db.QueryRow(emailExistsQuery, email).Scan(&exists); err != nil {
+		return nil, err
 	}
-	file, header, err := r.FormFile(field)
-	if errors.Is(err, http.ErrMissingFile) {
-		return "", nil
+	if exists {
+		return nil, ErrEmailAlreadyExists
 	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	defer file.Close()
-	if header.Filename == "" {
-		return "", nil
-	}
-
-	if err := os.MkdirAll(directory, 0o755); err != nil {
-		return "", err
-	}
-	ext := strings.ToLower(filepath.Ext(header.Filename))
-	if !allowedImageExtension(ext) {
-		return "", errors.New("profile photo must be jpg, jpeg, png, webp or gif")
-	}
-
-	name, err := randomFileName(ext)
+	result, err := service.db.Exec(insertUserQuery, fullname, email, string(hash), profilePhoto)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	path := filepath.Join(directory, name)
-	destination, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	id, err := result.LastInsertId()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	defer destination.Close()
-
-	if _, err := io.Copy(destination, file); err != nil {
-		return "", err
-	}
-	return path, nil
-}
-
-func ProfilePhotoErrorMessage(err error) string {
-	if strings.Contains(err.Error(), "jpg, jpeg, png, webp or gif") {
-		return "JPG, JPEG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
-	}
-	return "Profil fotoğrafı yüklenemedi."
-}
-
-func allowedImageExtension(ext string) bool {
-	switch ext {
-	case ".jpg", ".jpeg", ".png", ".webp", ".gif":
-		return true
-	default:
-		return false
-	}
-}
-
-func randomFileName(ext string) (string, error) {
-	bytes := make([]byte, 16)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes) + ext, nil
+	return &User{ID: id, FullName: fullname, Email: email, PasswordHash: string(hash), ProfilePhoto: profilePhoto}, nil
 }

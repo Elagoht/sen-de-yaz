@@ -1,13 +1,28 @@
 package fragments
 
 import (
+	"context"
+
+	storydomain "sen-de-yaz/data/stories"
+
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func StoryList() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("story-list", storyListBlock)
+// Returns story list content with its data handler
+func StoryList(storyService *storydomain.StoryService) *collage.Fragment {
+	return collage.NewInlineFragment("story-list", storyListBlock).
+		WithDataHandler(listData(storyService)).
+		Build()
 }
 
+// Types data used on this page
+type listView struct {
+	Stories []storydomain.Story
+	Filter  string
+}
+
+// Story list markup with search form
 const storyListBlock collage.InlineHTML = `
 <div class="page-intro">
 	<div>
@@ -43,3 +58,27 @@ const storyListBlock collage.InlineHTML = `
 		Aramanı değiştir veya ilk hikâyeyi sen başlat.
 	</div>
 {{end}}`
+
+// Generates filtered or full story list and sets SEO & metadata
+func listData(
+	service *storydomain.StoryService,
+) collage.DataHandlerFunc {
+	return collage.Load(func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (listView, error) {
+		// SEO & metadata
+		title := "Hikâyeler | Sen de Yaz"
+		rc.HoistTitle(title)
+		meta.Set(rc, meta.Page{
+			Title:       title,
+			Description: "Sen de Yaz topluluğunun birlikte geliştirdiği hikâyeleri keşfet.",
+			Canonical:   "/stories",
+		})
+
+		// Retrieve stories
+		filter := rc.Request.URL.Query().Get("filter")
+		stories, err := service.ListStories(filter)
+		return listView{Stories: stories, Filter: filter}, err
+	})
+}

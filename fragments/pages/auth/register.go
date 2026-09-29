@@ -7,14 +7,14 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns register form content with its data handler
 func RegisterBlock() *collage.Fragment {
 	return collage.NewInlineFragment("register", registerBlock).
 		WithDataHandler(collage.Load(registerPageData)).
 		Build()
 }
 
-// Inline HTML, highlighted with extension thanks to `collage.InlineHTML`
-// Includes csrf and honeypot
+// Register form markup, includes csrf and honeypot
 const registerBlock collage.InlineHTML = `
 <div class="auth-brand">
 	<a class="brand" href="{{pageURL "home"}}">
