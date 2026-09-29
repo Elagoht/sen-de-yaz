@@ -171,20 +171,20 @@ func homeData(
 		}
 		return homeView{
 			User:     user,
-			PhotoURL: utils.PhotoURL(rc, user.ProfilePhoto),
-			Recent:   storyCards(rc, recent),
-			Mine:     storyCards(rc, mine),
+			PhotoURL: utils.PhotoURL(user.ProfilePhoto),
+			Recent:   storyCards(recent),
+			Mine:     storyCards(mine),
 		}, nil
 	})
 }
 
 // Helper function converts stories into cards
-func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
+func storyCards(list []stories.Story) []storyCard {
 	cards := make([]storyCard, len(list))
 	for i, story := range list {
 		cards[i] = storyCard{
 			Story:          story,
-			AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto),
+			AuthorPhotoURL: utils.PhotoURL(story.LastAuthorPhoto),
 		}
 	}
 	return cards

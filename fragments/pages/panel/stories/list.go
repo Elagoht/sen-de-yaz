@@ -45,7 +45,7 @@ const storyListBlock collage.InlineHTML = `
 			<a class="story-row" href="{{pageURL "story-detail" "id" .ID}}">
 				<div class="story-row-top">
 					<h2 class="story-row-title">{{.Title}}</h2>
-					<small class="story-time">{{.UpdatedAt}}</small>
+					<small class="story-time">{{.UpdatedLabel}}</small>
 				</div>
 
 				<p class="story-theme">{{.Theme}}</p>

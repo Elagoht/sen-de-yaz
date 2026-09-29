@@ -13,7 +13,7 @@ const (
 	selectStoriesQuery = `
 		SELECT id, creator_id, title, theme, created_at, updated_at
 		FROM stories
-		WHERE ? = '' OR LOWER(title) LIKE ? OR LOWER(theme) LIKE ?
+		WHERE ? = '' OR tr_lower(title) LIKE ? ESCAPE '\' OR tr_lower(theme) LIKE ? ESCAPE '\'
 		ORDER BY updated_at DESC, id DESC`
 )
 

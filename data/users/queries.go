@@ -21,5 +21,7 @@ const (
 
 	deleteSessionQuery = `DELETE FROM sessions WHERE token = ?`
 
-	selectSessionUserQuery = `SELECT user_id FROM sessions WHERE token = ?`
+	selectSessionUserQuery = `SELECT user_id FROM sessions WHERE token = ? AND created_at > ?`
+
+	deleteExpiredSessionsQuery = `DELETE FROM sessions WHERE created_at <= ?`
 )

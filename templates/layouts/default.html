@@ -14,7 +14,7 @@
       {{end}}
     </div>
     {{slot "content"}}
-    <script>
+    <script nonce="{{cspNonce}}">
       document.querySelectorAll(".flash").forEach((toast) => {
         window.setTimeout(() => {
           toast.remove();

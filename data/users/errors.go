@@ -1,9 +1,6 @@
 package users
 
-import (
-	"errors"
-	"strings"
-)
+import "errors"
 
 // User domain errors
 var (
@@ -14,8 +11,12 @@ var (
 
 // Maps profile photo errors to user messages
 func ProfilePhotoErrorMessage(err error) string {
-	if strings.Contains(err.Error(), "jpg, jpeg, png, webp or gif") {
-		return "JPG, JPEG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
+	switch {
+	case errors.Is(err, ErrUnsupportedPhoto):
+		return "JPG, PNG, WEBP veya GIF formatında bir fotoğraf seçin."
+	case errors.Is(err, ErrPhotoTooLarge):
+		return "Profil fotoğrafı 5 MB'dan küçük olmalı."
+	default:
+		return "Profil fotoğrafı yüklenemedi."
 	}
-	return "Profil fotoğrafı yüklenemedi."
 }

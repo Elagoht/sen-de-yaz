@@ -10,7 +10,11 @@ import (
 
 // Appends an entry unless the last author is the same user
 func (service *StoryService) AddEntry(storyID, authorID int64, body string) (*Entry, error) {
-	if utf8.RuneCountInString(strings.TrimSpace(body)) > 140 {
+	body = strings.TrimSpace(body)
+	if body == "" {
+		return nil, ErrRequiredField
+	}
+	if utf8.RuneCountInString(body) > 140 {
 		return nil, ErrEntryTooLong
 	}
 	transaction, err := service.db.Begin()
@@ -55,7 +59,11 @@ func (service *StoryService) AddEntry(storyID, authorID int64, body string) (*En
 
 // Updates the entry only if it is still the last one
 func (service *StoryService) UpdateLastEntry(storyID, authorID, entryID int64, body string) error {
-	if utf8.RuneCountInString(strings.TrimSpace(body)) > 140 {
+	body = strings.TrimSpace(body)
+	if body == "" {
+		return ErrRequiredField
+	}
+	if utf8.RuneCountInString(body) > 140 {
 		return ErrEntryTooLong
 	}
 	transaction, err := service.db.Begin()

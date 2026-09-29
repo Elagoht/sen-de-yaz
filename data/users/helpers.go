@@ -2,7 +2,9 @@ package users
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
+	"time"
 )
 
 // Helper function finds user by email
@@ -42,14 +44,16 @@ func newToken() (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-// Checks if extension is a supported image type
-func allowedImageExtension(ext string) bool {
-	switch ext {
-	case ".jpg", ".jpeg", ".png", ".webp", ".gif":
-		return true
-	default:
-		return false
-	}
+// Hashes a session token, the database keeps only hashes so a leaked copy
+// signs no one in
+func hashToken(token string) string {
+	sum := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(sum[:])
+}
+
+// Oldest creation time a live session may have, in the database's format
+func sessionCutoff() string {
+	return time.Now().UTC().Add(-SessionLifetime).Format(time.DateTime)
 }
 
 // Generates a random file name with given extension

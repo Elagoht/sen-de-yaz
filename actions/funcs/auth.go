@@ -22,10 +22,6 @@ func Register(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
-		if rc.Request.ContentLength > users.MaxPhotoBytes {
-			v.Fail("profile_photo", users.PhotoTooLargeMessage)
-			return validate.Refuse(rc, v, rc.Page), nil
-		}
 		v.Field("fullname").Required().Message("Ad soyad alanı zorunludur.")
 		v.Field("email").Required().Message("E-posta alanı zorunludur.").
 			Email().Message("Geçerli bir e-posta adresi girin.")
@@ -50,6 +46,8 @@ func Register(
 			profilePhoto,
 		)
 		if err != nil {
+			// No user holds the photo, so it would stay on disk forever
+			users.RemoveFile(profilePhoto)
 			if errors.Is(err, users.ErrEmailAlreadyExists) {
 				v.Fail("email", "Bu e-posta zaten kayıtlı.")
 			} else {
@@ -73,7 +71,7 @@ func Register(
 		return &collage.ActionResult{
 			Location: home,
 			Header: http.Header{
-				"Set-Cookie": []string{users.SessionCookie(token).String()},
+				"Set-Cookie": []string{service.SessionCookie(token).String()},
 			},
 		}, nil
 	}
@@ -110,7 +108,7 @@ func Login(
 		return &collage.ActionResult{
 			Location: home,
 			Header: http.Header{
-				"Set-Cookie": []string{users.SessionCookie(token).String()},
+				"Set-Cookie": []string{service.SessionCookie(token).String()},
 			},
 		}, nil
 	}
@@ -125,10 +123,6 @@ func ProfileUpdate(
 		rc *collage.RenderContext,
 	) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
-		if rc.Request.ContentLength > users.MaxPhotoBytes {
-			v.Fail("profile_photo", users.PhotoTooLargeMessage)
-			return validate.Refuse(rc, v, rc.Page), nil
-		}
 		user, err := service.CurrentUser(rc.Request)
 		if err != nil {
 			return nil, err
@@ -151,8 +145,13 @@ func ProfileUpdate(
 			v.Value("fullname"),
 			profilePhoto,
 		); err != nil {
+			users.RemoveFile(profilePhoto)
 			v.Fail("fullname", "Ad soyad alanı zorunludur.")
 			return validate.Refuse(rc, v, rc.Page), nil
+		}
+		// A new photo replaces the old one, which nothing points at anymore
+		if profilePhoto != "" {
+			users.RemoveFile(user.ProfilePhoto)
 		}
 		flash.Add(rc, flash.Success, "Profilin güncellendi.")
 		home, err := app.URL("home", rc.Locale, nil)
@@ -182,7 +181,7 @@ func Logout(
 		return &collage.ActionResult{
 			Location: login,
 			Header: http.Header{
-				"Set-Cookie": []string{users.ClearSessionCookie().String()},
+				"Set-Cookie": []string{service.ClearSessionCookie().String()},
 			},
 		}, nil
 	}

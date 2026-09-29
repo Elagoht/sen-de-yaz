@@ -43,7 +43,7 @@ const registerBlock collage.InlineHTML = `
 
 	<label class="form-label">
 		Şifre
-		<input class="field" name="password" type="password" value="{{fieldValue "password"}}" required/>
+		<input class="field" name="password" type="password" required/>
 	</label>
 	{{with fieldError "password"}}
 		<small class="field-error">{{.}}</small>

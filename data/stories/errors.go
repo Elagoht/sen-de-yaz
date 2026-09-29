@@ -34,6 +34,8 @@ func EntryErrorMessage(err error) string {
 		return "Bu hikâyeye devam etmeden önce başka bir kullanıcı yazmalı."
 	case errors.Is(err, ErrEntryTooLong):
 		return "Devam metni 140 karakterden uzun olamaz."
+	case errors.Is(err, ErrRequiredField):
+		return "Devam metni zorunludur."
 	default:
 		return "Devam metni eklenemedi."
 	}

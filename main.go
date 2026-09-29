@@ -13,6 +13,7 @@ import (
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/utils"
+	"strings"
 	"time"
 
 	accesslog "github.com/Elagoht/collage-accesslog"
@@ -48,11 +49,18 @@ var staticFS embed.FS
 // Disk cache directory
 var cacheDir = ".cache"
 
-// Loads env, initializes services and serves or builds the app
+// Runs the app; exits only after run's deferred cleanup is done
 func main() {
+	os.Exit(run())
+}
+
+// Loads env, initializes services and serves or builds the app, returns the
+// exit code
+func run() int {
 	// Load ENV files. Do not accept not having one.
 	if file, err := utils.LoadEnvFile("."); err != nil {
-		log.Fatalf("sen-de-yaz: %v", err)
+		log.Printf("sen-de-yaz: %v", err)
+		return 1
 	} else if file != "" {
 		log.Printf("sen-de-yaz: loaded environment from %s", file)
 	}
@@ -60,7 +68,8 @@ func main() {
 	// Initialize database and services
 	database, usersService, storiesService, err := initializeDomains("app.sqlite")
 	if err != nil {
-		log.Fatalf("sen-de-yaz: initialize database: %v", err)
+		log.Printf("sen-de-yaz: initialize database: %v", err)
+		return 1
 	} // Don't forget to close it on shutdown
 	defer database.Close()
 
@@ -75,7 +84,8 @@ func main() {
 	devMode := os.Getenv("COLLAGE_DEV") == "1"
 	app, err := newApp(devMode, *portFlag, usersService, storiesService)
 	if err != nil {
-		log.Fatalf("sen-de-yaz: %v", err)
+		log.Printf("sen-de-yaz: %v", err)
+		return 1
 	}
 
 	// Dispatch flag commands
@@ -84,21 +94,24 @@ func main() {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "sen-de-yaz: %v\n", err)
 		}
-		os.Exit(code)
+		return code
 	}
 
 	// Build App if needed
 	if *buildFlag {
 		if err := staticBuild(app, *outFlag, *cleanFlag); err != nil {
-			log.Fatalf("sen-de-yaz: static build: %v", err)
+			log.Printf("sen-de-yaz: static build: %v", err)
+			return 1
 		}
-		return
+		return 0
 	}
 
 	// If not closed yet, run the app
 	if err := app.ListenAndServe(); err != nil {
-		log.Fatalf("sen-de-yaz: %v", err)
+		log.Printf("sen-de-yaz: %v", err)
+		return 1
 	}
+	return 0
 }
 
 // Initialize database and services
@@ -110,9 +123,11 @@ func initializeDomains(path string) (
 ) {
 	database, err := db.Open(path)
 	if err != nil {
-		log.Fatal("sen-de-yaz: Database nor services cannot be initialized")
+		return nil, nil, nil, err
 	}
-	return database, users.NewService(database), stories.NewService(database), nil
+	// Session cookies are Secure when the site is served over HTTPS
+	secureCookies := strings.HasPrefix(utils.EnvString("BASE_URL"), "https://")
+	return database, users.NewService(database, secureCookies), stories.NewService(database), nil
 }
 
 // Create Collage App with project specific needs
@@ -145,7 +160,10 @@ func newApp(
 			BackgroundColor: "#f7f8fc",
 		}),
 		// Defines security headers
-		secure.New(secure.Options{}),
+		// Inline scripts run only with {{cspNonce}}; dev mode only reports
+		secure.New(secure.Options{
+			CSP: "default-src 'self'; script-src 'self' 'nonce-{nonce}'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'",
+		}),
 		// Creates rate limits
 		ratelimit.New(ratelimit.Options{}),
 		// Compresses the responses with brotli or gzip depending on Accept-Encoding
@@ -165,14 +183,15 @@ func newApp(
 			DefaultImage:    "/assets/icon.png",
 			DefaultImageAlt: "Sen de Yaz logosu",
 		}),
-		// Structured Json-LD meta data for pages
-		jsonld.New(),
+		// Structured Json-LD meta data for pages, a WebSite node on every page
+		jsonld.NewWith(jsonld.Config{SiteName: "Sen de Yaz", SiteURL: baseURL}),
 		// Robots.txt creation
 		robots.New(robots.Options{}),
-		// Sitemap creation
+		// Sitemap creation. Panel pages need a session, a crawler only ever
+		// gets the login redirect there, so only the public pages are listed.
 		sitemap.New(sitemap.Options{
 			BaseURL: baseURL,
-			Exclude: []string{"login", "register", "profile", "story-create"},
+			Exclude: []string{"home", "profile", "stories", "story-create", "story-detail"},
 		}),
 		// Minimize html, css, js, json responses
 		minimizer.New(),

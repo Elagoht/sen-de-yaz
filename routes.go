@@ -9,6 +9,7 @@ import (
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/pages/auth"
+	errorpages "sen-de-yaz/pages/errors"
 	"sen-de-yaz/pages/panel"
 	storypages "sen-de-yaz/pages/panel/stories"
 )
@@ -19,6 +20,7 @@ func register(
 	userService *users.UserService,
 	storyService *stories.StoryService,
 ) error {
+	notFound := errorpages.NotFoundPage()
 	for _, page := range []*collage.Page{
 		// Register all Pages with their needs
 		panel.HomePage(userService, storyService),
@@ -28,10 +30,16 @@ func register(
 		storypages.DetailPage(app, storyService, userService),
 		auth.RegisterPage(app, userService),
 		auth.LoginPage(app, userService),
+		notFound,
 	} {
 		if err := app.RegisterPage(page); err != nil {
 			return fmt.Errorf("register page %q: %w", page.Name, err)
 		}
+	}
+
+	// Every 404, an unknown URL or a missing story, renders this page
+	if err := app.RegisterNotFoundPage(notFound); err != nil {
+		return fmt.Errorf("register not-found page: %w", err)
 	}
 
 	// Register all Actions which not registered specifically for a page with their needs

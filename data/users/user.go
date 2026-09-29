@@ -2,9 +2,10 @@ package users
 
 import "database/sql"
 
-// Creates user service on given database
-func NewService(database *sql.DB) *UserService {
-	return &UserService{db: database}
+// Creates user service on given database, secureCookies marks session
+// cookies Secure and is meant for sites served over HTTPS
+func NewService(database *sql.DB, secureCookies bool) *UserService {
+	return &UserService{db: database, secureCookies: secureCookies}
 }
 
 // Registered user
@@ -18,5 +19,6 @@ type User struct {
 
 // Handles user and session database operations
 type UserService struct {
-	db *sql.DB
+	db            *sql.DB
+	secureCookies bool
 }

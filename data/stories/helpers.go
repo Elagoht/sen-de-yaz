@@ -3,7 +3,15 @@ package stories
 import (
 	"database/sql"
 	"errors"
+	"strconv"
+	"time"
 )
+
+// Turkey keeps UTC+3 all year; a fixed zone needs no tzdata on the server
+var turkeyTime = time.FixedZone("TRT", 3*60*60)
+
+// Short Turkish month names, indexed by time.Month
+var monthNames = [...]string{"", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"}
 
 // Helper function finds a story without its entries
 func (service *StoryService) findStory(id int64) (*Story, error) {
@@ -85,8 +93,14 @@ func (service *StoryService) listDashboardStories(condition string, limit int, a
 		); err != nil {
 			return nil, err
 		}
-		story.LastEntryLabel = story.LastEntryAt.Format("Jan 2, 15:04")
+		story.LastEntryLabel = dateLabel(story.LastEntryAt)
 		result = append(result, story)
 	}
 	return result, rows.Err()
+}
+
+// Formats a stored UTC time as Turkish local time, like "29 Eyl, 13:04"
+func dateLabel(t time.Time) string {
+	local := t.In(turkeyTime)
+	return strconv.Itoa(local.Day()) + " " + monthNames[local.Month()] + ", " + local.Format("15:04")
 }

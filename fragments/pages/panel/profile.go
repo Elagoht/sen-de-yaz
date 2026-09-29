@@ -84,7 +84,7 @@ func profileData(service *users.UserService) collage.DataHandlerFunc {
 		}
 		return profileView{
 			User:     user,
-			PhotoURL: utils.PhotoURL(rc, user.ProfilePhoto),
+			PhotoURL: utils.PhotoURL(user.ProfilePhoto),
 		}, nil
 	})
 }

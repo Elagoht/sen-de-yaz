@@ -3,7 +3,6 @@ package fragments
 import (
 	"context"
 
-	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
@@ -35,7 +34,7 @@ const loginBlock collage.InlineHTML = `
 
 	<label class="form-label">
 		Şifre
-		<input class="field" name="password" type="password" value="{{fieldValue "password"}}" required/>
+		<input class="field" name="password" type="password" required/>
 	</label>
 	{{with fieldError "password"}}
 		<small class="field-error">{{.}}</small>
@@ -60,6 +59,5 @@ func loginPageData(ctx context.Context, rc *collage.RenderContext) (any, error) 
 		Description: "Sen de Yaz hesabına giriş yap ve topluluk hikâyelerine devam et.",
 		Canonical:   "/login",
 	})
-	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
 	return nil, nil
 }

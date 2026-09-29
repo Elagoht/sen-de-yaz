@@ -9,14 +9,29 @@ import (
 	"strings"
 )
 
-// Upload limits and messages
+// Upload limits. The form limit leaves room above the photo's own, so an
+// oversized photo still reaches the handler and gets a message, not a 413.
 const (
-	MaxPhotoBytes        int64 = 5 << 20
-	MaxFormBytes               = MaxPhotoBytes + 64<<10
-	PhotoTooLargeMessage       = "Profil fotoğrafı 5 MB'dan küçük olmalı."
+	MaxPhotoBytes int64 = 5 << 20
+	MaxFormBytes        = 2 * MaxPhotoBytes
 )
 
-// Saves uploaded image with a random name, returns empty path if no file
+// Profile photo errors
+var (
+	ErrPhotoTooLarge    = errors.New("profile photo is too large")
+	ErrUnsupportedPhoto = errors.New("profile photo must be jpg, png, webp or gif")
+)
+
+// Extensions of the image types a profile photo may be, by sniffed content type
+var photoExtensions = map[string]string{
+	"image/jpeg": ".jpg",
+	"image/png":  ".png",
+	"image/webp": ".webp",
+	"image/gif":  ".gif",
+}
+
+// Saves uploaded image with a random name, returns empty path if no file.
+// The type is read from the file's content, not from its name.
 func SaveOptionalFile(
 	r *http.Request,
 	field string,
@@ -36,15 +51,26 @@ func SaveOptionalFile(
 	if header.Filename == "" {
 		return "", nil
 	}
+	if header.Size > MaxPhotoBytes {
+		return "", ErrPhotoTooLarge
+	}
+
+	head := make([]byte, 512)
+	n, err := io.ReadFull(file, head)
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, io.EOF) {
+		return "", err
+	}
+	ext, ok := photoExtensions[http.DetectContentType(head[:n])]
+	if !ok {
+		return "", ErrUnsupportedPhoto
+	}
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return "", err
+	}
 
 	if err := os.MkdirAll(directory, 0o755); err != nil {
 		return "", err
 	}
-	ext := strings.ToLower(filepath.Ext(header.Filename))
-	if !allowedImageExtension(ext) {
-		return "", errors.New("profile photo must be jpg, jpeg, png, webp or gif")
-	}
-
 	name, err := randomFileName(ext)
 	if err != nil {
 		return "", err
@@ -54,10 +80,21 @@ func SaveOptionalFile(
 	if err != nil {
 		return "", err
 	}
-	defer destination.Close()
-
 	if _, err := io.Copy(destination, file); err != nil {
+		_ = destination.Close()
+		_ = os.Remove(path)
+		return "", err
+	}
+	if err := destination.Close(); err != nil {
+		_ = os.Remove(path)
 		return "", err
 	}
 	return path, nil
+}
+
+// Removes a saved upload; an empty path is a no-op
+func RemoveFile(path string) {
+	if path != "" {
+		_ = os.Remove(path)
+	}
 }

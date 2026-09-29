@@ -1,19 +1,19 @@
 package utils
 
 import (
-	"github.com/Elagoht/collage/pkg/collage"
+	"path/filepath"
+	"strings"
 )
 
-// Gets urls of profile photos
-func PhotoURL(rc *collage.RenderContext, path string) string {
+// Gets urls of profile photos. Absolute, so opti-image can optimize them,
+// and built on BASE_URL rather than the request's Host header, which the
+// client chooses.
+func PhotoURL(path string) string {
 	if path == "" {
 		return ""
 	}
-	scheme := "http"
-	if rc.Request.TLS != nil {
-		scheme = "https"
-	} else if proto := rc.Request.Header.Get("X-Forwarded-Proto"); proto != "" {
-		scheme = proto
-	}
-	return scheme + "://" + rc.Request.Host + "/" + path
+	return strings.TrimSuffix(
+		EnvString("BASE_URL"),
+		"/",
+	) + "/" + filepath.ToSlash(path)
 }

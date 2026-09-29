@@ -2,7 +2,10 @@ package fragments
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strconv"
+	"strings"
 
 	storydomain "sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
@@ -19,7 +22,9 @@ func StoryDetail(
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Fragment {
+	// Required, so a missing story renders the not-found page with a 404
 	return collage.NewInlineFragment("story-detail", storyDetailBlock).
+		Required().
 		WithSlotResolver("entry-area", resolveEntryArea).
 		WithDataHandler(detailData(app, storyService, userService)).
 		Build()
@@ -34,46 +39,38 @@ type entryView struct {
 }
 
 type detailView struct {
-	Story    *storydomain.Story
-	Entries  []entryView
-	NotFound bool
+	Story   *storydomain.Story
+	Entries []entryView
 }
 
 // Story reading markup, entry area is resolved into its slot
 const storyDetailBlock collage.InlineHTML = `
-{{if .NotFound}}
-	<div class="empty-state">
-		<p>Hikâye bulunamadı.</p>
-		<a class="text-link" href="{{pageURL "stories"}}">Hikâyelere dön</a>
-	</div>
-{{else}}
-	<div class="reading-shell">
-		<div class="reading-head">
-			<div>
-				<p class="eyebrow">Hikâye</p>
-				<h1 class="reading-title">{{.Story.Title}}</h1>
-				<p class="page-subtitle">{{.Story.Theme}}</p>
-			</div>
-			<a class="text-link" href="{{pageURL "stories"}}">← Tüm hikâyeler</a>
+<div class="reading-shell">
+	<div class="reading-head">
+		<div>
+			<p class="eyebrow">Hikâye</p>
+			<h1 class="reading-title">{{.Story.Title}}</h1>
+			<p class="page-subtitle">{{.Story.Theme}}</p>
 		</div>
-		<div class="entries">
-			{{range .Entries}}
-				<article class="entry">
-					<div class="entry-number">#{{.Sequence}}</div>
-					<div>
-						<div class="entry-head">
-							{{if .PhotoURL}}<img class="entry-avatar" width="24" height="24" src="{{.PhotoURL}}" alt="">{{end}}
-							<p class="entry-author">{{.Author}}</p>
-							{{if .CanEdit}}<button type="button" class="entry-edit" title="Düzenle" aria-label="Düzenle">✎</button>{{end}}
-						</div>
-						<p class="entry-body">{{.Body}}</p>
+		<a class="text-link" href="{{pageURL "stories"}}">← Tüm hikâyeler</a>
+	</div>
+	<div class="entries">
+		{{range .Entries}}
+			<article class="entry">
+				<div class="entry-number">#{{.Sequence}}</div>
+				<div>
+					<div class="entry-head">
+						{{if .PhotoURL}}<img class="entry-avatar" width="24" height="24" src="{{.PhotoURL}}" alt="">{{end}}
+						<p class="entry-author">{{.Author}}</p>
+						{{if .CanEdit}}<button type="button" class="entry-edit" title="Düzenle" aria-label="Düzenle">✎</button>{{end}}
 					</div>
-				</article>
-			{{end}}
-		</div>
-		{{slot "entry-area"}}
+					<p class="entry-body">{{.Body}}</p>
+				</div>
+			</article>
+		{{end}}
 	</div>
-{{end}}`
+	{{slot "entry-area"}}
+</div>`
 
 // Generates story details and sets SEO & metadata
 func detailData(
@@ -88,12 +85,12 @@ func detailData(
 		// Checks story id from render context
 		id, ok := storyID(rc)
 		if !ok {
-			return detailView{NotFound: true}, nil
+			return detailView{}, fmt.Errorf("story %q: %w", rc.Param("id"), collage.ErrNotFound)
 		}
 		// Gets story from service
 		story, entries, err := storyService.GetStory(id)
-		if err == storydomain.ErrStoryNotFound {
-			return detailView{NotFound: true}, nil
+		if errors.Is(err, storydomain.ErrStoryNotFound) {
+			return detailView{}, fmt.Errorf("story %d: %w", id, collage.ErrNotFound)
 		}
 		if err != nil {
 			return detailView{}, err
@@ -128,7 +125,7 @@ func detailData(
 		jsonld.Emit(rc, jsonld.Article{
 			Headline:      story.Title,
 			Description:   story.Theme,
-			URL:           storyURL,
+			URL:           strings.TrimSuffix(utils.EnvString("BASE_URL"), "/") + storyURL,
 			Section:       "Hikâyeler",
 			DatePublished: story.CreatedAt,
 			DateModified:  story.UpdatedAt,
@@ -149,7 +146,7 @@ func detailData(
 		for i, entry := range entries {
 			views[i] = entryView{
 				Entry:    entry,
-				PhotoURL: utils.PhotoURL(rc, entry.AuthorPhoto),
+				PhotoURL: utils.PhotoURL(entry.AuthorPhoto),
 				IsLast:   i == len(entries)-1,
 				CanEdit:  i == len(entries)-1 && entry.AuthorID == user.ID,
 			}

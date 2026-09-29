@@ -25,10 +25,10 @@ func (service *StoryService) CreateStory(
 	if title == "" || theme == "" || opening == "" {
 		return nil, ErrRequiredField
 	}
-	if utf8.RuneCountInString(strings.TrimSpace(theme)) > 100 {
+	if utf8.RuneCountInString(theme) > 100 {
 		return nil, ErrThemeTooLong
 	}
-	if utf8.RuneCountInString(strings.TrimSpace(opening)) > 500 {
+	if utf8.RuneCountInString(opening) > 500 {
 		return nil, ErrOpeningTooLong
 	}
 	transaction, err := service.db.Begin()
@@ -90,6 +90,7 @@ type Story struct {
 	Theme           string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
+	UpdatedLabel    string
 	LastBody        string
 	LastAuthor      string
 	LastAuthorPhoto string

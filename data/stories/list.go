@@ -1,11 +1,19 @@
 package stories
 
-import "strings"
+import (
+	"strings"
+
+	"sen-de-yaz/data/db"
+)
+
+// Escapes LIKE wildcards so a search for "%" finds a percent sign
+var likeEscaper = strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
 
 // Lists stories filtered by title or theme
 func (service *StoryService) ListStories(filter string) ([]Story, error) {
-	pattern := "%" + strings.ToLower(strings.TrimSpace(filter)) + "%"
-	rows, err := service.db.Query(selectStoriesQuery, strings.TrimSpace(filter), pattern, pattern)
+	filter = strings.TrimSpace(filter)
+	pattern := "%" + likeEscaper.Replace(db.LowerTurkish(filter)) + "%"
+	rows, err := service.db.Query(selectStoriesQuery, filter, pattern, pattern)
 	if err != nil {
 		return nil, err
 	}
@@ -17,6 +25,7 @@ func (service *StoryService) ListStories(filter string) ([]Story, error) {
 		if err := rows.Scan(&story.ID, &story.CreatorID, &story.Title, &story.Theme, &story.CreatedAt, &story.UpdatedAt); err != nil {
 			return nil, err
 		}
+		story.UpdatedLabel = dateLabel(story.UpdatedAt)
 		result = append(result, story)
 	}
 	return result, rows.Err()
