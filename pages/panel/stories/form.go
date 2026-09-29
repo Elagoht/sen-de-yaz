@@ -2,7 +2,6 @@ package stories
 
 import (
 	"context"
-	"net/http"
 
 	"sen-de-yaz/actions"
 	storydomain "sen-de-yaz/data/stories"
@@ -15,10 +14,6 @@ import (
 )
 
 func CreatePage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-	action := collage.NewAction("story-create").
-		WithMethods(http.MethodPost).
-		WithHandler(actions.CreateStoryAction(app, storyService, userService)).
-		Build()
 	return collage.NewPage("story-create").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(stories.StoryCreateBlock().
@@ -26,7 +21,7 @@ func CreatePage(app *collage.App, storyService *storydomain.StoryService, userSe
 			Build(),
 		).
 		WithPath("tr", "/stories/new").
-		WithActionFor(action).
+		WithActionFor(actions.StoryCreate(app, storyService, userService)).
 		Build()
 }
 

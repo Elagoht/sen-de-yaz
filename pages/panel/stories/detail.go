@@ -2,7 +2,6 @@ package stories
 
 import (
 	"context"
-	"net/http"
 	"strconv"
 
 	"sen-de-yaz/actions"
@@ -19,10 +18,6 @@ import (
 
 // Page
 func DetailPage(app *collage.App, storyService *storydomain.StoryService, userService *users.UserService) *collage.Page {
-	entryAction := collage.NewAction("story-detail").
-		WithMethods(http.MethodPost).
-		WithHandler(actions.StoryEntryAction(app, storyService, userService)).
-		Build()
 
 	return collage.NewPage("story-detail").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
@@ -31,7 +26,7 @@ func DetailPage(app *collage.App, storyService *storydomain.StoryService, userSe
 			Build(),
 		).
 		WithPath("tr", "/stories/{id}").
-		WithActionFor(entryAction).
+		WithActionFor(actions.StoryEntry(app, storyService, userService)).
 		Build()
 }
 

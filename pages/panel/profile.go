@@ -2,7 +2,6 @@ package panel
 
 import (
 	"context"
-	"net/http"
 	"sen-de-yaz/actions"
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
@@ -14,12 +13,6 @@ import (
 )
 
 func ProfilePage(app *collage.App, userService *users.UserService) *collage.Page {
-	profileAction := collage.NewAction("profile").
-		WithMethods(http.MethodPost).
-		WithMaxBodyBytes(users.MaxFormBytes).
-		WithHandler(actions.UpdateProfileAction(app, userService)).
-		Build()
-
 	return collage.NewPage("profile").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(userService)).
 		WithContent(pages.ProfileBlock().
@@ -27,7 +20,7 @@ func ProfilePage(app *collage.App, userService *users.UserService) *collage.Page
 			Build(),
 		).
 		WithPath("tr", "/profile").
-		WithActionFor(profileAction).
+		WithActionFor(actions.ProfileUpdate(app, userService)).
 		Build()
 }
 
@@ -36,8 +29,6 @@ type profileView struct {
 	PhotoURL string
 }
 
-// profileData fills the profile form and hoists the page's SEO; field errors
-// reach the template through the validate plugin's fieldError.
 func profileData(service *users.UserService) collage.DataHandlerFunc {
 	return collage.Load(func(ctx context.Context, rc *collage.RenderContext) (profileView, error) {
 		rc.HoistTitle("Profilini düzenle | Sen de Yaz")
