@@ -10,7 +10,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages/stories"
-	"sen-de-yaz/utilities"
+	"sen-de-yaz/utils"
 
 	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
@@ -102,7 +102,7 @@ func detailData(app *collage.App, storyService *storydomain.StoryService, userSe
 		for i, entry := range entries {
 			views[i] = entryView{
 				Entry:    entry,
-				PhotoURL: utilities.PhotoURL(rc, entry.AuthorPhoto),
+				PhotoURL: utils.PhotoURL(rc, entry.AuthorPhoto),
 				IsLast:   i == len(entries)-1,
 				CanEdit:  i == len(entries)-1 && entry.AuthorID == user.ID,
 			}

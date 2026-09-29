@@ -12,7 +12,7 @@ import (
 	"sen-de-yaz/data/db"
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
-	"sen-de-yaz/utilities"
+	"sen-de-yaz/utils"
 	"time"
 
 	accesslog "github.com/Elagoht/collage-accesslog"
@@ -48,7 +48,7 @@ var staticFS embed.FS
 var cacheDir = ".cache"
 
 func main() {
-	if file, err := utilities.LoadEnvFile("."); err != nil {
+	if file, err := utils.LoadEnvFile("."); err != nil {
 		log.Fatalf("sen-de-yaz: %v", err)
 	} else if file != "" {
 		log.Printf("sen-de-yaz: loaded environment from %s", file)
@@ -63,7 +63,7 @@ func main() {
 	buildFlag := flag.Bool("collage-build", false, "render the app to static files instead of serving it")
 	outFlag := flag.String("out", "dist", "output directory for -collage-build")
 	cleanFlag := flag.Bool("clean", false, "remove -out's existing contents before building")
-	portFlag := flag.Int("port", utilities.EnvInt("PORT"), "port to listen on (env PORT)")
+	portFlag := flag.Int("port", utils.EnvInt("PORT"), "port to listen on (env PORT)")
 	flag.Parse()
 
 	devMode := os.Getenv("COLLAGE_DEV") == "1"
@@ -114,7 +114,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		csrfKey = "sen-de-yaz-development-csrf-key-change-me"
 	}
 
-	baseURL := utilities.EnvString("BASE_URL")
+	baseURL := utils.EnvString("BASE_URL")
 	plugins := []collage.Plugin{
 		favicon.New(favicon.Options{
 			FS:              assetsFS,
@@ -131,13 +131,13 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 		// plugins see and can update the uncompressed HTML response.
 		compress.New(compress.Options{}),
 		honeypot.New(honeypot.Options{
-			Key: []byte(utilities.EnvString("COLLAGE_HONEYPOT_KEY")),
+			Key: []byte(utils.EnvString("COLLAGE_HONEYPOT_KEY")),
 			// Paths learn themselves from the {{honeypot}} forms the app
 			// serves; a new POST form is covered without touching this file.
 			// One trade-off: after a restart, a path is only checked once its
 			// page has been served.
 		}),
-		flash.New(flash.Options{Key: []byte(utilities.EnvString("COLLAGE_FLASH_KEY"))}),
+		flash.New(flash.Options{Key: []byte(utils.EnvString("COLLAGE_FLASH_KEY"))}),
 		validate.New(validate.Options{}),
 		meta.New(meta.Options{
 			SiteName:        "Sen de Yaz",
@@ -165,7 +165,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 	app, err := collage.New(&collage.Config{
 		DevMode: devMode,
 		Server: collage.ServerConfig{
-			Host: utilities.EnvString("HOST"),
+			Host: utils.EnvString("HOST"),
 			Port: port,
 		},
 		Template: collage.TemplateConfig{

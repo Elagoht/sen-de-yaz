@@ -1,4 +1,4 @@
-package utilities
+package utils
 
 import (
 	"github.com/Elagoht/collage/pkg/collage"

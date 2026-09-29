@@ -47,7 +47,7 @@ fragments/      templates and view layer: layouts/ for skeletons, pages/ for con
 actions/        POST handlers: validation, service calls, redirects
 data/           domain model and services: users/, stories/, sqlite setup
 guards/         pre-request checks (e.g. a required session)
-utilities/      small shared helpers (photo URLs, env loading)
+utils/      small shared helpers (photo URLs, env loading)
 ```
 
 ## What it is built on

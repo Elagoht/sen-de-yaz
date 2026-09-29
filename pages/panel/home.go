@@ -6,7 +6,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages"
-	"sen-de-yaz/utilities"
+	"sen-de-yaz/utils"
 
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
@@ -29,7 +29,7 @@ type homeView struct {
 func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
 	cards := make([]storyCard, len(list))
 	for i, story := range list {
-		cards[i] = storyCard{Story: story, AuthorPhotoURL: utilities.PhotoURL(rc, story.LastAuthorPhoto)}
+		cards[i] = storyCard{Story: story, AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto)}
 	}
 	return cards
 }
@@ -57,7 +57,7 @@ func homeData(service *users.UserService, storyService *stories.StoryService) co
 		}
 		return homeView{
 			User:     user,
-			PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto),
+			PhotoURL: utils.PhotoURL(rc, user.ProfilePhoto),
 			Recent:   storyCards(rc, recent),
 			Mine:     storyCards(rc, mine),
 		}, nil

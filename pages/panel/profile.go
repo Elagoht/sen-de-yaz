@@ -7,7 +7,7 @@ import (
 	"sen-de-yaz/data/users"
 	"sen-de-yaz/fragments/layouts"
 	"sen-de-yaz/fragments/pages"
-	"sen-de-yaz/utilities"
+	"sen-de-yaz/utils"
 
 	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
@@ -50,6 +50,6 @@ func profileData(service *users.UserService) collage.DataHandlerFunc {
 		if err != nil {
 			return profileView{}, err
 		}
-		return profileView{User: user, PhotoURL: utilities.PhotoURL(rc, user.ProfilePhoto)}, nil
+		return profileView{User: user, PhotoURL: utils.PhotoURL(rc, user.ProfilePhoto)}, nil
 	})
 }
