@@ -12,6 +12,19 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns Page with its all needs: layout, content and data
+func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
+	content := pages.HomeBlock().
+		WithDataHandler(homeData(service, storyService)).
+		Build()
+
+	return collage.NewPage("home").
+		WithLayouts(layouts.Layout(), layouts.PanelLayout(service)).
+		WithContent(content).
+		WithPath("tr", "/").
+		Build()
+}
+
 // Types data used on this page
 type storyCard struct {
 	stories.Story
@@ -25,7 +38,7 @@ type homeView struct {
 	Mine     []storyCard
 }
 
-// storyCards turns stories into cards
+// Converts stories into cards
 func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
 	cards := make([]storyCard, len(list))
 	for i, story := range list {
@@ -37,7 +50,7 @@ func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
 	return cards
 }
 
-// Genreated dashboard and sets SEO & metadata
+// Genreates dashboard and sets SEO & metadata
 func homeData(
 	service *users.UserService,
 	storyService *stories.StoryService,
@@ -73,17 +86,4 @@ func homeData(
 			Mine:     storyCards(rc, mine),
 		}, nil
 	})
-}
-
-// Returns Page with its all needs: layout, content and data
-func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
-	content := pages.HomeBlock().
-		WithDataHandler(homeData(service, storyService)).
-		Build()
-
-	return collage.NewPage("home").
-		WithLayouts(layouts.Layout(), layouts.PanelLayout(service)).
-		WithContent(content).
-		WithPath("tr", "/").
-		Build()
 }
