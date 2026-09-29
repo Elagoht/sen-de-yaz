@@ -8,12 +8,14 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns login form content with its data handler
 func LoginBlock() *collage.Fragment {
 	return collage.NewInlineFragment("login", loginBlock).
 		WithDataHandler(collage.Load(loginPageData)).
 		Build()
 }
 
+// Login form markup, includes csrf and honeypot
 const loginBlock collage.InlineHTML = `
 <div class="auth-brand"><a class="brand" href="{{pageURL "home"}}">
 	<span class="brand-mark">✎</span>Sen de Yaz</a>
@@ -50,9 +52,8 @@ const loginBlock collage.InlineHTML = `
 	<a class="text-link" href="{{pageURL "register"}}">Kayıt ol</a>
 </p>`
 
-type loginView struct{}
-
-func loginPageData(ctx context.Context, rc *collage.RenderContext) (loginView, error) {
+// Sets SEO & metadata
+func loginPageData(ctx context.Context, rc *collage.RenderContext) (any, error) {
 	rc.HoistTitle("Giriş yap | Sen de Yaz")
 	meta.Set(rc, meta.Page{
 		Title:       "Giriş yap | Sen de Yaz",
@@ -60,5 +61,5 @@ func loginPageData(ctx context.Context, rc *collage.RenderContext) (loginView, e
 		Canonical:   "/login",
 	})
 	jsonld.Emit(rc, jsonld.WebSite{Name: "Sen de Yaz", URL: "/"})
-	return loginView{}, nil
+	return nil, nil
 }

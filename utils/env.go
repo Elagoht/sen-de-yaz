@@ -31,6 +31,23 @@ func LoadEnvFile(dir string) (string, error) {
 	return "", nil
 }
 
+// Returns env as string and panics if not found
+func EnvString(key string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	panic(fmt.Sprintf("Missing environment variable: %s", key))
+}
+
+// Returns env as integer and panics if not found
+func EnvInt(key string) int {
+	value, err := strconv.Atoi(os.Getenv(key))
+	if err != nil {
+		panic(fmt.Sprintf("Missing environment variable: %s", key))
+	}
+	return value
+}
+
 // Parses environment variables
 func applyEnv(content string) error {
 	for number, line := range strings.Split(content, "\n") {
@@ -67,21 +84,4 @@ func applyEnv(content string) error {
 		}
 	}
 	return nil
-}
-
-// Returns env as string and panics if not found
-func EnvString(key string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	panic(fmt.Sprintf("Missing environment variable: %s", key))
-}
-
-// Returns env as integer and panics if not found
-func EnvInt(key string) int {
-	value, err := strconv.Atoi(os.Getenv(key))
-	if err != nil {
-		panic(fmt.Sprintf("Missing environment variable: %s", key))
-	}
-	return value
 }

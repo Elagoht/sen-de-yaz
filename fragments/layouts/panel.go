@@ -7,27 +7,9 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Returns panel layout, only signed in users can see its pages
 func Panel(service *users.UserService) *collage.Fragment {
-	return collage.NewInlineFragment("panel", panelBlock).
+	return collage.NewFragment("panel", "layouts/panel.html").
 		WithGuard(guards.RequireUser(service)).
 		Build()
 }
-
-const panelBlock collage.InlineHTML = `
-<nav class="site-nav">
-	<div class="nav-inner">
-		<a class="brand" href="{{pageURL "home"}}"><span class="brand-mark">✎</span>Sen de Yaz</a>
-		<div class="nav-links">
-			<a class="nav-link" href="{{pageURL "stories"}}">Hikâyeler</a>
-			<a class="nav-link" href="{{pageURL "profile"}}">Profil</a>
-			<form method="POST" action="{{actionURL "logout"}}" class="nav-form">
-				{{csrfToken}}
-				{{honeypot}}
-				<button class="btn btn-ghost" type="submit">Çıkış yap</button>
-			</form>
-		</div>
-	</div>
-</nav>
-<main class="app-shell">
-	{{slot "content"}}
-</main>`

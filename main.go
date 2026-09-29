@@ -45,8 +45,10 @@ var assetsFS embed.FS
 //go:embed all:static
 var staticFS embed.FS
 
+// Disk cache directory
 var cacheDir = ".cache"
 
+// Loads env, initializes services and serves or builds the app
 func main() {
 	// Load ENV files. Do not accept not having one.
 	if file, err := utils.LoadEnvFile("."); err != nil {
@@ -59,7 +61,7 @@ func main() {
 	database, usersService, storiesService, err := initializeDomains("app.sqlite")
 	if err != nil {
 		log.Fatalf("sen-de-yaz: initialize database: %v", err)
-	} // Dont Forget to close it on shutdown
+	} // Don't forget to close it on shutdown
 	defer database.Close()
 
 	// Startup flags setup
@@ -113,14 +115,14 @@ func initializeDomains(path string) (
 	return database, users.NewService(database), stories.NewService(database), nil
 }
 
-// Crate Collage App with project specific needs
+// Create Collage App with project specific needs
 func newApp(
 	devMode bool,
 	port int,
 	userService *users.UserService,
 	storyService *stories.StoryService,
 ) (*collage.App, error) {
-	// Load pluginc configs from typed json file.
+	// Load plugin configs from typed json file.
 	pluginConfig, err := collage.LoadPluginConfig("plugins-config.json")
 	if err != nil {
 		return nil, fmt.Errorf("plugin configuration: %w", err)
@@ -132,7 +134,7 @@ func newApp(
 	baseURL := utils.EnvString("BASE_URL")
 	// Configures plugins
 	plugins := []collage.Plugin{
-		// Creates required filed from source png or svg files
+		// Creates required files from source png or svg files
 		favicon.New(favicon.Options{
 			FS:              assetsFS,
 			Source:          "assets/icon.png",
@@ -174,7 +176,7 @@ func newApp(
 		}),
 		// Minimize html, css, js, json responses
 		minimizer.New(),
-		// Optimize images bt creating resized versions if width and height is set
+		// Optimize images by creating resized versions if width and height is set
 		optiimage.New(),
 		// Access log
 		accesslog.New(accesslog.Options{}),

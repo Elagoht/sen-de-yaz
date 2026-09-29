@@ -1,13 +1,29 @@
 package fragments
 
 import (
+	"context"
+
+	"sen-de-yaz/data/users"
+	"sen-de-yaz/utils"
+
+	meta "github.com/Elagoht/collage-meta"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-func Profile() *collage.FragmentBuilder {
-	return collage.NewInlineFragment("profile", profileBlock)
+// Returns profile form content with its data handler
+func Profile(service *users.UserService) *collage.Fragment {
+	return collage.NewInlineFragment("profile", profileBlock).
+		WithDataHandler(profileData(service)).
+		Build()
 }
 
+// Types data used on this page
+type profileView struct {
+	User     *users.User
+	PhotoURL string
+}
+
+// Profile form markup, includes csrf and honeypot
 const profileBlock collage.InlineHTML = `
 <div class="profile-shell">
 	<div class="form-intro">
@@ -44,3 +60,31 @@ const profileBlock collage.InlineHTML = `
 		<input class="btn btn-primary" type="submit" value="Değişiklikleri kaydet"/>
 	</form>
 </div>`
+
+// Generates profile data and sets SEO & metadata
+func profileData(service *users.UserService) collage.DataHandlerFunc {
+	return collage.Load(func(
+		ctx context.Context,
+		rc *collage.RenderContext,
+	) (profileView, error) {
+		// Sets SEO & metadata values
+		title := "Profilini düzenle | Sen de Yaz"
+
+		rc.HoistTitle(title)
+		meta.Set(rc, meta.Page{
+			Title:       title,
+			Description: "Sen de Yaz hesabında adını ve profil fotoğrafını güncelle.",
+			Canonical:   "/profile",
+		})
+
+		// Profile Data
+		user, err := service.CurrentUser(rc.Request)
+		if err != nil {
+			return profileView{}, err
+		}
+		return profileView{
+			User:     user,
+			PhotoURL: utils.PhotoURL(rc, user.ProfilePhoto),
+		}, nil
+	})
+}

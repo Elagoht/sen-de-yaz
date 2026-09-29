@@ -12,6 +12,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
+// Validates register form, creates the user and signs in
 func Register(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
@@ -66,6 +67,7 @@ func Register(app *collage.App, service *users.UserService) collage.ActionHandle
 	}
 }
 
+// Validates login form and signs in
 func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
@@ -95,6 +97,7 @@ func Login(app *collage.App, service *users.UserService) collage.ActionHandlerFu
 	}
 }
 
+// Validates profile form and updates the current user
 func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		v := validate.Form(rc)
@@ -128,6 +131,7 @@ func ProfileUpdate(app *collage.App, service *users.UserService) collage.ActionH
 	}
 }
 
+// Ends the session and clears session cookie
 func Logout(app *collage.App, service *users.UserService) collage.ActionHandlerFunc {
 	return func(ctx context.Context, rc *collage.RenderContext) (*collage.ActionResult, error) {
 		if cookie, err := rc.Request.Cookie(users.SessionCookieName); err == nil {
