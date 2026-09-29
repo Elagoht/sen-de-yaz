@@ -4,10 +4,7 @@ import (
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
-// PhotoURL returns an absolute URL for an uploaded photo path. opti-image only
-// rewrites img sources that carry a host, so a relative upload path never
-// reaches it; the request's own origin is what makes the photo an allowed
-// origin. An empty path returns empty, for a user without a photo.
+// Gets urls of profile photos
 func PhotoURL(rc *collage.RenderContext, path string) string {
 	if path == "" {
 		return ""
