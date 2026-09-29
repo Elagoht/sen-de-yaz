@@ -22,7 +22,6 @@ import (
 	favicon "github.com/Elagoht/collage-favicon"
 	flash "github.com/Elagoht/collage-flash"
 	honeypot "github.com/Elagoht/collage-honeypot"
-	validate "github.com/Elagoht/collage-validate"
 	htmlcheck "github.com/Elagoht/collage-htmlcheck"
 	jsonld "github.com/Elagoht/collage-jsonld"
 	meta "github.com/Elagoht/collage-meta"
@@ -34,6 +33,7 @@ import (
 	robots "github.com/Elagoht/collage-robots"
 	secure "github.com/Elagoht/collage-secure"
 	sitemap "github.com/Elagoht/collage-sitemap"
+	validate "github.com/Elagoht/collage-validate"
 	"github.com/Elagoht/collage/pkg/collage"
 )
 
@@ -145,7 +145,7 @@ func newApp(devMode bool, port int, userService *users.UserService, storyService
 			BaseURL:         baseURL,
 			DefaultImage:    "/assets/icon.png",
 			DefaultImageAlt: "Sen de Yaz logosu",
-			Locales:         map[string]string{"en": "tr"},
+			Locales:         map[string]string{"tr": "tr-TR"},
 		}),
 		jsonld.New(),
 		robots.New(robots.Options{}),

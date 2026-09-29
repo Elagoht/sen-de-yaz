@@ -26,7 +26,7 @@ func ProfilePage(userService *users.UserService) *collage.Page {
 			WithDataHandler(profileData(userService)).
 			Build(),
 		).
-		WithPath("en", "/profile").
+		WithPath("tr", "/profile").
 		WithActionFor(profileAction).
 		Build()
 }

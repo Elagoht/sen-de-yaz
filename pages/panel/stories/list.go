@@ -24,7 +24,7 @@ func ListPage(storyService *storydomain.StoryService, userService *users.UserSer
 			WithDataHandler(collage.Load(listData(storyService))).
 			Build(),
 		).
-		WithPath("en", "/stories").
+		WithPath("tr", "/stories").
 		Build()
 }
 

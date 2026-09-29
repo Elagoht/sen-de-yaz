@@ -25,7 +25,7 @@ func CreatePage(storyService *storydomain.StoryService, userService *users.UserS
 			WithDataHandler(collage.Load(createData)).
 			Build(),
 		).
-		WithPath("en", "/stories/new").
+		WithPath("tr", "/stories/new").
 		WithActionFor(action).
 		Build()
 }

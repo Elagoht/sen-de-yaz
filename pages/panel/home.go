@@ -72,6 +72,6 @@ func HomePage(service *users.UserService, storyService *stories.StoryService) *c
 	return collage.NewPage("home").
 		WithLayouts(layouts.Layout(), layouts.PanelLayout(service)).
 		WithContent(content).
-		WithPath("en", "/").
+		WithPath("tr", "/").
 		Build()
 }

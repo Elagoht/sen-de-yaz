@@ -31,7 +31,7 @@ func DetailPage(storyService *storydomain.StoryService, userService *users.UserS
 			WithDataHandler(detailData(storyService, userService)).
 			Build(),
 		).
-		WithPath("en", "/stories/{id}").
+		WithPath("tr", "/stories/{id}").
 		WithActionFor(addEntry).
 		Build()
 }

@@ -31,7 +31,7 @@ func register(app *collage.App, userService *users.UserService, storyService *st
 		}
 	}
 	editEntry := collage.NewAction("story-edit-entry").
-		WithPath("en", "/stories/{id}/edit").
+		WithPath("tr", "/stories/{id}/edit").
 		WithMethods(http.MethodPost).
 		WithHandler(actions.UpdateEntryAction(storyService, userService, func() *collage.Page { return detail })).
 		Build()
@@ -39,7 +39,7 @@ func register(app *collage.App, userService *users.UserService, storyService *st
 		return fmt.Errorf("register story edit action: %w", err)
 	}
 	logout := collage.NewAction("logout").
-		WithPath("en", "/logout").
+		WithPath("tr", "/logout").
 		WithMethods("POST").
 		WithHandler(actions.LogoutAction(userService)).
 		Build()

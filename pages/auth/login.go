@@ -19,7 +19,7 @@ func LoginPage(userService *users.UserService) *collage.Page {
 	return collage.NewPage("login").
 		WithLayouts(layouts.Layout(), layouts.AuthLayout(userService)).
 		WithContent(pages.LoginBlock()).
-		WithPath("en", "/login").
+		WithPath("tr", "/login").
 		WithActionFor(loginAction).
 		Build()
 }
