@@ -10,13 +10,10 @@ import (
 	"strings"
 )
 
-// envFiles are the files environment variables are read from, in order of
-// preference — the same files "collage dev" reads. Only the first one found is
-// applied: .env.development replaces .env rather than being merged over it.
+// Development env var is preferred over .env
 var envFiles = []string{".env.development", ".env"}
 
-// LoadEnvFile applies the first environment file found in dir and returns its
-// name, or "" when there is none — which is not an error.
+// Loads environment variables from .env files
 func LoadEnvFile(dir string) (string, error) {
 	for _, name := range envFiles {
 		content, err := os.ReadFile(filepath.Join(dir, name))
@@ -34,13 +31,7 @@ func LoadEnvFile(dir string) (string, error) {
 	return "", nil
 }
 
-// applyEnv sets every variable the process does not already have, so the shell
-// wins over the file. The format is the common dotenv subset: KEY=value lines,
-// blank lines, "#" comments, an optional "export " prefix, and an optional pair
-// of matching quotes around the value. A malformed line is an error rather than
-// a skipped one: a skipped line is a setting somebody wrote and the program
-// never saw, and the symptom — a default where a value was meant to be — points
-// everywhere except at the file.
+// Parses environment variables
 func applyEnv(content string) error {
 	for number, line := range strings.Split(content, "\n") {
 		line = strings.TrimSpace(line)
@@ -78,6 +69,7 @@ func applyEnv(content string) error {
 	return nil
 }
 
+// Returns env as string and panics if not found
 func EnvString(key string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -85,6 +77,7 @@ func EnvString(key string) string {
 	panic(fmt.Sprintf("Missing environment variable: %s", key))
 }
 
+// Returns env as integer and panics if not found
 func EnvInt(key string) int {
 	value, err := strconv.Atoi(os.Getenv(key))
 	if err != nil {
