@@ -15,9 +15,7 @@ func PanelLayout(service *users.UserService) *collage.Fragment {
 			<div class="nav-links">
 				<a class="nav-link" href="{{pageURL "stories"}}">Hikâyeler</a>
 				<a class="nav-link" href="{{pageURL "profile"}}">Profil</a>
-				<!-- action URLs are not in the page registry: /logout is
-					declared once, beside its action, in routes.go -->
-				<form method="POST" action="/logout" class="nav-form">
+				<form method="POST" action="{{actionURL "logout"}}" class="nav-form">
 					{{csrfToken}}
 					{{honeypot}}
 					<button class="btn btn-ghost" type="submit">Çıkış yap</button>

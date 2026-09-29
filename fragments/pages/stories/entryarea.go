@@ -56,7 +56,7 @@ var (
 )
 
 const entryAddHTML collage.InlineHTML = `
-<form class="continue-box form-stack" method="POST" action="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}">
+<form class="continue-box form-stack" method="POST" action="{{pageURL "story-detail" "id" .StoryID}}">
 	<label class="form-label">
 		Sıradaki bölümü yaz
 		<span class="form-help">En fazla 140 karakter</span>
@@ -73,7 +73,7 @@ const entryAddHTML collage.InlineHTML = `
 </form>`
 
 const entryEditHTML collage.InlineHTML = `
-<form class="continue-box edit-box form-stack" method="POST" action="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}"{{if not .Rejected}} hidden{{end}}>
+<form class="continue-box edit-box form-stack" method="POST" action="{{pageURL "story-detail" "id" .StoryID}}"{{if not .Rejected}} hidden{{end}}>
 	<input type="hidden" name="entry_id" value="{{.Edit.ID}}"/>
 	<p class="edit-note">Yayında olan:</p>
 	<blockquote class="edit-original">{{.Edit.Original}}</blockquote>
@@ -91,7 +91,7 @@ const entryEditHTML collage.InlineHTML = `
 
 	<div class="edit-actions">
 		<button class="btn btn-primary" type="submit">Değişiklikleri kaydet</button>
-		<a class="text-link" href="{{pageURL "story-detail" "id" (printf "%d" .StoryID)}}">Vazgeç</a>
+		<a class="text-link" href="{{pageURL "story-detail" "id" .StoryID}}">Vazgeç</a>
 	</div>
 </form>
 <script nonce="{{cspNonce}}">

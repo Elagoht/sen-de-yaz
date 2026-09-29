@@ -23,7 +23,7 @@ const storyListBlock collage.InlineHTML = `
 {{if .Stories}}
 	<div class="story-list">
 		{{range .Stories}}
-			<a class="story-row" href="{{pageURL "story-detail" "id" (printf "%d" .ID)}}">
+			<a class="story-row" href="{{pageURL "story-detail" "id" .ID}}">
 				<div class="story-row-top">
 					<h2 class="story-row-title">{{.Title}}</h2>
 					<small class="story-time">{{.UpdatedAt}}</small>

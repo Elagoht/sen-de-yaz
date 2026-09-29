@@ -41,7 +41,7 @@ const homeBlock collage.InlineHTML = `
 	{{if .Recent}}
 		<div class="story-grid">
 			{{range .Recent}}
-				<a class="story-card" href="{{pageURL "story-detail" "id" (printf "%d" .ID)}}">
+				<a class="story-card" href="{{pageURL "story-detail" "id" .ID}}">
 					<div>
 						<div class="story-card-top">
 							<span class="story-label">Yeni katkı</span>
@@ -82,7 +82,7 @@ const homeBlock collage.InlineHTML = `
 	{{if .Mine}}
 		<div class="story-grid">
 			{{range .Mine}}
-				<a class="story-card" href="{{pageURL "story-detail" "id" (printf "%d" .ID)}}">
+				<a class="story-card" href="{{pageURL "story-detail" "id" .ID}}">
 					<div>
 						<div class="story-card-top">
 							<span class="story-label">Katıldığın hikâye</span>

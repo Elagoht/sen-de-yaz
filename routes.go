@@ -29,9 +29,6 @@ func register(app *collage.App, userService *users.UserService, storyService *st
 			return fmt.Errorf("register page %q: %w", page.Name, err)
 		}
 	}
-	// The logout action answers a URL of its own — no page posts anywhere
-	// else on /logout — so its form hardcodes the path; the URL registry
-	// names pages and documents, not actions.
 	logout := collage.NewAction("logout").
 		WithPath("tr", "/logout").
 		WithMethods(http.MethodPost).
