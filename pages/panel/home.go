@@ -38,18 +38,6 @@ type homeView struct {
 	Mine     []storyCard
 }
 
-// Converts stories into cards
-func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
-	cards := make([]storyCard, len(list))
-	for i, story := range list {
-		cards[i] = storyCard{
-			Story:          story,
-			AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto),
-		}
-	}
-	return cards
-}
-
 // Genreates dashboard and sets SEO & metadata
 func homeData(
 	service *users.UserService,
@@ -86,4 +74,16 @@ func homeData(
 			Mine:     storyCards(rc, mine),
 		}, nil
 	})
+}
+
+// Helper function converts stories into cards
+func storyCards(rc *collage.RenderContext, list []stories.Story) []storyCard {
+	cards := make([]storyCard, len(list))
+	for i, story := range list {
+		cards[i] = storyCard{
+			Story:          story,
+			AuthorPhotoURL: utils.PhotoURL(rc, story.LastAuthorPhoto),
+		}
+	}
+	return cards
 }
