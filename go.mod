@@ -13,13 +13,13 @@ require (
 	github.com/Elagoht/collage-htmlcheck v0.1.1
 	github.com/Elagoht/collage-jsonld v0.2.3
 	github.com/Elagoht/collage-meta v0.1.1
-	github.com/Elagoht/collage-minimizer v0.1.3
+	github.com/Elagoht/collage-minimizer v0.1.6
 	github.com/Elagoht/collage-opti-image v0.2.3
 	github.com/Elagoht/collage-otel v0.2.2
 	github.com/Elagoht/collage-prometheus v0.2.1
 	github.com/Elagoht/collage-ratelimit v0.1.2
 	github.com/Elagoht/collage-robots v0.1.1
-	github.com/Elagoht/collage-secure v0.1.1
+	github.com/Elagoht/collage-secure v0.1.2
 	github.com/Elagoht/collage-sitemap v0.1.1
 	github.com/Elagoht/collage-validate v0.1.2
 	golang.org/x/crypto v0.57.0

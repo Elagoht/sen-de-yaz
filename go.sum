@@ -18,8 +18,8 @@ github.com/Elagoht/collage-jsonld v0.2.3 h1:y02d/OegQ6mn+VgQfuWMZBxFIWuctj6dCqhy
 github.com/Elagoht/collage-jsonld v0.2.3/go.mod h1:baYzFVrqmxmPixNfdASM4l7tdqxRFN39yNuw65fUleg=
 github.com/Elagoht/collage-meta v0.1.1 h1:MAUl1ytjgOG6qSyn/AefeSDaYH7HNqykjnwrYW49g7Y=
 github.com/Elagoht/collage-meta v0.1.1/go.mod h1:oEO/+9goTa9xfUtSTnV3aRczijG2C8G64vr+cUnhgLc=
-github.com/Elagoht/collage-minimizer v0.1.3 h1:Qa7mEtgiJhP1G6nTdrG5ZBnEFqPUiWxDicfc796aCIg=
-github.com/Elagoht/collage-minimizer v0.1.3/go.mod h1:sU7cl8bfWqtD1sGY2yrIxh4cSYYRt1oZnqB24kJC6+k=
+github.com/Elagoht/collage-minimizer v0.1.6 h1:8Ahdyu9fjgVyE2LK9rtBjwyqw7c7YfahCHORnwm/MLY=
+github.com/Elagoht/collage-minimizer v0.1.6/go.mod h1:ewjXk1tSNNhcMqxbXEX4dPFybzwNQwVwTxtvx3O7n74=
 github.com/Elagoht/collage-opti-image v0.2.3 h1:ATDiM1mxB4CmfGfkEYSWhL/MW1e4+RHUJEttA08ciN4=
 github.com/Elagoht/collage-opti-image v0.2.3/go.mod h1:Uv3xejvO0xnWsXY/24AvpL9aUqE7zt6Jama0FBePDCc=
 github.com/Elagoht/collage-otel v0.2.2 h1:plWiO48iaa3IzSGlafsSssfGNoe+Cmzy3iR5nNLvGN8=
@@ -30,8 +30,8 @@ github.com/Elagoht/collage-ratelimit v0.1.2 h1:kq3xzMG7Yhn2Qtf+Pr4+vKPrtxaDMB9Kh
 github.com/Elagoht/collage-ratelimit v0.1.2/go.mod h1:Lwrzey+kY9Eyljkty/Tnze43yDWpVddZyeM9A1pc1i0=
 github.com/Elagoht/collage-robots v0.1.1 h1:gQfOBd0EYa3iV1sgsLcLhQrzKOj+gtajA+XmNNfYgBY=
 github.com/Elagoht/collage-robots v0.1.1/go.mod h1:ZrzXgL77es01hUu8L1MXeXwtTWuoQ+Vom1LNpr+iDcU=
-github.com/Elagoht/collage-secure v0.1.1 h1:J/flvYOfr+o2i8073+SpXuwM62tFXz4x12YDLoJ2tyw=
-github.com/Elagoht/collage-secure v0.1.1/go.mod h1:b6dNfVwS/bmVFjufDVvkFVkBn0Nu9h5x7QJoJdnCxyw=
+github.com/Elagoht/collage-secure v0.1.2 h1:dX4IOtHUsDlXAonPt19NHJeUO7Dp/daOMlN1DquSGY0=
+github.com/Elagoht/collage-secure v0.1.2/go.mod h1:b6dNfVwS/bmVFjufDVvkFVkBn0Nu9h5x7QJoJdnCxyw=
 github.com/Elagoht/collage-sitemap v0.1.1 h1:zP7GP+9LRHT2gYqsLCNgkmBxT09qoevHL27mGd3WnS8=
 github.com/Elagoht/collage-sitemap v0.1.1/go.mod h1:KcgggWEVdh+bBg3KaJ/SY274FomWijktvHBLZuEPthg=
 github.com/Elagoht/collage-validate v0.1.2 h1:3/cd3by9CjU6qrvITAOUhJ0LRjgI6RlrCoZgBQ8SqYw=
