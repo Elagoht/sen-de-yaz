@@ -190,7 +190,7 @@ func newApp(
 		// gets the login redirect there, so only the public pages are listed.
 		sitemap.New(sitemap.Options{
 			BaseURL: baseURL,
-			Exclude: []string{"home", "profile", "stories", "story-create", "story-detail"},
+			Exclude: []string{"panel", "profile", "stories", "story-create", "story-detail"},
 		}),
 		// Minimize html, css, js, json responses
 		minimizer.New(),

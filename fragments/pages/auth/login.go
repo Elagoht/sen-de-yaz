@@ -16,7 +16,7 @@ func LoginBlock() *collage.Fragment {
 
 // Login form markup, includes csrf and honeypot
 const loginBlock collage.InlineHTML = `
-<div class="auth-brand"><a class="brand" href="{{pageURL "home"}}">
+<div class="auth-brand"><a class="brand" href="{{pageURL "panel"}}">
 	<span class="brand-mark">✎</span>Sen de Yaz</a>
 </div>
 

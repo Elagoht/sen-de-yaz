@@ -17,7 +17,7 @@ func RegisterBlock() *collage.Fragment {
 // Register form markup, includes csrf and honeypot
 const registerBlock collage.InlineHTML = `
 <div class="auth-brand">
-	<a class="brand" href="{{pageURL "home"}}">
+	<a class="brand" href="{{pageURL "panel"}}">
 	<span class="brand-mark">✎</span>Sen de Yaz</a>
 </div>
 

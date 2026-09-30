@@ -63,7 +63,7 @@ func Register(
 
 		flash.Add(rc, flash.Success, "Hesabın oluşturuldu. Hoş geldin!")
 
-		home, err := rc.URL("home", nil)
+		home, err := rc.URL("panel", nil)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +99,7 @@ func Login(
 
 		flash.Add(rc, flash.Success, "Tekrar hoş geldin!")
 
-		home, err := rc.URL("home", nil)
+		home, err := rc.URL("panel", nil)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +151,7 @@ func ProfileUpdate(
 			users.RemoveFile(user.ProfilePhoto)
 		}
 		flash.Add(rc, flash.Success, "Profilin güncellendi.")
-		home, err := rc.URL("home", nil)
+		home, err := rc.URL("panel", nil)
 		if err != nil {
 			return nil, err
 		}

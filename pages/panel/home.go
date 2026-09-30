@@ -11,9 +11,9 @@ import (
 
 // Returns Page with its all needs: layout, content and data
 func Home(service *users.UserService, storyService *stories.StoryService) *collage.Page {
-	return collage.NewPage("home").
+	return collage.NewPage("panel").
 		WithLayouts(layouts.Master(), layouts.Panel(service)).
 		WithContent(fragments.Home(service, storyService)).
-		WithPath("tr", "/").
+		WithPath("tr", "/panel").
 		Build()
 }

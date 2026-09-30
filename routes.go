@@ -10,6 +10,7 @@ import (
 	"sen-de-yaz/data/users"
 	authpages "sen-de-yaz/pages/auth"
 	errorpages "sen-de-yaz/pages/errors"
+	landingpages "sen-de-yaz/pages/landing"
 	panelpages "sen-de-yaz/pages/panel"
 	storypages "sen-de-yaz/pages/panel/stories"
 )
@@ -23,6 +24,7 @@ func register(
 	notFound := errorpages.NotFoundPage()
 	for _, page := range []*collage.Page{
 		// Register all Pages with their needs
+		landingpages.Landing(),
 		authpages.Register(userService),
 		authpages.Login(userService),
 		panelpages.Home(userService, storyService),
@@ -42,7 +44,7 @@ func register(
 		return fmt.Errorf("register not-found page: %w", err)
 	}
 
-	// Register all Actions which not registered specifically for a page with their needs
+	// Register all Actions which not registered specifically for a page, with their needs
 	if err := app.RegisterAction(
 		funcs.Logout(userService),
 	); err != nil {
