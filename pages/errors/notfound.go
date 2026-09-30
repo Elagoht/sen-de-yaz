@@ -1,4 +1,4 @@
-package errors
+package pages
 
 import (
 	"sen-de-yaz/fragments/layouts"

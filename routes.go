@@ -8,9 +8,9 @@ import (
 	funcs "sen-de-yaz/actions"
 	"sen-de-yaz/data/stories"
 	"sen-de-yaz/data/users"
-	"sen-de-yaz/pages/auth"
+	authpages "sen-de-yaz/pages/auth"
 	errorpages "sen-de-yaz/pages/errors"
-	"sen-de-yaz/pages/panel"
+	panelpages "sen-de-yaz/pages/panel"
 	storypages "sen-de-yaz/pages/panel/stories"
 )
 
@@ -23,13 +23,13 @@ func register(
 	notFound := errorpages.NotFoundPage()
 	for _, page := range []*collage.Page{
 		// Register all Pages with their needs
-		panel.HomePage(userService, storyService),
-		panel.ProfilePage(userService),
-		storypages.ListPage(storyService, userService),
-		storypages.CreatePage(storyService, userService),
-		storypages.DetailPage(storyService, userService),
-		auth.RegisterPage(userService),
-		auth.LoginPage(userService),
+		authpages.Register(userService),
+		authpages.Login(userService),
+		panelpages.Home(userService, storyService),
+		panelpages.Profile(userService),
+		storypages.List(storyService, userService),
+		storypages.Create(storyService, userService),
+		storypages.Detail(storyService, userService),
 		notFound,
 	} {
 		if err := app.RegisterPage(page); err != nil {

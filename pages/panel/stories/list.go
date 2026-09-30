@@ -1,4 +1,4 @@
-package stories
+package pages
 
 import (
 	storydomain "sen-de-yaz/data/stories"
@@ -10,7 +10,7 @@ import (
 )
 
 // Returns Page with its all needs: layout, content and data
-func ListPage(
+func List(
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Page {

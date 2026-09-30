@@ -1,4 +1,4 @@
-package panel
+package pages
 
 import (
 	"sen-de-yaz/data/stories"
@@ -10,7 +10,7 @@ import (
 )
 
 // Returns Page with its all needs: layout, content and data
-func HomePage(service *users.UserService, storyService *stories.StoryService) *collage.Page {
+func Home(service *users.UserService, storyService *stories.StoryService) *collage.Page {
 	return collage.NewPage("home").
 		WithLayouts(layouts.Master(), layouts.Panel(service)).
 		WithContent(fragments.Home(service, storyService)).

@@ -1,4 +1,4 @@
-package stories
+package pages
 
 import (
 	"sen-de-yaz/actions"
@@ -11,7 +11,7 @@ import (
 )
 
 // Returns Page with its all needs: layout, content and data
-func DetailPage(
+func Detail(
 	storyService *storydomain.StoryService,
 	userService *users.UserService,
 ) *collage.Page {

@@ -1,4 +1,4 @@
-package auth
+package pages
 
 import (
 	"sen-de-yaz/actions"
@@ -10,7 +10,7 @@ import (
 )
 
 // Returns Page with its all needs: layout, content and data
-func LoginPage(
+func Login(
 	userService *users.UserService,
 ) *collage.Page {
 	return collage.NewPage("login").
